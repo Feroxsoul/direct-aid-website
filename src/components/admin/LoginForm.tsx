@@ -4,7 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-export function LoginForm() {
+type LoginFormProps = {
+  supabaseUrl: string;
+  supabaseAnonKey: string;
+};
+
+export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,7 +26,7 @@ export function LoginForm() {
     let navigating = false;
 
     try {
-      const supabase = createSupabaseBrowserClient();
+      const supabase = createSupabaseBrowserClient(supabaseUrl, supabaseAnonKey);
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,

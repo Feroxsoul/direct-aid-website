@@ -1,10 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 import type { Database } from "@/types";
 
 /** Anonymous client for public site data (no session). */
 export function createSupabasePublicClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = getSupabaseUrl();
+  const anonKey = getSupabaseAnonKey();
 
   if (!url || !anonKey) {
     return null;

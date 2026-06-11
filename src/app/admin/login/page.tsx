@@ -1,16 +1,21 @@
 import { LoginForm } from "@/components/admin/LoginForm";
 
+export const dynamic = "force-dynamic";
+import {
+  getSupabaseAnonKey,
+  getSupabaseUrl,
+  isSupabaseConfigured,
+} from "@/lib/supabase/env";
+
 type LoginPageProps = {
   searchParams: Promise<{ error?: string }>;
 };
 
 export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
   const { error } = await searchParams;
-  const supabaseConfigured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
-      !process.env.NEXT_PUBLIC_SUPABASE_URL.includes("your-project"),
-  );
+  const supabaseConfigured = isSupabaseConfigured();
+  const supabaseUrl = getSupabaseUrl();
+  const supabaseAnonKey = getSupabaseAnonKey();
 
   return (
     <div className="admin-login-wrap">
@@ -49,7 +54,10 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...`}
             </ol>
           </div>
         ) : (
-          <LoginForm />
+          <LoginForm
+            supabaseUrl={supabaseUrl}
+            supabaseAnonKey={supabaseAnonKey}
+          />
         )}
 
         {error === "supabase" ? (
