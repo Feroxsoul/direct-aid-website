@@ -1,0 +1,96 @@
+:root {
+  --da-font-family: "Diaborient012", sans-serif;
+
+  /* Type scale — archived Webflow */
+  --da-text-xs: 0.625rem; /* 10px — tags */
+  --da-text-sm: 0.75rem; /* 12px — buttons */
+  --da-text-base: 0.875rem; /* 14px — body */
+  --da-text-md: 1rem; /* 16px — card titles */
+  --da-text-lg: 1.125rem; /* 18px — section titles */
+  --da-text-xl: 1.25rem; /* 20px — project titles */
+  --da-text-stat: 1.8125rem; /* 29px — counter */
+  --da-text-hero: 2.625rem; /* 42px — hero stats */
+
+  --da-leading-tight: 1.125rem; /* 18px */
+  --da-leading-normal: 1.5em;
+  --da-leading-title: 2.0625rem; /* 33px */
+}
+
+@theme inline {
+  --font-sans: var(--da-font-family);
+  --font-size-da-xs: var(--da-text-xs);
+  --font-size-da-sm: var(--da-text-sm);
+  --font-size-da-base: var(--da-text-base);
+  --font-size-da-md: var(--da-text-md);
+  --font-size-da-lg: var(--da-text-lg);
+  --font-size-da-xl: var(--da-text-xl);
+  --font-size-da-stat: var(--da-text-stat);
+  --font-size-da-hero: var(--da-text-hero);
+}
+
+/* Weight utilities */
+.da-font-light {
+  font-weight: 300;
+}
+
+.da-font-regular {
+  font-weight: 400;
+}
+
+.da-font-bold {
+  font-weight: 700;
+}
+
+.da-font-heavy {
+  font-weight: 900;
+}
+
+/* Semantic text styles */
+.da-text-tag {
+  font-size: var(--da-text-xs);
+  font-weight: 700;
+  line-height: 0.9375rem;
+}
+
+.da-text-button {
+  font-size: var(--da-text-sm);
+  font-weight: 700;
+}
+
+.da-text-body {
+  font-size: var(--da-text-base);
+  font-weight: 400;
+  line-height: var(--da-leading-tight);
+}
+
+.da-text-body-light {
+  font-size: var(--da-text-base);
+  font-weight: 300;
+  line-height: var(--da-leading-tight);
+}
+
+.da-text-card-title {
+  font-size: var(--da-text-md);
+  font-weight: 700;
+}
+
+.da-text-section {
+  font-size: var(--da-text-lg);
+  font-weight: 700;
+  line-height: var(--da-leading-title);
+}
+
+.da-text-project {
+  font-size: var(--da-text-xl);
+  font-weight: 700;
+}
+
+.da-text-stat {
+  font-size: var(--da-text-stat);
+  font-weight: 700;
+}
+
+.da-text-hero-stat {
+  font-size: var(--da-text-hero);
+  font-weight: 700;
+}

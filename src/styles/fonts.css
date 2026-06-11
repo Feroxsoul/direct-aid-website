@@ -1,0 +1,36 @@
+/* DiabOrient012 — matches archived Webflow site. Self-host to public/fonts when assets are available. */
+@font-face {
+  font-family: "Diaborient012";
+  src: url("https://cdn.prod.website-files.com/632a01171b125a156b28c038/632a128657251d5005727e03_DiabOrient012-Light.ttf")
+    format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Diaborient012";
+  src: url("https://cdn.prod.website-files.com/632a01171b125a156b28c038/632a128601516fe6cee52ea9_DiabOrient012-SemiLight.ttf")
+    format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Diaborient012";
+  src: url("https://cdn.prod.website-files.com/632a01171b125a156b28c038/632a12865710ad8ec9cb47d4_DiabOrient012-Bold.ttf")
+    format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Diaborient012";
+  src: url("https://cdn.prod.website-files.com/632a01171b125a156b28c038/632a12869b1139d4a2730b26_DiabOrient012-Heavy.ttf")
+    format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}

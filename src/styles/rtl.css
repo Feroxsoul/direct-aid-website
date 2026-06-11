@@ -1,0 +1,20 @@
+[dir="rtl"] {
+  direction: rtl;
+}
+
+.da-rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.da-text-start {
+  text-align: start;
+}
+
+.da-text-end {
+  text-align: end;
+}
+
+.da-flex-row-reverse {
+  flex-direction: row-reverse;
+}

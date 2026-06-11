@@ -1,0 +1,73 @@
+/* Homepage — matches da10.webflow.io layout */
+
+.grid-box {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 20px;
+  row-gap: 20px;
+  width: var(--da-card-size);
+  max-width: var(--da-card-size);
+  margin: 20px 20px 10px;
+}
+
+.box-green {
+  max-height: none;
+}
+
+.grid-index {
+  padding: 20px;
+}
+
+.counter-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.box-inbox-black {
+  min-height: 142px;
+  border-radius: 6px;
+  background-color: var(--da-overlay-light);
+  backdrop-filter: blur(20px);
+}
+
+.stats-branding {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 142px;
+  padding: 18px 12px 12px;
+  text-align: right;
+}
+
+.stats-branding-line1 {
+  margin: 0;
+  font-size: 2.625rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--da-black);
+}
+
+.stats-branding-line2 {
+  margin: 0;
+  font-size: 2.625rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--da-black);
+}
+
+@media screen and (max-width: 767px) {
+  .grid-box {
+    min-width: var(--da-card-size);
+    max-width: var(--da-card-size);
+    margin-bottom: 10px;
+  }
+
+  .box-green {
+    min-width: var(--da-card-size);
+    max-width: var(--da-card-size);
+  }
+}

@@ -1,0 +1,40 @@
+:root {
+  /* Brand — archived Webflow :root */
+  --da-green: #2c9942;
+  --da-white: #f9f9f9;
+  --da-gray: #49575f;
+  --da-black: #050505;
+  --da-lightgreen: #e2eed6;
+  --da-orange: #f88d2a;
+  --da-red: #df3b2c;
+  --da-darkblue: #0457a2;
+  --da-olive: #9ba538;
+  --da-yellow: #f1bb1a;
+  --da-purple: #904d9d;
+  --da-blue: #27a8e0;
+  --da-lightgray: #e5e5e4;
+
+  /* Surfaces */
+  --da-background: #ffffff;
+  --da-overlay: #05050533;
+  --da-overlay-light: #0505051a;
+}
+
+@theme inline {
+  --color-da-green: var(--da-green);
+  --color-da-white: var(--da-white);
+  --color-da-gray: var(--da-gray);
+  --color-da-black: var(--da-black);
+  --color-da-lightgreen: var(--da-lightgreen);
+  --color-da-orange: var(--da-orange);
+  --color-da-red: var(--da-red);
+  --color-da-darkblue: var(--da-darkblue);
+  --color-da-olive: var(--da-olive);
+  --color-da-yellow: var(--da-yellow);
+  --color-da-purple: var(--da-purple);
+  --color-da-blue: var(--da-blue);
+  --color-da-lightgray: var(--da-lightgray);
+  --color-da-background: var(--da-background);
+  --color-da-overlay: var(--da-overlay);
+  --color-da-overlay-light: var(--da-overlay-light);
+}
