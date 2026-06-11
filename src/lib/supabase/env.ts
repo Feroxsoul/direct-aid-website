@@ -1,17 +1,19 @@
+function clean(value: string | undefined) {
+  return value?.trim() ?? "";
+}
+
 /** Runtime (Railway/Docker) or build-time (NEXT_PUBLIC_*) Supabase config. */
 export function getSupabaseUrl() {
-  return (
-    process.env.SUPABASE_URL ??
-    process.env.NEXT_PUBLIC_SUPABASE_URL ??
-    ""
-  );
+  const url =
+    clean(process.env.SUPABASE_URL) ||
+    clean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  return url.replace(/\/+$/, "");
 }
 
 export function getSupabaseAnonKey() {
   return (
-    process.env.SUPABASE_ANON_KEY ??
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
-    ""
+    clean(process.env.SUPABASE_ANON_KEY) ||
+    clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   );
 }
 
