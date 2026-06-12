@@ -1,5 +1,11 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { CategoryRow, ProjectRow, SettingRow, StatisticsRow } from "@/types";
+import type {
+  AdminUserRow,
+  CategoryRow,
+  ProjectRow,
+  SettingRow,
+  StatisticsRow,
+} from "@/types";
 
 export async function adminGetProjects(): Promise<ProjectRow[]> {
   const supabase = await createSupabaseServerClient();
@@ -56,5 +62,17 @@ export async function adminGetSettings(): Promise<SettingRow[]> {
   if (!supabase) return [];
 
   const { data } = await supabase.from("settings").select("*").order("key");
+  return data ?? [];
+}
+
+export async function adminGetUsers(): Promise<AdminUserRow[]> {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) return [];
+
+  const { data } = await supabase
+    .from("admin_users")
+    .select("*")
+    .order("created_at", { ascending: true });
+
   return data ?? [];
 }

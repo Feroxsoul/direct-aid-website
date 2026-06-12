@@ -1,5 +1,9 @@
 import Link from "next/link";
+import { AdminPresence } from "@/components/admin/AdminPresence";
 import { signOut } from "@/lib/admin/actions";
+import { canManageUsers, ROLE_LABELS } from "@/lib/admin/roles";
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
+import type { AdminUserRow } from "@/types";
 
 const links = [
   { href: "/admin/projects", label: "المشاريع" },
@@ -7,7 +11,17 @@ const links = [
   { href: "/admin/homepage", label: "الصفحة الرئيسية" },
 ];
 
-export function AdminNav() {
+type AdminNavProps = {
+  profile: AdminUserRow;
+};
+
+export function AdminNav({ profile }: AdminNavProps) {
+  const navLinks = canManageUsers(profile.role)
+    ? [...links, { href: "/admin/users", label: "المستخدمون" }]
+    : links;
+
+  const presenceKey = profile.user_id ?? profile.id;
+
   return (
     <header className="admin-nav">
       <div className="admin-nav-inner">
@@ -15,7 +29,18 @@ export function AdminNav() {
           لوحة التحكم — 10×10
         </Link>
         <nav className="admin-nav-links">
-          {links.map((link) => (
+          <AdminPresence
+            supabaseUrl={getSupabaseUrl()}
+            supabaseAnonKey={getSupabaseAnonKey()}
+            currentUser={{
+              key: presenceKey,
+              email: profile.email,
+              role: profile.role,
+              displayName: profile.display_name,
+            }}
+          />
+          <span className="admin-nav-role">{ROLE_LABELS[profile.role]}</span>
+          {navLinks.map((link) => (
             <Link key={link.href} href={link.href} className="admin-nav-link">
               {link.label}
             </Link>

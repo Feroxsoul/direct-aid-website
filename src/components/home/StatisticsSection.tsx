@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { HomeStatisticsData } from "@/types";
 
 type StatisticsSectionProps = HomeStatisticsData;
@@ -8,38 +9,35 @@ export function StatisticsSection({
   label,
   iconUrl,
   introText,
+  brandLine1,
+  brandLine2,
+  backgroundColor,
 }: StatisticsSectionProps) {
   return (
-    <section
-      aria-label="إحصائيات المشاريع"
-      className="box-green mx-5 mb-0 w-[var(--da-card-size)] max-w-[var(--da-card-size)] rounded-da-md bg-da-lightgreen"
-      dir="ltr"
-    >
-      <div className="grid-index grid grid-cols-2 gap-0 rounded-da-md">
-        <div className="box-inbox-black">
-          <div className="counter-box">
-            <Image
-              src={iconUrl}
-              alt=""
-              width={40}
-              height={40}
-              className="h-10 w-10"
-              aria-hidden
-            />
-            <p className="da-text-stat m-0 pt-5 text-da-black">{value}</p>
-            <p className="da-text-card-title m-0 pt-1.5 text-da-black">{label}</p>
+    <section id="hero" aria-label="Project impact" className="landing-hero">
+      <div className="landing-container">
+        <div
+          className="landing-hero-shell"
+          style={{ backgroundColor: backgroundColor || "#e8f3e0" }}
+        >
+          <div className="landing-hero-grid">
+            <div className="landing-stat-card">
+              <div className="landing-stat-icon">
+                <Image src={iconUrl} alt="" width={28} height={28} aria-hidden />
+              </div>
+              <p className="landing-stat-value">{value}</p>
+              <p className="landing-stat-label">{label}</p>
+            </div>
+
+            <div>
+              <p className="landing-hero-brand-small">{brandLine1}</p>
+              <p className="landing-hero-brand-large">{brandLine2}</p>
+              <p className="landing-hero-intro">{introText}</p>
+              <Link href="#categories" className="landing-hero-cta">
+                EXPLORE OUR MISSION →
+              </Link>
+            </div>
           </div>
-        </div>
-
-        <div className="stats-branding">
-          <p className="stats-branding-line1">عشرة</p>
-          <p className="stats-branding-line2">10×10</p>
-        </div>
-
-        <div className="box-inbox-black col-span-2">
-          <p className="paragraph-2 da-text-body m-0 p-3.5 text-end text-da-black">
-            {introText}
-          </p>
         </div>
       </div>
     </section>

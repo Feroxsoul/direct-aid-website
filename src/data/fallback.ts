@@ -74,6 +74,9 @@ export const fallbackHomeStatistics: HomeStatisticsData = {
   illustrationUrl: `${CDN}/6354b9eae708dc82e540dd5b_Group%203.svg`,
   introText:
     "مشروع البركة 10×10 من باب مشاركة الأثر معكم نقوم برفع التقارير الخاصة في هذا الموقع بشكل دوري",
+  brandLine1: "عشرة",
+  brandLine2: "10×10",
+  backgroundColor: "#e2eed6",
 };
 
 export const fallbackSettings: SiteSettings = {

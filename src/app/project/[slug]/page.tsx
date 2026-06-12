@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { LandingHeader } from "@/components/layout/LandingHeader";
+import { PageContainer } from "@/components/layout/PageContainer";
 import { ProjectDetail } from "@/components/project/ProjectDetail";
-import { getProjectBySlug, getProjectSlugs } from "@/lib/data";
+import { getProjectBySlug, getProjectSlugs, getPublicSettings } from "@/lib/data";
 
 export const revalidate = 60;
 
@@ -21,14 +23,14 @@ export async function generateMetadata({
   const project = await getProjectBySlug(slug);
 
   if (!project) {
-    return { title: "10x10 مشاريع" };
+    return { title: "Direct Aid 10x10" };
   }
 
   return {
-    title: `${project.title} | 10x10 مشاريع`,
+    title: `${project.title} | Direct Aid 10x10`,
     description: project.description.slice(0, 160),
     openGraph: {
-      title: `${project.title} | 10x10 مشاريع`,
+      title: `${project.title} | Direct Aid 10x10`,
       images: [{ url: project.imageUrl }],
     },
   };
@@ -36,11 +38,19 @@ export async function generateMetadata({
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
+  const [project, settings] = await Promise.all([
+    getProjectBySlug(slug),
+    getPublicSettings(),
+  ]);
 
   if (!project) {
     notFound();
   }
 
-  return <ProjectDetail project={project} />;
+  return (
+    <PageContainer>
+      <LandingHeader logoUrl={settings.logo_url} siteTitle={settings.site_title} />
+      <ProjectDetail project={project} />
+    </PageContainer>
+  );
 }

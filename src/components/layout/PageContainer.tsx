@@ -5,9 +5,5 @@ type PageContainerProps = {
 };
 
 export function PageContainer({ children }: PageContainerProps) {
-  return (
-    <div className="container-2 mx-auto flex w-full flex-col items-center pb-10">
-      {children}
-    </div>
-  );
+  return <div className="landing-page">{children}</div>;
 }

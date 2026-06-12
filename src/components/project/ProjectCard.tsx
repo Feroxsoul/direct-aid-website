@@ -33,6 +33,8 @@ export function ProjectCard({
         imageAlt={imageAlt ?? title}
         metadata={metadata}
         statistics={statistics}
+        href={href}
+        title={title}
       />
 
       <ProjectCardInfo title={title} href={href} iconUrl={iconUrl} />
@@ -58,16 +60,27 @@ function ProjectCardImage({
   imageAlt,
   metadata,
   statistics,
-}: ProjectCardImageProps) {
+  href,
+  title,
+}: ProjectCardImageProps & { href: string; title: string }) {
+  const unoptimized = imageUrl.includes("cdn.prod.website-files.com");
+
   return (
     <div className="image-inbox relative flex min-h-[var(--da-image-min-height)] justify-end rounded-t-da-md">
-      <Image
-        src={imageUrl}
-        alt={imageAlt}
-        fill
-        className="rounded-t-da-md object-cover object-center"
-        sizes="340px"
-      />
+      <Link
+        href={href}
+        className="absolute inset-0 z-[1] block"
+        aria-label={`${title} — عرض التفاصيل`}
+      >
+        <Image
+          src={imageUrl}
+          alt={imageAlt}
+          fill
+          className="rounded-t-da-md object-cover object-center"
+          sizes="340px"
+          unoptimized={unoptimized}
+        />
+      </Link>
 
       {statistics ? (
         <ProjectCardStatistics value={statistics.value} label={statistics.label} />

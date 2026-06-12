@@ -10,12 +10,22 @@ type ProjectDetailProps = {
   project: ProjectDetailData;
 };
 
+function isWebflowCdn(url: string) {
+  return url.includes("cdn.prod.website-files.com");
+}
+
 export function ProjectDetail({ project }: ProjectDetailProps) {
   const tags = [
     project.categoryLabel,
     project.location,
     project.metadata.dateLabel,
   ].filter(Boolean) as string[];
+
+  const galleryUrls = [
+    ...new Set(
+      project.galleryUrls.filter((url) => url && url !== project.imageUrl),
+    ),
+  ];
 
   return (
     <div className="project-page">
@@ -26,12 +36,17 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </Link>
       </nav>
 
-      <div
-        className="project-hero"
-        style={{ backgroundImage: `url("${project.imageUrl}")` }}
-        role="img"
-        aria-label={project.imageAlt ?? project.title}
-      />
+      <div className="project-hero">
+        <Image
+          src={project.imageUrl}
+          alt={project.imageAlt ?? project.title}
+          fill
+          className="project-hero-image"
+          sizes="(max-width: 767px) 100vw, 940px"
+          priority
+          unoptimized={isWebflowCdn(project.imageUrl)}
+        />
+      </div>
 
       <div className="project-detail">
         <div className="project-tags">
@@ -49,17 +64,19 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </p>
       </div>
 
-      {project.galleryUrls.length > 0 ? (
+      {galleryUrls.length > 0 ? (
         <div className="project-gallery">
-          {project.galleryUrls.map((url, index) => (
+          <h2 className="project-gallery-title">صور المشروع</h2>
+          {galleryUrls.map((url, index) => (
             <Image
               key={`${url}-${index}`}
               src={url}
-              alt=""
+              alt={`${project.title} — صورة ${index + 1}`}
               width={940}
               height={600}
               className="project-gallery-image"
               sizes="(max-width: 767px) 100vw, 940px"
+              unoptimized={isWebflowCdn(url)}
             />
           ))}
         </div>

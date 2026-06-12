@@ -2,7 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requireSupabaseAdmin } from "@/lib/admin/auth";
+import {
+  assertCanDeleteProjects,
+  requireSupabaseAdmin,
+} from "@/lib/admin/auth";
+import {
+  ADMIN_ROLES,
+  type AdminRole,
+  canManageUsers,
+} from "@/lib/admin/roles";
 import type { CategoryAccent } from "@/lib/design-tokens";
 
 const ACCENTS: CategoryAccent[] = [
@@ -109,7 +117,8 @@ export async function saveProject(formData: FormData) {
 }
 
 export async function deleteProject(formData: FormData) {
-  const { supabase } = await requireSupabaseAdmin();
+  const { supabase, profile } = await requireSupabaseAdmin("admin");
+  await assertCanDeleteProjects(profile);
   const slug = String(formData.get("slug") ?? "").trim();
   if (!slug) throw new Error("معرف المشروع مطلوب");
 
@@ -172,22 +181,132 @@ export async function saveHomepage(formData: FormData) {
   if (illustrationError) throw new Error(illustrationError.message);
 
   const settings = [
-    { key: "site_title", value: String(formData.get("site_title") ?? "").trim() },
-    { key: "site_description", value: String(formData.get("site_description") ?? "").trim() },
+    { key: "stats_brand_line_1", value: String(formData.get("stats_brand_line_1") ?? "").trim() },
+    { key: "stats_brand_line_2", value: String(formData.get("stats_brand_line_2") ?? "").trim() },
+    { key: "stats_box_color", value: String(formData.get("stats_box_color") ?? "").trim() },
     { key: "share_label", value: String(formData.get("share_label") ?? "").trim() },
-    { key: "logo_url", value: String(formData.get("logo_url") ?? "").trim() },
     { key: "share_icon_url", value: String(formData.get("share_icon_url") ?? "").trim() },
   ];
 
   for (const setting of settings) {
-    const { error } = await supabase
-      .from("settings")
-      .update({ value: setting.value })
-      .eq("key", setting.key);
+    const { error } = await supabase.from("settings").upsert(
+      { key: setting.key, value: setting.value, value_json: null, is_public: true },
+      { onConflict: "key" },
+    );
     if (error) throw new Error(error.message);
   }
 
   revalidateSite();
   revalidatePath("/admin/homepage");
   redirect("/admin/homepage?saved=1");
+}
+
+function parseAdminRole(value: FormDataEntryValue | null): AdminRole {
+  const role = String(value ?? "").trim() as AdminRole;
+  if (!ADMIN_ROLES.includes(role)) {
+    throw new Error("الدور غير صالح");
+  }
+  return role;
+}
+
+export async function saveAdminUser(formData: FormData) {
+  const { supabase, user, profile } = await requireSupabaseAdmin("super_admin");
+  if (!canManageUsers(profile.role)) {
+    throw new Error("ليس لديك صلاحية إدارة المستخدمين");
+  }
+
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const role = parseAdminRole(formData.get("role"));
+  const displayName = String(formData.get("display_name") ?? "").trim() || null;
+
+  if (!email) {
+    throw new Error("البريد الإلكتروني مطلوب");
+  }
+
+  const { data: existing } = await supabase
+    .from("admin_users")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+  const { error } = existing
+    ? await supabase
+        .from("admin_users")
+        .update({
+          role,
+          display_name: displayName,
+          is_active: true,
+          created_by: user.id,
+        })
+        .eq("id", existing.id)
+    : await supabase.from("admin_users").insert({
+        email,
+        role,
+        display_name: displayName,
+        is_active: true,
+        created_by: user.id,
+        user_id: null,
+      });
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/users");
+  redirect("/admin/users?saved=1");
+}
+
+export async function updateAdminUser(formData: FormData) {
+  const { supabase, user, profile } = await requireSupabaseAdmin("super_admin");
+  if (!canManageUsers(profile.role)) {
+    throw new Error("ليس لديك صلاحية إدارة المستخدمين");
+  }
+
+  const id = String(formData.get("id") ?? "").trim();
+  const role = parseAdminRole(formData.get("role"));
+  const displayName = String(formData.get("display_name") ?? "").trim() || null;
+  const isActive = formData.get("is_active") === "on";
+
+  if (!id) {
+    throw new Error("معرف المستخدم مطلوب");
+  }
+
+  if (id === profile.id && (!isActive || role !== "super_admin")) {
+    throw new Error("لا يمكنك إلغاء صلاحياتك أو تعطيل حسابك");
+  }
+
+  const { error } = await supabase
+    .from("admin_users")
+    .update({
+      role,
+      display_name: displayName,
+      is_active: isActive,
+      created_by: user.id,
+    })
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/users");
+  redirect("/admin/users?saved=1");
+}
+
+export async function removeAdminUser(formData: FormData) {
+  const { supabase, profile } = await requireSupabaseAdmin("super_admin");
+  if (!canManageUsers(profile.role)) {
+    throw new Error("ليس لديك صلاحية إدارة المستخدمين");
+  }
+
+  const id = String(formData.get("id") ?? "").trim();
+  if (!id) {
+    throw new Error("معرف المستخدم مطلوب");
+  }
+
+  if (id === profile.id) {
+    throw new Error("لا يمكنك حذف حسابك");
+  }
+
+  const { error } = await supabase.from("admin_users").delete().eq("id", id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin/users");
+  redirect("/admin/users?removed=1");
 }

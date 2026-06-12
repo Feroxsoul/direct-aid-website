@@ -63,11 +63,19 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...`}
         {error === "supabase" ? (
           <p className="admin-error">يجب إعداد Supabase قبل استخدام لوحة التحكم.</p>
         ) : null}
+        {error === "unauthorized" ? (
+          <p className="admin-error">
+            حسابك غير مسجّل في لوحة التحكم — تواصل مع Super Admin لإضافة بريدك.
+          </p>
+        ) : null}
+        {error === "forbidden" ? (
+          <p className="admin-error">ليس لديك صلاحية الوصول لهذه الصفحة.</p>
+        ) : null}
 
         {supabaseConfigured ? (
           <p className="admin-setup-note">
-            سجّل الدخول بالبريد وكلمة المرور اللذين أنشأتهما في Supabase →
-            Authentication → Users.
+            سجّل الدخول بالبريد المسجّل في لوحة المستخدمين. Super Admin يضيف
+            البريدات من /admin/users ثم ينشئ الحساب في Supabase.
           </p>
         ) : null}
       </div>

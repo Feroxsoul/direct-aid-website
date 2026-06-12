@@ -4,11 +4,11 @@ import { requireAdmin } from "@/lib/admin/auth";
 export default async function AdminDashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  await requireAdmin();
+  const profile = await requireAdmin();
 
   return (
     <>
-      <AdminNav />
+      <AdminNav profile={profile} />
       <main className="admin-main">{children}</main>
     </>
   );

@@ -33,7 +33,10 @@ INSERT INTO public.settings (key, value, is_public) VALUES
   ('site_description', '10x10 مشاريع', true),
   ('share_label', 'المشاركة', true),
   ('logo_url', 'https://cdn.prod.website-files.com/632a01171b125a156b28c038/64c8cde2258c815c760717a9_small.png', true),
-  ('share_icon_url', 'https://cdn.prod.website-files.com/632a01171b125a156b28c038/6354b9e95ee93e437d920d4b_Share.svg', true)
+  ('share_icon_url', 'https://cdn.prod.website-files.com/632a01171b125a156b28c038/6354b9e95ee93e437d920d4b_Share.svg', true),
+  ('stats_brand_line_1', 'عشرة', true),
+  ('stats_brand_line_2', '10×10', true),
+  ('stats_box_color', '#e2eed6', true)
 ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO public.projects (

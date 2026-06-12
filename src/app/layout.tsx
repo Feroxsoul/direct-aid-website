@@ -1,25 +1,28 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
+import { getPublicSettings } from "@/lib/data";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "10x10 مشاريع",
-  description: "10x10 مشاريع",
+  title: "Direct Aid 10x10",
+  description: "Direct Aid 10x10 Projects",
   openGraph: {
-    title: "10x10 مشاريع",
+    title: "Direct Aid 10x10",
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const settings = await getPublicSettings();
+
   return (
-    <html lang="ar" dir="rtl">
-      <body className="body-2 da-rtl flex min-h-screen flex-col bg-da-background text-da-black">
+    <html lang="en" dir="ltr">
+      <body className="flex min-h-screen flex-col bg-white text-da-black antialiased">
         <main className="flex flex-1 flex-col">{children}</main>
-        <Footer />
+        <Footer logoUrl={settings.logo_url} siteTitle={settings.site_title} />
       </body>
     </html>
   );

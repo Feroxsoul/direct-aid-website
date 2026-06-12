@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { CategoryGrid } from "@/components/home/CategoryGrid";
+import { HomeProjectsExplorer } from "@/components/home/HomeProjectsExplorer";
 import { StatisticsSection } from "@/components/home/StatisticsSection";
-import { Header } from "@/components/layout/Header";
+import { TransparencySection } from "@/components/home/TransparencySection";
+import { LandingHeader } from "@/components/layout/LandingHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { ProjectGrid } from "@/components/project/ProjectGrid";
 import {
   getAllProjects,
   getCategories,
@@ -18,10 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("home");
 
   return {
-    title: page?.title ?? "10x10 مشاريع",
-    description: page?.meta_description ?? "10x10 مشاريع",
+    title: page?.title ?? "Direct Aid 10x10",
+    description: page?.meta_description ?? "Direct Aid 10x10 Projects",
     openGraph: {
-      title: page?.title ?? "10x10 مشاريع",
+      title: page?.title ?? "Direct Aid 10x10",
     },
   };
 }
@@ -36,15 +36,10 @@ export default async function Home() {
 
   return (
     <PageContainer>
-      <Header
-        logoUrl={settings.logo_url}
-        shareIconUrl={settings.share_icon_url}
-        shareLabel={settings.share_label}
-        siteTitle={settings.site_title}
-      />
+      <LandingHeader logoUrl={settings.logo_url} siteTitle={settings.site_title} />
       <StatisticsSection {...statistics} />
-      <CategoryGrid categories={categories} />
-      <ProjectGrid projects={projects} variant="home" />
+      <HomeProjectsExplorer categories={categories} projects={projects} />
+      <TransparencySection />
     </PageContainer>
   );
 }

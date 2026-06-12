@@ -13,6 +13,7 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,7 +34,39 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
       });
 
       if (signInError) {
-        setError("البريد أو كلمة المرور غير صحيحة");
+        const message = signInError.message.toLowerCase();
+        if (message.includes("invalid api key") || message.includes("invalid jwt")) {
+          setError("مفتاح Supabase غير صحيح — استخدم Legacy anon key من Supabase → API Keys");
+        } else if (message.includes("email not confirmed")) {
+          setError("البريد غير مؤكد — فعّل Auto Confirm User في Supabase");
+        } else {
+          setError(
+            `البريد أو كلمة المرور غير صحيحة. (${signInError.message})`,
+          );
+        }
+        return;
+      }
+
+      const { data: sessionData } = await supabase.auth.getUser();
+      const userId = sessionData.user?.id;
+
+      if (!userId) {
+        setError("تعذر التحقق من الحساب");
+        return;
+      }
+
+      const { data: adminProfile } = await supabase
+        .from("admin_users")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (!adminProfile) {
+        await supabase.auth.signOut();
+        setError(
+          "ليس لديك صلاحية الدخول — اطلب من Super Admin إضافة بريدك في لوحة المستخدمين أولاً.",
+        );
         return;
       }
 
@@ -68,15 +101,25 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
         <label className="admin-label" htmlFor="password">
           كلمة المرور
         </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          className="admin-input"
-          required
-          dir="ltr"
-          autoComplete="current-password"
-        />
+        <div className="admin-password-wrap">
+          <input
+            id="password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            className="admin-input admin-password-input"
+            required
+            dir="ltr"
+            autoComplete="current-password"
+          />
+          <button
+            type="button"
+            className="admin-password-toggle"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+          >
+            {showPassword ? "إخفاء" : "إظهار"}
+          </button>
+        </div>
       </div>
       {error ? <p className="admin-error">{error}</p> : null}
       <button type="submit" className="admin-button" disabled={loading}>

@@ -15,6 +15,9 @@ export type HomeStatisticsData = {
   iconUrl: string;
   illustrationUrl: string;
   introText: string;
+  brandLine1: string;
+  brandLine2: string;
+  backgroundColor: string;
 };
 
 export type ProjectMetadata = {
@@ -38,6 +41,8 @@ export type ProjectCardData = {
   categoryAccent: CategoryAccent;
   statistics?: ProjectStatistics;
   iconUrl?: string;
+  categoryLabel?: string;
+  description?: string;
 };
 
 export type ProjectDetailData = ProjectCardData & {
@@ -129,6 +134,20 @@ export type SettingRow = {
   updated_at: string;
 };
 
+export type AdminRole = "super_admin" | "admin" | "editor";
+
+export type AdminUserRow = {
+  id: string;
+  user_id: string | null;
+  email: string;
+  role: AdminRole;
+  display_name: string | null;
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 type TableDef<Row> = {
   Row: Row;
   Insert: Omit<Row, "id" | "created_at" | "updated_at"> & {
@@ -148,6 +167,7 @@ export type Database = {
       statistics: TableDef<StatisticsRow>;
       pages: TableDef<PageRow>;
       settings: TableDef<SettingRow>;
+      admin_users: TableDef<AdminUserRow>;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
