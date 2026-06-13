@@ -10,6 +10,7 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV DEPLOY_MARKER=impact-admin-v2
 ARG SUPABASE_URL
 ARG SUPABASE_ANON_KEY
 ARG NEXT_PUBLIC_SUPABASE_URL

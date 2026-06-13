@@ -1,6 +1,7 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
+# Redeploy trigger: impact-admin-v2 (2026-06-12)
 
 [deploy]
 healthcheckPath = "/"
