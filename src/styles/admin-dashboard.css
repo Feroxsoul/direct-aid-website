@@ -1133,3 +1133,137 @@ body:has(.admin-body) .landing-footer {
   border-radius: 0.75rem;
   background: var(--dash-surface-2);
 }
+
+/* Dash shell — form fields & legacy admin components (light + dark) */
+.admin-body.dash-mode .admin-input,
+.admin-body.dash-mode .admin-select,
+.admin-body.dash-mode .admin-textarea {
+  background: var(--dash-surface-2);
+  color: var(--dash-text);
+  border-color: var(--dash-border);
+}
+
+.admin-body.dash-mode .admin-input::placeholder,
+.admin-body.dash-mode .admin-textarea::placeholder {
+  color: var(--dash-muted);
+  opacity: 0.9;
+}
+
+.admin-body.dash-mode .admin-label,
+.admin-body.dash-mode .admin-section-title {
+  color: var(--dash-text);
+}
+
+.admin-body.dash-mode .admin-help-text,
+.admin-body.dash-mode .admin-preview-label,
+.admin-body.dash-mode .admin-page-subtitle,
+.admin-body.dash-mode .admin-setup-note {
+  color: var(--dash-muted);
+}
+
+.admin-body.dash-mode .admin-page-title {
+  color: var(--dash-text);
+}
+
+.admin-body.dash-mode .admin-preview-card {
+  background: var(--dash-surface);
+  border-color: var(--dash-border);
+}
+
+/* Public hero preview — keep dark text on the colored stats box */
+.admin-body.dash-mode .admin-preview-stats,
+.admin-body.dash-mode .admin-preview-stats .admin-preview-value,
+.admin-body.dash-mode .admin-preview-stats .admin-preview-label-text,
+.admin-body.dash-mode .admin-preview-stats .admin-preview-brand,
+.admin-body.dash-mode .admin-preview-stats .admin-preview-brand p,
+.admin-body.dash-mode .admin-preview-stats .admin-preview-intro {
+  color: #111827;
+}
+
+.admin-body.dash-mode .admin-preview-stats {
+  border-color: var(--dash-border);
+}
+
+.admin-body.dash-mode .admin-color-input {
+  background: var(--dash-surface-2);
+  border-color: var(--dash-border);
+}
+
+.admin-body.dash-mode .admin-login-card {
+  background: var(--dash-surface);
+  color: var(--dash-text);
+  border: 1px solid var(--dash-border);
+}
+
+.admin-body.dash-mode .admin-setup-box {
+  color: var(--dash-text);
+}
+
+.admin-body.dash-mode .admin-setup-steps {
+  color: var(--dash-muted);
+}
+
+.admin-body.dash-mode .admin-env-block {
+  background: var(--dash-surface-2);
+  color: var(--dash-text);
+  border: 1px solid var(--dash-border);
+}
+
+/* Impact editor grids in dark mode */
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-initiative-card,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-category-card {
+  background: var(--dash-surface);
+  border-color: var(--dash-border);
+  box-shadow: var(--dash-shadow);
+}
+
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-projects-title,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-initiative-title {
+  color: var(--dash-text);
+}
+
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-projects-subtitle,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-initiative-desc,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-initiative-meta,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-empty,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-pagination {
+  color: var(--dash-muted);
+}
+
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-toolbar {
+  background: var(--dash-surface);
+  border-color: var(--dash-border);
+}
+
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-select,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-search,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-btn,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-page-btn,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-view-btn {
+  background: var(--dash-surface-2);
+  border-color: var(--dash-border);
+  color: var(--dash-text);
+}
+
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-filters-label {
+  color: var(--dash-muted);
+}
+
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-sync-banner {
+  background: #3b2e12;
+  border-color: #854d0e;
+  color: #fde68a;
+}
+
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-btn--primary {
+  background: var(--dash-accent);
+  border-color: var(--dash-accent);
+  color: #0b0d12;
+}
+
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-view-btn.is-active,
+[data-admin-theme="dark"] .admin-body.dash-mode .impact-page-btn.is-active {
+  background: var(--dash-accent);
+  border-color: var(--dash-accent);
+  color: #0b0d12;
+}
