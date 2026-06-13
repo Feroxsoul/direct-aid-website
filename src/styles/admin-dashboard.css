@@ -35,6 +35,7 @@
 .dash-shell {
   display: flex;
   min-height: 100vh;
+  width: 100%;
   background: var(--dash-bg);
   color: var(--dash-text);
 }
@@ -46,14 +47,15 @@
 
 .dash-sidebar {
   position: fixed;
-  inset-block: 0;
-  inset-inline-start: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
   width: 15.5rem;
   display: flex;
   flex-direction: column;
   background: var(--dash-sidebar-bg);
   color: var(--dash-sidebar-text);
-  border-inline-end: 1px solid var(--dash-border);
+  border-right: 1px solid var(--dash-border);
   z-index: 40;
   box-shadow: 2px 0 16px rgba(15, 23, 42, 0.04);
 }
@@ -280,7 +282,6 @@
 .dash-main-wrap {
   flex: 1;
   min-width: 0;
-  margin-inline-start: 15.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -771,6 +772,9 @@
   background: var(--dash-bg);
   text-align: left;
   direction: ltr;
+  width: 100%;
+  max-width: none;
+  margin: 0;
 }
 
 .dash-filters {
