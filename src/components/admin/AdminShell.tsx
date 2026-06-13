@@ -47,6 +47,26 @@ export function AdminShell({
     }
   }, []);
 
+  useEffect(() => {
+    const previousDir = document.documentElement.getAttribute("dir");
+    const previousLang = document.documentElement.getAttribute("lang");
+    document.documentElement.setAttribute("dir", "ltr");
+    document.documentElement.setAttribute("lang", "en");
+
+    return () => {
+      if (previousDir) {
+        document.documentElement.setAttribute("dir", previousDir);
+      } else {
+        document.documentElement.setAttribute("dir", "rtl");
+      }
+      if (previousLang) {
+        document.documentElement.setAttribute("lang", previousLang);
+      } else {
+        document.documentElement.setAttribute("lang", "ar");
+      }
+    };
+  }, []);
+
   function toggleTheme() {
     const next = theme === "light" ? "dark" : "light";
     setTheme(next);

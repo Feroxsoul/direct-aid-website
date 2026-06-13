@@ -33,23 +33,24 @@
 }
 
 .dash-shell {
-  display: flex;
+  display: grid;
+  grid-template-columns: 15.5rem minmax(0, 1fr);
   min-height: 100vh;
   width: 100%;
+  direction: ltr;
   background: var(--dash-bg);
   color: var(--dash-text);
 }
 
 .dash-sidebar-wrap {
-  width: 15.5rem;
-  flex-shrink: 0;
+  grid-column: 1;
+  min-width: 0;
 }
 
 .dash-sidebar {
-  position: fixed;
+  position: sticky;
   top: 0;
-  bottom: 0;
-  left: 0;
+  height: 100vh;
   width: 15.5rem;
   display: flex;
   flex-direction: column;
@@ -280,7 +281,7 @@
 }
 
 .dash-main-wrap {
-  flex: 1;
+  grid-column: 2;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -357,6 +358,7 @@
 
 .dash-content {
   flex: 1;
+  width: 100%;
   padding: 1.25rem;
 }
 
@@ -731,6 +733,10 @@
 }
 
 @media (max-width: 900px) {
+  .dash-shell {
+    display: block;
+  }
+
   .dash-sidebar-wrap {
     position: fixed;
     inset: 0;
@@ -755,7 +761,8 @@
   }
 
   .dash-main-wrap {
-    margin-inline-start: 0;
+    grid-column: auto;
+    width: 100%;
   }
 
   .dash-topbar-menu {
@@ -775,6 +782,18 @@
   width: 100%;
   max-width: none;
   margin: 0;
+}
+
+.admin-body.dash-mode .dash-content {
+  text-align: left;
+}
+
+.admin-body.dash-mode .admin-form,
+.admin-body.dash-mode .admin-card,
+.admin-body.dash-mode .dash-panel {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
 }
 
 .dash-filters {
