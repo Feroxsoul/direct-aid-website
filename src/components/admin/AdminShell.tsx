@@ -8,17 +8,17 @@ import { signOut } from "@/lib/admin/actions";
 import type { AdminProfile } from "@/types";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/admin": "Dashboard",
-  "/admin/projects": "Project Management",
-  "/admin/users": "User Management",
-  "/admin/media": "Media Library",
-  "/admin/donations": "Donations",
-  "/admin/categories": "Categories",
-  "/admin/homepage": "Homepage",
-  "/admin/roles": "Roles",
-  "/admin/logs": "Activity Logs",
-  "/admin/settings": "Settings",
-  "/admin/notifications": "Notifications",
+  "/admin": "لوحة التحكم",
+  "/admin/projects": "إدارة المشاريع",
+  "/admin/users": "إدارة المستخدمين",
+  "/admin/media": "الوسائط",
+  "/admin/donations": "التبرعات",
+  "/admin/categories": "الفئات",
+  "/admin/homepage": "الصفحة الرئيسية",
+  "/admin/roles": "الأدوار",
+  "/admin/logs": "سجل النشاط",
+  "/admin/settings": "الإعدادات",
+  "/admin/notifications": "الإشعارات",
 };
 
 type AdminShellProps = {
@@ -39,7 +39,7 @@ export function AdminShell({
   const pageTitle =
     Object.entries(PAGE_TITLES).find(([path]) =>
       path === "/admin" ? pathname === "/admin" : pathname.startsWith(path),
-    )?.[1] ?? "Admin";
+    )?.[1] ?? "لوحة التحكم";
 
   useEffect(() => {
     const stored = localStorage.getItem("admin-theme");
@@ -77,7 +77,7 @@ export function AdminShell({
             <button
               type="button"
               className="dash-topbar-menu"
-              aria-label="Open menu"
+              aria-label="فتح القائمة"
               onClick={() => setMobileOpen(true)}
             >
               ☰
@@ -86,7 +86,11 @@ export function AdminShell({
           </div>
 
           <div className="dash-topbar-actions">
-            <Link href="/admin/notifications" className="dash-topbar-bell" aria-label="Notifications">
+            <Link
+              href="/admin/notifications"
+              className="dash-topbar-bell"
+              aria-label="الإشعارات"
+            >
               🔔
               {notificationCount > 0 ? (
                 <span className="dash-topbar-bell-count">{notificationCount}</span>
@@ -97,18 +101,18 @@ export function AdminShell({
               type="button"
               className="dash-topbar-theme"
               onClick={toggleTheme}
-              aria-label="Toggle theme"
+              aria-label="تبديل المظهر"
             >
               {theme === "light" ? "🌙" : "☀️"}
             </button>
 
             <Link href="/" className="dash-topbar-live" target="_blank">
-              LIVE SITE
+              الموقع المباشر
             </Link>
 
             <form action={signOut}>
               <button type="submit" className="dash-topbar-signout">
-                Sign out
+                خروج
               </button>
             </form>
           </div>

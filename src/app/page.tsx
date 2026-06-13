@@ -18,10 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("home");
 
   return {
-    title: page?.title ?? "Direct Aid 10x10",
-    description: page?.meta_description ?? "Direct Aid 10x10 Projects",
+    title: page?.title ?? "مشاريع العون المباشر 10×10",
+    description: page?.meta_description ?? "مشاريع العون المباشر 10×10",
     openGraph: {
-      title: page?.title ?? "Direct Aid 10x10",
+      title: page?.title ?? "مشاريع العون المباشر 10×10",
     },
   };
 }

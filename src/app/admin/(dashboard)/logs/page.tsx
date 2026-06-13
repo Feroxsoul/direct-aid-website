@@ -8,24 +8,24 @@ export default async function AdminLogsPage() {
   return (
     <div className="dash-page">
       <header className="dash-page-header">
-        <h1 className="dash-page-title">Activity Logs</h1>
+        <h1 className="dash-page-title">سجل النشاط</h1>
         <p className="dash-page-subtitle">
-          Audit trail of logins, edits, deletions, and role changes.
+          سجل تدقيق لتسجيلات الدخول والتعديلات والحذف وتغييرات الأدوار.
         </p>
       </header>
 
       <div className="dash-panel">
         {logs.length === 0 ? (
-          <p className="dash-empty">No activity recorded yet.</p>
+          <p className="dash-empty">لا يوجد نشاط مسجّل بعد.</p>
         ) : (
           <div className="dash-table-wrap">
             <table className="dash-table">
               <thead>
                 <tr>
-                  <th>Time</th>
-                  <th>Actor</th>
-                  <th>Action</th>
-                  <th>Resource</th>
+                  <th>الوقت</th>
+                  <th>المستخدم</th>
+                  <th>الإجراء</th>
+                  <th>المورد</th>
                 </tr>
               </thead>
               <tbody>

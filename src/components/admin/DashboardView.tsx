@@ -4,7 +4,7 @@ import { getRoleBadgeColor, getRoleLabel } from "@/lib/admin/roles";
 import type { DashboardStats } from "@/types";
 
 function formatMoney(value: number) {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("ar-KW", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
@@ -28,7 +28,7 @@ function StatCard({
       <p className="dash-stat-value">{value}</p>
       {growth !== undefined ? (
         <p className={`dash-stat-growth${growth >= 0 ? " is-up" : " is-down"}`}>
-          {growth >= 0 ? "↑" : "↓"} {Math.abs(growth)}% vs last month
+          {growth >= 0 ? "↑" : "↓"} {Math.abs(growth)}% مقارنة بالشهر الماضي
         </p>
       ) : null}
     </div>
@@ -55,46 +55,46 @@ export function DashboardView({ stats }: DashboardViewProps) {
     <div className="dash-page">
       <header className="dash-page-header">
         <div>
-          <h1 className="dash-page-title">Platform Overview</h1>
+          <h1 className="dash-page-title">نظرة عامة على المنصة</h1>
           <p className="dash-page-subtitle">
-            Real-time snapshot of donations, projects, and team activity.
+            لقطة فورية للتبرعات والمشاريع ونشاط الفريق.
           </p>
         </div>
       </header>
 
       <section className="dash-stat-grid">
         <StatCard
-          label="Total Donations"
+          label="إجمالي التبرعات"
           value={formatMoney(stats.totalDonations)}
           growth={stats.donationGrowth}
           href="/admin/donations"
         />
-        <StatCard label="Total Donors" value={String(stats.totalDonors)} />
+        <StatCard label="إجمالي المتبرعين" value={String(stats.totalDonors)} />
         <StatCard
-          label="Total Projects"
+          label="إجمالي المشاريع"
           value={String(stats.totalProjects)}
           href="/admin/projects"
         />
-        <StatCard label="Active Projects" value={String(stats.activeProjects)} />
-        <StatCard label="Total Users" value={String(stats.totalUsers)} href="/admin/users" />
-        <StatCard label="Total Roles" value={String(stats.totalRoles)} href="/admin/roles" />
+        <StatCard label="المشاريع النشطة" value={String(stats.activeProjects)} />
+        <StatCard label="إجمالي المستخدمين" value={String(stats.totalUsers)} href="/admin/users" />
+        <StatCard label="إجمالي الأدوار" value={String(stats.totalRoles)} href="/admin/roles" />
         <StatCard
-          label="Monthly Donations"
+          label="تبرعات الشهر"
           value={formatMoney(stats.monthlyDonations)}
           growth={stats.donationGrowth}
         />
         <StatCard
-          label="Yearly Donations"
+          label="تبرعات السنة"
           value={formatMoney(stats.yearlyDonations)}
         />
       </section>
 
       <div className="dash-grid-2">
         <section className="dash-panel">
-          <h2 className="dash-panel-title">Donations by Month</h2>
+          <h2 className="dash-panel-title">التبرعات حسب الشهر</h2>
           <div className="dash-bar-chart">
             {stats.donationsByMonth.length === 0 ? (
-              <p className="dash-empty">No donations recorded yet.</p>
+              <p className="dash-empty">لا توجد تبرعات مسجّلة بعد.</p>
             ) : (
               stats.donationsByMonth.map((item) => (
                 <div key={item.month} className="dash-bar-row">
@@ -113,10 +113,10 @@ export function DashboardView({ stats }: DashboardViewProps) {
         </section>
 
         <section className="dash-panel">
-          <h2 className="dash-panel-title">Users by Role</h2>
+          <h2 className="dash-panel-title">المستخدمون حسب الدور</h2>
           <div className="dash-bar-chart">
             {stats.usersByRole.length === 0 ? (
-              <p className="dash-empty">No admin users yet.</p>
+              <p className="dash-empty">لا يوجد مستخدمون بعد.</p>
             ) : (
               stats.usersByRole.map((item) => (
                 <div key={item.role} className="dash-bar-row">
@@ -136,22 +136,22 @@ export function DashboardView({ stats }: DashboardViewProps) {
             )}
           </div>
           <div className="dash-mini-stats">
-            <span>Suspended: {stats.suspendedUsers}</span>
-            <span>Active: {stats.totalUsers - stats.suspendedUsers}</span>
+            <span>موقوفون: {stats.suspendedUsers}</span>
+            <span>نشطون: {stats.totalUsers - stats.suspendedUsers}</span>
           </div>
         </section>
       </div>
 
       <section className="dash-panel">
         <div className="dash-panel-header">
-          <h2 className="dash-panel-title">Top Projects by Donations</h2>
+          <h2 className="dash-panel-title">أعلى المشاريع تبرعاً</h2>
           <Link href="/admin/projects" className="dash-link">
-            View all →
+            عرض الكل ←
           </Link>
         </div>
         <div className="dash-project-rank-list">
           {stats.topProjects.length === 0 ? (
-            <p className="dash-empty">No projects with donation data yet.</p>
+            <p className="dash-empty">لا توجد مشاريع ببيانات تبرعات بعد.</p>
           ) : (
             stats.topProjects.map((project) => {
               const progress =
@@ -184,15 +184,15 @@ export function DashboardView({ stats }: DashboardViewProps) {
       </section>
 
       <section className="dash-panel">
-        <h2 className="dash-panel-title">Recently Added Users</h2>
+        <h2 className="dash-panel-title">المستخدمون المضافون مؤخراً</h2>
         <div className="dash-table-wrap">
           <table className="dash-table">
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th>الاسم</th>
+                <th>البريد</th>
+                <th>الدور</th>
+                <th>الحالة</th>
               </tr>
             </thead>
             <tbody>
@@ -211,10 +211,10 @@ export function DashboardView({ stats }: DashboardViewProps) {
                     </td>
                     <td>
                       {user.suspended_at
-                        ? "Suspended"
+                        ? "موقوف"
                         : user.is_active
-                          ? "Active"
-                          : "Inactive"}
+                          ? "نشط"
+                          : "غير نشط"}
                     </td>
                   </tr>
                 );

@@ -13,9 +13,9 @@ export default async function AdminMediaPage() {
   return (
     <div className="dash-page">
       <header className="dash-page-header">
-        <h1 className="dash-page-title">Media Library</h1>
+        <h1 className="dash-page-title">مكتبة الوسائط</h1>
         <p className="dash-page-subtitle">
-          Upload, browse, and reuse images across projects and pages.
+          رفع وتصفح وإعادة استخدام الصور عبر المشاريع والصفحات.
         </p>
       </header>
 
@@ -27,7 +27,7 @@ export default async function AdminMediaPage() {
 
       <div className="dash-panel">
         {assets.length === 0 ? (
-          <p className="dash-empty">No media uploaded yet.</p>
+          <p className="dash-empty">لم يُرفع أي ملف بعد.</p>
         ) : (
           <div className="dash-media-grid">
             {assets.map((asset) => (

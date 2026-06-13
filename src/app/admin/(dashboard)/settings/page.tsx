@@ -15,26 +15,26 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
   return (
     <div className="dash-page">
       <header className="dash-page-header">
-        <h1 className="dash-page-title">Platform Settings</h1>
+        <h1 className="dash-page-title">إعدادات المنصة</h1>
         <p className="dash-page-subtitle">
-          Super Admin only — configure branding, integrations, and security.
+          للمشرف الأعلى فقط — إعداد العلامة التجارية والتكاملات والأمان.
         </p>
       </header>
 
-      {saved ? <p className="admin-success">Settings saved.</p> : null}
+      {saved ? <p className="admin-success">تم حفظ الإعدادات.</p> : null}
 
       <form action={savePlatformSettings} className="dash-panel admin-form">
-        <h2 className="dash-panel-title">General</h2>
+        <h2 className="dash-panel-title">عام</h2>
         <div className="admin-field">
-          <label className="admin-label">Platform Name</label>
+          <label className="admin-label">اسم المنصة</label>
           <input
             name="site_title"
             className="admin-input"
-            defaultValue={map.site_title ?? "Direct Aid 10x10"}
+            defaultValue={map.site_title ?? "مشاريع 10×10"}
           />
         </div>
         <div className="admin-field">
-          <label className="admin-label">Logo URL</label>
+          <label className="admin-label">رابط الشعار</label>
           <input
             name="logo_url"
             className="admin-input"

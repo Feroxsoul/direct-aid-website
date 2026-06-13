@@ -22,16 +22,16 @@ export default async function AdminUsersPage({ searchParams }: UsersPageProps) {
   return (
     <div className="dash-page">
       <header className="dash-page-header">
-        <h1 className="dash-page-title">User Management</h1>
+        <h1 className="dash-page-title">إدارة المستخدمين</h1>
         <p className="dash-page-subtitle">
           {profile.role_slug === "super_admin"
-            ? "Create users, assign roles, suspend accounts, and manage admins."
-            : "View and manage team members within your permission level."}
+            ? "إنشاء المستخدمين وتعيين الأدوار وإيقاف الحسابات وإدارة المشرفين."
+            : "عرض وإدارة أعضاء الفريق ضمن صلاحياتك."}
         </p>
       </header>
 
-      {saved ? <p className="admin-success">Changes saved.</p> : null}
-      {removed ? <p className="admin-success">User removed.</p> : null}
+      {saved ? <p className="admin-success">تم حفظ التغييرات.</p> : null}
+      {removed ? <p className="admin-success">تم حذف المستخدم.</p> : null}
 
       <AdminUsersPanel
         users={users}

@@ -34,7 +34,7 @@ export function StatisticsSection({
               <p className="landing-hero-brand-large">{brandLine2}</p>
               <p className="landing-hero-intro">{introText}</p>
               <Link href="#categories" className="landing-hero-cta">
-                EXPLORE OUR MISSION →
+                استكشف مهمتنا ←
               </Link>
             </div>
           </div>

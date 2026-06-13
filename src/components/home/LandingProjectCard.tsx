@@ -61,9 +61,9 @@ export function LandingProjectCard({
           ) : (
             <span />
           )}
-          <Link href={project.href} className="landing-project-btn">
-            PROJECT DETAILS
-          </Link>
+              <Link href={project.href} className="landing-project-btn">
+                تفاصيل المشروع
+              </Link>
         </div>
       </div>
     </article>

@@ -17,6 +17,12 @@ import type { CategoryRow, ProjectRow } from "@/types";
 
 const PAGE_SIZE = 6;
 
+const STATUS_LABELS: Record<string, string> = {
+  published: "منشور",
+  draft: "مسودة",
+  archived: "مؤرشف",
+};
+
 type ProjectsLiveEditorProps = AdminProjectsEditorData & {
   canCreate: boolean;
   canEdit: boolean;
@@ -192,7 +198,7 @@ export function ProjectsLiveEditor({
       setError(result.error);
       return;
     }
-    setMessage(`Synced ${result.count} projects from the live catalog.`);
+    setMessage(`تمت مزامنة ${result.count} مشروعاً من الكتالوج المباشر.`);
     refreshPreview();
   }
 
@@ -229,12 +235,12 @@ export function ProjectsLiveEditor({
     setProjects((current) =>
       current.map((project) => (project.slug === updated.slug ? updated : project)),
     );
-    setMessage("Published live — changes are on the public site.");
+    setMessage("نُشر على الموقع — التغييرات ظاهرة للزوار.");
     refreshPreview();
   }
 
   async function handleDelete(slug: string) {
-    if (!canDelete || !window.confirm("Delete this project permanently?")) return;
+    if (!canDelete || !window.confirm("حذف هذا المشروع نهائياً؟")) return;
     const result = await deleteProjectInline(slug);
     if (!result.ok) {
       setError(result.error);
@@ -242,7 +248,7 @@ export function ProjectsLiveEditor({
     }
     setProjects((current) => current.filter((project) => project.slug !== slug));
     if (selectedSlug === slug) closeEditor();
-    setMessage("Project deleted.");
+    setMessage("تم الحذف.");
     refreshPreview();
   }
 
@@ -251,7 +257,7 @@ export function ProjectsLiveEditor({
       {(liveUsesWebflow || dbProjectCount < webflowProjectCount) && (
         <div className="impact-sync-banner">
           <span>
-            Sync {webflowProjectCount} live projects into the database to edit what visitors see.
+            مزامنة {webflowProjectCount} مشروعاً مباشراً إلى قاعدة البيانات لتعديل ما يراه الزوار.
           </span>
           <button
             type="button"
@@ -259,7 +265,7 @@ export function ProjectsLiveEditor({
             onClick={handleSync}
             disabled={syncing}
           >
-            {syncing ? "Syncing…" : "Sync Live Data"}
+            {syncing ? "جاري المزامنة…" : "مزامنة البيانات"}
           </button>
         </div>
       )}
@@ -269,27 +275,27 @@ export function ProjectsLiveEditor({
 
       <header className="impact-projects-header">
         <div>
-          <h2 className="impact-projects-title">All Initiatives</h2>
+          <h2 className="impact-projects-title">جميع المبادرات</h2>
           <p className="impact-projects-subtitle">
-            Overview and control of humanitarian operations.
+            نظرة عامة وتحكم في العمليات الإنسانية.
           </p>
         </div>
         {canCreate ? (
           <Link href="/admin/projects/new" className="impact-btn impact-btn--primary impact-btn--lg">
-            + New Project
+            + مشروع جديد
           </Link>
         ) : null}
       </header>
 
       <div className="impact-toolbar">
         <div className="impact-filters">
-          <span className="impact-filters-label">FILTER BY:</span>
+          <span className="impact-filters-label">تصفية حسب:</span>
           <select
             className="impact-select"
             value={categoryFilter}
             onChange={(event) => setCategoryFilter(event.target.value)}
           >
-            <option value="all">All Categories</option>
+            <option value="all">كل الفئات</option>
             {categories.map((category) => (
               <option key={category.slug} value={category.slug}>
                 {category.title_line_2 || category.title_line_1}
@@ -301,26 +307,26 @@ export function ProjectsLiveEditor({
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
           >
-            <option value="all">All Statuses</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="archived">Archived</option>
+            <option value="all">كل الحالات</option>
+            <option value="published">منشور</option>
+            <option value="draft">مسودة</option>
+            <option value="archived">مؤرشف</option>
           </select>
           <input
             type="search"
             className="impact-search"
-            placeholder="Search initiatives…"
+            placeholder="بحث في المبادرات…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
         </div>
-        <div className="impact-view-toggle" role="group" aria-label="View mode">
+        <div className="impact-view-toggle" role="group" aria-label="طريقة العرض">
           <button
             type="button"
             className={`impact-view-btn${viewMode === "grid" ? " is-active" : ""}`}
             onClick={() => setViewMode("grid")}
             aria-pressed={viewMode === "grid"}
-            title="Grid view"
+            title="عرض شبكي"
           >
             ▦
           </button>
@@ -329,7 +335,7 @@ export function ProjectsLiveEditor({
             className={`impact-view-btn${viewMode === "list" ? " is-active" : ""}`}
             onClick={() => setViewMode("list")}
             aria-pressed={viewMode === "list"}
-            title="List view"
+            title="عرض قائمة"
           >
             ☰
           </button>
@@ -337,7 +343,7 @@ export function ProjectsLiveEditor({
       </div>
 
       {pagedProjects.length === 0 ? (
-        <p className="impact-empty">No projects match your filters.</p>
+        <p className="impact-empty">لا توجد مشاريع تطابق التصفية.</p>
       ) : (
         <div
           className={`impact-initiative-grid${
@@ -367,7 +373,7 @@ export function ProjectsLiveEditor({
                   <span
                     className={`impact-status impact-status--${project.statusLabel}`}
                   >
-                    {project.statusLabel}
+                    {STATUS_LABELS[project.statusLabel] ?? project.statusLabel}
                   </span>
                 </div>
                 <p className="impact-initiative-desc">
@@ -375,7 +381,7 @@ export function ProjectsLiveEditor({
                     project.short_description ??
                       project.description ??
                       project.preview.description ??
-                      "No description yet.",
+                      "لا يوجد وصف بعد.",
                   )}
                 </p>
                 <div className="impact-initiative-meta">
@@ -388,7 +394,7 @@ export function ProjectsLiveEditor({
                     target="_blank"
                     className="impact-action impact-action--view"
                   >
-                    👁 View Live
+                    👁 عرض مباشر
                   </Link>
                   {canEdit ? (
                     <button
@@ -396,7 +402,7 @@ export function ProjectsLiveEditor({
                       className="impact-action impact-action--edit"
                       onClick={() => openEditor(project)}
                     >
-                      ✎ Edit
+                      ✎ تعديل
                     </button>
                   ) : null}
                   {canDelete ? (
@@ -417,7 +423,7 @@ export function ProjectsLiveEditor({
 
       <footer className="impact-pagination">
         <p>
-          Showing {pagedProjects.length} of {filteredProjects.length} initiatives
+          عرض {pagedProjects.length} من {filteredProjects.length} مبادرة
         </p>
         <div className="impact-pagination-controls">
           <button
@@ -458,20 +464,20 @@ export function ProjectsLiveEditor({
           <button
             type="button"
             className="live-editor-drawer-backdrop"
-            aria-label="Close editor"
+            aria-label="إغلاق المحرر"
             onClick={closeEditor}
           />
-          <aside className="live-editor-drawer" aria-label="Live site editor">
+          <aside className="live-editor-drawer" aria-label="محرر الموقع المباشر">
             <header className="live-editor-drawer-header">
               <div>
-                <p className="live-editor-drawer-kicker">Live Site Editor</p>
-                <h2 className="live-editor-drawer-brand">DirectAid</h2>
+                <p className="live-editor-drawer-kicker">محرر الموقع المباشر</p>
+                <h2 className="live-editor-drawer-brand">العون المباشر</h2>
               </div>
               <button
                 type="button"
                 className="live-editor-drawer-close"
                 onClick={closeEditor}
-                aria-label="Close"
+                aria-label="إغلاق"
               >
                 ×
               </button>
@@ -479,10 +485,10 @@ export function ProjectsLiveEditor({
 
             <div className="live-editor-drawer-body">
               <section className="live-editor-drawer-section">
-                <h3 className="live-editor-drawer-section-title">Project Content</h3>
+                <h3 className="live-editor-drawer-section-title">محتوى المشروع</h3>
                 <div className="admin-field">
                   <label className="admin-label" htmlFor="live-title">
-                    Title
+                    العنوان
                   </label>
                   <input
                     id="live-title"
@@ -494,7 +500,7 @@ export function ProjectsLiveEditor({
                 </div>
                 <div className="admin-field">
                   <label className="admin-label" htmlFor="live-short">
-                    Card description (homepage)
+                    وصف البطاقة (الصفحة الرئيسية)
                   </label>
                   <textarea
                     id="live-short"
@@ -509,7 +515,7 @@ export function ProjectsLiveEditor({
                 </div>
                 <div className="admin-field">
                   <label className="admin-label" htmlFor="live-desc">
-                    Full description
+                    الوصف الكامل
                   </label>
                   <textarea
                     id="live-desc"
@@ -523,12 +529,12 @@ export function ProjectsLiveEditor({
               </section>
 
               <section className="live-editor-drawer-section">
-                <h3 className="live-editor-drawer-section-title">Hero Media</h3>
+                <h3 className="live-editor-drawer-section-title">الصورة الرئيسية</h3>
                 {canEdit ? (
                   <ImageField
                     key={draft.slug}
                     name="image_url"
-                    label="Main image"
+                    label="الصورة الرئيسية"
                     defaultValue={draft.image_url}
                     onUrlChange={(url) => updateDraft("image_url", url)}
                     required
@@ -539,10 +545,10 @@ export function ProjectsLiveEditor({
               </section>
 
               <section className="live-editor-drawer-section">
-                <h3 className="live-editor-drawer-section-title">Metadata</h3>
+                <h3 className="live-editor-drawer-section-title">البيانات الوصفية</h3>
                 <div className="admin-field">
                   <label className="admin-label" htmlFor="live-category">
-                    Category
+                    الفئة
                   </label>
                   <select
                     id="live-category"
@@ -561,7 +567,7 @@ export function ProjectsLiveEditor({
                 <div className="admin-row">
                   <div className="admin-field">
                     <label className="admin-label" htmlFor="live-date">
-                      Date label
+                      تاريخ العرض
                     </label>
                     <input
                       id="live-date"
@@ -573,7 +579,7 @@ export function ProjectsLiveEditor({
                   </div>
                   <div className="admin-field">
                     <label className="admin-label" htmlFor="live-status">
-                      Status
+                      الحالة
                     </label>
                     <select
                       id="live-status"
@@ -582,9 +588,9 @@ export function ProjectsLiveEditor({
                       onChange={(event) => updateDraft("status", event.target.value)}
                       disabled={!canEdit}
                     >
-                      <option value="draft">Draft</option>
-                      <option value="published">Published</option>
-                      <option value="archived">Archived</option>
+                      <option value="draft">مسودة</option>
+                      <option value="published">منشور</option>
+                      <option value="archived">مؤرشف</option>
                     </select>
                   </div>
                 </div>
@@ -593,7 +599,7 @@ export function ProjectsLiveEditor({
 
             <footer className="live-editor-drawer-footer">
               <button type="button" className="impact-btn" onClick={closeEditor}>
-                Discard
+                تجاهل
               </button>
               {canEdit ? (
                 <button
@@ -602,7 +608,7 @@ export function ProjectsLiveEditor({
                   onClick={handlePublish}
                   disabled={saving}
                 >
-                  {saving ? "Publishing…" : "Publish Live"}
+                  {saving ? "جاري النشر…" : "نشر مباشر"}
                 </button>
               ) : null}
             </footer>

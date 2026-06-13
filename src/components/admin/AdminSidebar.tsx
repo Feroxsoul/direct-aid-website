@@ -2,28 +2,31 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { canAccessNav, hasPermission } from "@/lib/admin/permissions";
 import type { AdminPermissions } from "@/lib/admin/permissions";
 import { RoleBadge } from "@/components/admin/RoleBadge";
 
-export type NavItem = {
+type NavItem = {
   href: string;
   label: string;
   icon: string;
   resource: Parameters<typeof canAccessNav>[2];
 };
 
-const NAV_ITEMS: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: "▦", resource: "analytics" },
-  { href: "/admin/projects", label: "Projects", icon: "◫", resource: "projects" },
-  { href: "/admin/users", label: "User Management", icon: "◎", resource: "users" },
-  { href: "/admin/media", label: "Media Library", icon: "▣", resource: "media" },
-  { href: "/admin/donations", label: "Donations", icon: "◈", resource: "donations" },
-  { href: "/admin/categories", label: "Categories", icon: "▦", resource: "categories" },
-  { href: "/admin/homepage", label: "Homepage", icon: "⌂", resource: "homepage" },
-  { href: "/admin/roles", label: "Roles", icon: "⚙", resource: "roles" },
-  { href: "/admin/logs", label: "Activity", icon: "☰", resource: "audit_logs" },
-  { href: "/admin/settings", label: "Settings", icon: "⚙", resource: "settings" },
+const MAIN_NAV: NavItem[] = [
+  { href: "/admin", label: "لوحة التحكم", icon: "▦", resource: "analytics" },
+  { href: "/admin/homepage", label: "الصفحة الرئيسية", icon: "⌂", resource: "homepage" },
+  { href: "/admin/categories", label: "الفئات", icon: "▦", resource: "categories" },
+  { href: "/admin/projects", label: "المشاريع", icon: "◫", resource: "projects" },
+  { href: "/admin/media", label: "الوسائط", icon: "▣", resource: "media" },
+  { href: "/admin/logs", label: "النشاط", icon: "☰", resource: "audit_logs" },
+];
+
+const SETTINGS_CHILDREN: NavItem[] = [
+  { href: "/admin/settings", label: "الإعدادات العامة", icon: "⚙", resource: "settings" },
+  { href: "/admin/users", label: "إدارة المستخدمين", icon: "◎", resource: "users" },
+  { href: "/admin/roles", label: "الأدوار", icon: "⚙", resource: "roles" },
 ];
 
 function getInitials(name: string | null, email: string) {
@@ -33,6 +36,19 @@ function getInitials(name: string | null, email: string) {
     return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
   }
   return source.slice(0, 2).toUpperCase();
+}
+
+function canSeeNavItem(
+  profile: AdminSidebarProps["profile"],
+  resource: NavItem["resource"],
+) {
+  if (resource === "roles" || resource === "audit_logs") {
+    return profile.role_slug === "super_admin";
+  }
+  if (resource === "settings") {
+    return hasPermission(profile.permissions, profile.role_slug, "settings", "view");
+  }
+  return canAccessNav(profile.permissions, profile.role_slug, resource);
 }
 
 type AdminSidebarProps = {
@@ -49,30 +65,25 @@ type AdminSidebarProps = {
 
 export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
-  const displayName = profile.display_name ?? "Admin User";
+  const displayName = profile.display_name ?? "مشرف";
+  const settingsActive = SETTINGS_CHILDREN.some((item) => pathname.startsWith(item.href));
+  const [settingsOpen, setSettingsOpen] = useState(settingsActive);
 
-  const visibleItems = NAV_ITEMS.filter((item) => {
-    if (item.resource === "roles") {
-      return profile.role_slug === "super_admin";
-    }
-    if (item.resource === "audit_logs") {
-      return profile.role_slug === "super_admin";
-    }
-    if (item.resource === "settings") {
-      return hasPermission(
-        profile.permissions,
-        profile.role_slug,
-        "settings",
-        "view",
-      );
-    }
-    return canAccessNav(profile.permissions, profile.role_slug, item.resource);
-  });
+  useEffect(() => {
+    if (settingsActive) setSettingsOpen(true);
+  }, [settingsActive]);
+
+  const mainItems = MAIN_NAV.filter((item) => canSeeNavItem(profile, item.resource));
+  const settingsItems = SETTINGS_CHILDREN.filter((item) =>
+    canSeeNavItem(profile, item.resource),
+  );
+  const showSettings = settingsItems.length > 0;
 
   return (
     <aside className="dash-sidebar dash-sidebar--impact">
       <div className="dash-sidebar-brand">
-        <span className="dash-sidebar-logo">IMPACT ADMIN</span>
+        <span className="dash-sidebar-logo">لوحة التحكم</span>
+        <span className="dash-sidebar-sub">10×10</span>
       </div>
 
       <div className="dash-sidebar-user">
@@ -89,8 +100,8 @@ export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
         </div>
       </div>
 
-      <nav className="dash-sidebar-nav" aria-label="Admin navigation">
-        {visibleItems.map((item) => {
+      <nav className="dash-sidebar-nav" aria-label="تنقل لوحة التحكم">
+        {mainItems.map((item) => {
           const active =
             item.href === "/admin"
               ? pathname === "/admin"
@@ -110,11 +121,49 @@ export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
             </Link>
           );
         })}
+
+        {showSettings ? (
+          <div className="dash-sidebar-group">
+            <button
+              type="button"
+              className={`dash-sidebar-link dash-sidebar-group-toggle${
+                settingsActive ? " is-active" : ""
+              }`}
+              onClick={() => setSettingsOpen((open) => !open)}
+              aria-expanded={settingsOpen}
+            >
+              <span className="dash-sidebar-icon" aria-hidden>
+                ⚙
+              </span>
+              الإعدادات
+              <span className="dash-sidebar-chevron" aria-hidden>
+                {settingsOpen ? "▾" : "◂"}
+              </span>
+            </button>
+            {settingsOpen ? (
+              <div className="dash-sidebar-subnav">
+                {settingsItems.map((item) => {
+                  const active = pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`dash-sidebar-sublink${active ? " is-active" : ""}`}
+                      onClick={onNavigate}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </nav>
 
       <div className="dash-sidebar-status">
         <span className="dash-sidebar-status-dot" aria-hidden />
-        System Online
+        النظام متصل
       </div>
     </aside>
   );

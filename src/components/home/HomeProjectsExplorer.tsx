@@ -6,17 +6,6 @@ import { categoryAccentColors } from "@/lib/design-tokens";
 import { LandingProjectCard } from "@/components/home/LandingProjectCard";
 import type { HomepageCategory, ProjectCardData } from "@/types";
 
-const CATEGORY_SHORT: Record<string, string> = {
-  "health-10x10": "HEALTH",
-  "educational.10x10": "EDUCATION",
-  developments: "DEVELOPMENT",
-  "lmshryaa-ldaawy": "DA'WAH",
-  orphans: "ORPHAN",
-  "lmshryaa-lgthy": "RELIEF",
-  mosque: "MOSQUE",
-  "waters-10x10": "WATER",
-};
-
 type HomeProjectsExplorerProps = {
   categories: HomepageCategory[];
   projects: ProjectCardData[];
@@ -56,8 +45,8 @@ export function HomeProjectsExplorer({
   }, [activeSlug, previewProjects, projects]);
 
   const activeLabel = activeSlug
-    ? (CATEGORY_SHORT[activeSlug] ??
-      categories.find((category) => category.slug === activeSlug)?.titleLine2 ??
+    ? (categories.find((category) => category.slug === activeSlug)?.titleLine2 ??
+      categories.find((category) => category.slug === activeSlug)?.titleLine1 ??
       activeSlug)
     : null;
 
@@ -75,16 +64,14 @@ export function HomeProjectsExplorer({
     <>
       <section
         id="categories"
-        aria-label="Project categories"
+        aria-label="فئات المشاريع"
         className="landing-section landing-section--categories"
       >
         <div className="landing-container">
-          <h2 className="landing-section-title landing-reveal">Project Categories</h2>
+          <h2 className="landing-section-title landing-reveal">فئات المشاريع</h2>
           <div className="landing-categories-scroll">
             {categories.map((category, index) => {
-              const short =
-                CATEGORY_SHORT[category.slug] ??
-                (category.titleLine2 || category.titleLine1);
+              const short = category.titleLine2 || category.titleLine1;
               const isActive = activeSlug === category.slug;
 
               return (
@@ -117,26 +104,26 @@ export function HomeProjectsExplorer({
         </div>
       </section>
 
-      <section id="impact" aria-label="Recent impact" className="landing-section">
+      <section id="impact" aria-label="آخر الأثر" className="landing-section">
         <div className="landing-container">
           <div className="landing-section-header">
             <div>
-              <h2 className="landing-section-title">Recent Impact Activity</h2>
+              <h2 className="landing-section-title">آخر نشاط للأثر</h2>
               <p className="landing-section-subtitle">
                 {activeLabel
-                  ? `All ${visibleProjects.length} projects in ${activeLabel}.`
-                  : "One featured project from each category — tap a category above to see more."}
+                  ? `جميع المشاريع (${visibleProjects.length}) في ${activeLabel}.`
+                  : "مشروع مميز من كل فئة — اختر فئة أعلاه لعرض المزيد."}
               </p>
             </div>
             {activeSlug ? (
               <button type="button" className="landing-section-link" onClick={showOverview}>
-                BACK TO OVERVIEW →
+                العودة للنظرة العامة ←
               </button>
             ) : null}
           </div>
 
           {visibleProjects.length === 0 ? (
-            <p className="landing-section-subtitle">No projects in this category yet.</p>
+            <p className="landing-section-subtitle">لا توجد مشاريع في هذه الفئة حالياً.</p>
           ) : (
             <div
               key={activeSlug ?? "overview"}

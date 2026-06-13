@@ -8,27 +8,27 @@ const DEFAULT_LOGO = `${CDN}/64c8cde2258c815c760717a9_small.png`;
 
 const FOOTER_COLUMNS = [
   {
-    title: "OUR WORK",
+    title: "أعمالنا",
     links: [
-      { href: "/#categories", label: "Project Categories" },
-      { href: "/#impact", label: "Recent Impact" },
-      { href: "https://directaid.org", label: "Global Programs" },
+      { href: "/#categories", label: "فئات المشاريع" },
+      { href: "/#impact", label: "آخر الأثر" },
+      { href: "https://directaid.org", label: "البرامج العالمية" },
     ],
   },
   {
-    title: "ORGANIZATION",
+    title: "المؤسسة",
     links: [
-      { href: "https://directaid.org", label: "About Direct Aid" },
-      { href: "/#transparency", label: "Transparency" },
-      { href: "/admin/login", label: "Admin Portal" },
+      { href: "https://directaid.org", label: "عن العون المباشر" },
+      { href: "/#transparency", label: "الشفافية" },
+      { href: "/admin/login", label: "لوحة التحكم" },
     ],
   },
   {
-    title: "HELP & SUPPORT",
+    title: "المساعدة والدعم",
     links: [
-      { href: "https://directaid.org", label: "Contact Us" },
-      { href: "https://directaid.org/donate", label: "Donate" },
-      { href: "/#transparency", label: "Newsletter" },
+      { href: "https://directaid.org", label: "تواصل معنا" },
+      { href: "https://directaid.org/donate", label: "تبرع الآن" },
+      { href: "/#transparency", label: "النشرة البريدية" },
     ],
   },
 ] as const;
@@ -40,7 +40,7 @@ type FooterProps = {
 
 export function Footer({
   logoUrl = DEFAULT_LOGO,
-  siteTitle = "Direct Aid 10x10",
+  siteTitle = "مشاريع 10×10",
 }: FooterProps) {
   const year = new Date().getFullYear();
 
@@ -51,8 +51,8 @@ export function Footer({
           <div className="landing-footer-brand">
             <Image src={logoUrl} alt={siteTitle} width={120} height={40} className="h-8 w-auto" />
             <p>
-              Empowering communities through sustainable development and transparent
-              humanitarian action across the globe.
+              تمكين المجتمعات من خلال التنمية المستدامة والعمل الإنساني الشفاف
+              في جميع أنحاء العالم.
             </p>
           </div>
 
@@ -71,10 +71,10 @@ export function Footer({
         </div>
 
         <div className="landing-footer-bottom">
-          <span>© {year} DirectAid International. All rights reserved.</span>
+          <span>© {year} العون المباشر الدولي. جميع الحقوق محفوظة.</span>
           <div className="landing-footer-meta">
-            <span>Certified NGO: #8254-A</span>
-            <span>Audited by KPMG</span>
+            <span>منظمة خيرية معتمدة: #8254-A</span>
+            <span>مدققة من KPMG</span>
           </div>
         </div>
       </div>

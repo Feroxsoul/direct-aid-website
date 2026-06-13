@@ -3,11 +3,18 @@ import { Footer } from "@/components/layout/Footer";
 import { getPublicSettings } from "@/lib/data";
 import "./globals.css";
 
+const DIRECT_AID_FAVICON = "https://directaid.org/favicon.ico";
+
 export const metadata: Metadata = {
-  title: "Direct Aid 10x10",
-  description: "Direct Aid 10x10 Projects",
+  title: "مشاريع العون المباشر 10×10",
+  description: "مشاريع العون المباشر 10×10",
+  icons: {
+    icon: DIRECT_AID_FAVICON,
+    shortcut: DIRECT_AID_FAVICON,
+    apple: DIRECT_AID_FAVICON,
+  },
   openGraph: {
-    title: "Direct Aid 10x10",
+    title: "مشاريع العون المباشر 10×10",
   },
 };
 
@@ -19,7 +26,7 @@ export default async function RootLayout({
   const settings = await getPublicSettings();
 
   return (
-    <html lang="en" dir="ltr">
+    <html lang="ar" dir="rtl">
       <body className="flex min-h-screen flex-col bg-white text-da-black antialiased">
         <main className="flex flex-1 flex-col">{children}</main>
         <Footer logoUrl={settings.logo_url} siteTitle={settings.site_title} />

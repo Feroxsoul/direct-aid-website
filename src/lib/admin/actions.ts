@@ -16,6 +16,13 @@ import { hasPermission } from "@/lib/admin/permissions";
 import { canAssignRole, canManageUsers, isPrivilegedRole } from "@/lib/admin/roles";
 import type { AdminProfile } from "@/types";
 import type { CategoryAccent } from "@/lib/design-tokens";
+import { createSupabaseServiceClient } from "@/lib/supabase/service";
+
+async function getAdminWriteClient() {
+  const { supabase, profile } = await requireSupabaseAdmin();
+  const service = createSupabaseServiceClient();
+  return { supabase: service ?? supabase, profile };
+}
 
 const ACCENTS: CategoryAccent[] = [
   "red",
@@ -165,7 +172,7 @@ export async function saveProject(formData: FormData) {
 
 export async function saveProjectInline(formData: FormData) {
   try {
-    const { supabase, profile } = await requireSupabaseAdmin();
+    const { supabase, profile } = await getAdminWriteClient();
     const isNew = formData.get("is_new") === "true";
     const { slug, payload } = parseProjectPayload(formData, isNew);
 
@@ -203,7 +210,7 @@ export async function saveProjectInline(formData: FormData) {
 }
 
 export async function syncWebflowProjectsToDatabase() {
-  const { supabase, profile } = await requireSupabaseAdmin();
+  const { supabase, profile } = await getAdminWriteClient();
   const webflowProjects = (await import("@/data/webflow-projects.json")).default as Array<{
     slug: string;
     title: string;
@@ -254,7 +261,10 @@ export async function syncWebflowProjectsToDatabase() {
       .upsert(chunk, { onConflict: "slug" });
 
     if (error) {
-      return { ok: false as const, error: error.message };
+      const hint = createSupabaseServiceClient()
+        ? ""
+        : " — أضِف SUPABASE_SERVICE_ROLE_KEY في Railway إن استمر الخطأ.";
+      return { ok: false as const, error: `${error.message}${hint}` };
     }
   }
 
@@ -269,12 +279,14 @@ export async function deleteProjectInline(slug: string) {
   try {
     const { supabase, profile } = await requireSupabaseAdmin("admin");
     await assertCanDeleteProjects(profile as AdminProfile);
+    const service = createSupabaseServiceClient();
+    const writeClient = service ?? supabase;
 
     if (!slug.trim()) {
       return { ok: false as const, error: "Project slug required" };
     }
 
-    const { error } = await supabase.from("projects").delete().eq("slug", slug);
+    const { error } = await writeClient.from("projects").delete().eq("slug", slug);
     if (error) {
       return { ok: false as const, error: error.message };
     }
