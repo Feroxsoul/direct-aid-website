@@ -3,22 +3,20 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AdminProfileMenu } from "@/components/admin/AdminProfileMenu";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
-import { signOut } from "@/lib/admin/actions";
 import type { AdminProfile } from "@/types";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/admin": "لوحة التحكم",
-  "/admin/projects": "إدارة المشاريع",
-  "/admin/users": "إدارة المستخدمين",
-  "/admin/media": "الوسائط",
-  "/admin/donations": "التبرعات",
-  "/admin/categories": "الفئات",
-  "/admin/homepage": "الصفحة الرئيسية",
-  "/admin/roles": "الأدوار",
-  "/admin/logs": "سجل النشاط",
-  "/admin/settings": "الإعدادات",
-  "/admin/notifications": "الإشعارات",
+  "/admin": "Dashboard",
+  "/admin/projects": "Projects",
+  "/admin/users": "User Management",
+  "/admin/categories": "Categories",
+  "/admin/homepage": "Home Page",
+  "/admin/roles": "Roles",
+  "/admin/logs": "Activity Logs",
+  "/admin/settings": "Settings",
+  "/admin/notifications": "Notifications",
 };
 
 type AdminShellProps = {
@@ -39,7 +37,7 @@ export function AdminShell({
   const pageTitle =
     Object.entries(PAGE_TITLES).find(([path]) =>
       path === "/admin" ? pathname === "/admin" : pathname.startsWith(path),
-    )?.[1] ?? "لوحة التحكم";
+    )?.[1] ?? "Dashboard";
 
   useEffect(() => {
     const stored = localStorage.getItem("admin-theme");
@@ -65,10 +63,7 @@ export function AdminShell({
       />
 
       <div className={`dash-sidebar-wrap${mobileOpen ? " is-open" : ""}`}>
-        <AdminSidebar
-          profile={profile}
-          onNavigate={() => setMobileOpen(false)}
-        />
+        <AdminSidebar profile={profile} onNavigate={() => setMobileOpen(false)} />
       </div>
 
       <div className="dash-main-wrap">
@@ -77,7 +72,7 @@ export function AdminShell({
             <button
               type="button"
               className="dash-topbar-menu"
-              aria-label="فتح القائمة"
+              aria-label="Open menu"
               onClick={() => setMobileOpen(true)}
             >
               ☰
@@ -89,7 +84,7 @@ export function AdminShell({
             <Link
               href="/admin/notifications"
               className="dash-topbar-bell"
-              aria-label="الإشعارات"
+              aria-label="Notifications"
             >
               🔔
               {notificationCount > 0 ? (
@@ -101,20 +96,12 @@ export function AdminShell({
               type="button"
               className="dash-topbar-theme"
               onClick={toggleTheme}
-              aria-label="تبديل المظهر"
+              aria-label="Toggle theme"
             >
               {theme === "light" ? "🌙" : "☀️"}
             </button>
 
-            <Link href="/" className="dash-topbar-live" target="_blank">
-              الموقع المباشر
-            </Link>
-
-            <form action={signOut}>
-              <button type="submit" className="dash-topbar-signout">
-                خروج
-              </button>
-            </form>
+            <AdminProfileMenu profile={profile} />
           </div>
         </header>
 

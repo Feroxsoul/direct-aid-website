@@ -1,6 +1,7 @@
 import webflowProjectsJson from "@/data/webflow-projects.json";
 import type { CategoryAccent } from "@/lib/design-tokens";
 import { getDefaultDescription } from "@/data/project-details";
+import { truncateCardDescription } from "@/lib/project-catalog";
 import type {
   HomepageCategory,
   ProjectCardData,
@@ -63,7 +64,7 @@ function mapWebflowToCard(row: WebflowProjectRow): ProjectCardData {
         : undefined,
     iconUrl: row.icon_url ?? undefined,
     categoryLabel: categoryLabels[row.category_slug],
-    description: row.description ?? undefined,
+    description: truncateCardDescription(row.description),
   };
 }
 

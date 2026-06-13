@@ -14,28 +14,33 @@ export default async function AdminCategoriesPage() {
       <header className="dash-page-header">
         <h1 className="dash-page-title">Categories</h1>
         <p className="dash-page-subtitle">
-          Edit category tiles — title, icon, accent color, and sort order.
+          {categories.length} category tiles — title, icon, accent color, and sort order.
         </p>
       </header>
 
-      <div className="admin-form" style={{ gap: "1.5rem" }}>
+      <div className="admin-category-grid">
         {categories.map((category) => (
-          <form key={category.slug} action={saveCategory} className="admin-form dash-panel">
+          <form key={category.slug} action={saveCategory} className="admin-category-card">
             <input type="hidden" name="slug" value={category.slug} />
 
-            <div className="admin-category-header">
+            <header className="admin-category-card-head">
               <div
                 className="admin-category-swatch"
                 style={{ backgroundColor: categoryAccentColors[category.accent] }}
               />
-              <h2 className="admin-label">
-                {category.title_line_1} {category.title_line_2}
-              </h2>
-            </div>
+              <div>
+                <h2 className="admin-category-card-title">
+                  {category.title_line_1} {category.title_line_2}
+                </h2>
+                <p className="admin-category-card-slug" dir="ltr">
+                  {category.slug}
+                </p>
+              </div>
+            </header>
 
             <div className="admin-row">
               <div className="admin-field">
-                <label className="admin-label">السطر الأول (مثال: المشاريع)</label>
+                <label className="admin-label">Title line 1</label>
                 <input
                   name="title_line_1"
                   className="admin-input"
@@ -44,7 +49,7 @@ export default async function AdminCategoriesPage() {
                 />
               </div>
               <div className="admin-field">
-                <label className="admin-label">السطر الثاني (مثال: التعليمية)</label>
+                <label className="admin-label">Title line 2</label>
                 <input
                   name="title_line_2"
                   className="admin-input"
@@ -56,18 +61,18 @@ export default async function AdminCategoriesPage() {
 
             <ImageField
               name="icon_url"
-              label="أيقونة الفئة"
+              label="Category icon"
               defaultValue={category.icon_url}
               required
             />
 
             <div className="admin-row">
               <div className="admin-field">
-                <label className="admin-label">لون الشريط السفلي</label>
+                <label className="admin-label">Accent color</label>
                 <AccentSelect defaultValue={category.accent} />
               </div>
               <div className="admin-field">
-                <label className="admin-label">الترتيب</label>
+                <label className="admin-label">Sort order</label>
                 <input
                   name="sort_order"
                   type="number"
@@ -78,7 +83,7 @@ export default async function AdminCategoriesPage() {
             </div>
 
             <button type="submit" className="admin-button">
-              حفظ الفئة
+              Save category
             </button>
           </form>
         ))}

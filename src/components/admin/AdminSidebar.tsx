@@ -5,7 +5,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { canAccessNav, hasPermission } from "@/lib/admin/permissions";
 import type { AdminPermissions } from "@/lib/admin/permissions";
-import { RoleBadge } from "@/components/admin/RoleBadge";
+import {
+  APP_BUILD_NAME,
+  APP_DEVELOPER,
+  APP_VERSION_LABEL,
+} from "@/lib/app-version";
 
 type NavItem = {
   href: string;
@@ -15,28 +19,18 @@ type NavItem = {
 };
 
 const MAIN_NAV: NavItem[] = [
-  { href: "/admin", label: "لوحة التحكم", icon: "▦", resource: "analytics" },
-  { href: "/admin/homepage", label: "الصفحة الرئيسية", icon: "⌂", resource: "homepage" },
-  { href: "/admin/categories", label: "الفئات", icon: "▦", resource: "categories" },
-  { href: "/admin/projects", label: "المشاريع", icon: "◫", resource: "projects" },
-  { href: "/admin/media", label: "الوسائط", icon: "▣", resource: "media" },
-  { href: "/admin/logs", label: "النشاط", icon: "☰", resource: "audit_logs" },
+  { href: "/admin", label: "Dashboard", icon: "▦", resource: "analytics" },
+  { href: "/admin/homepage", label: "Home Page", icon: "⌂", resource: "homepage" },
+  { href: "/admin/categories", label: "Categories", icon: "▦", resource: "categories" },
+  { href: "/admin/projects", label: "Projects", icon: "◫", resource: "projects" },
+  { href: "/admin/logs", label: "Activity", icon: "☰", resource: "audit_logs" },
 ];
 
 const SETTINGS_CHILDREN: NavItem[] = [
-  { href: "/admin/settings", label: "الإعدادات العامة", icon: "⚙", resource: "settings" },
-  { href: "/admin/users", label: "إدارة المستخدمين", icon: "◎", resource: "users" },
-  { href: "/admin/roles", label: "الأدوار", icon: "⚙", resource: "roles" },
+  { href: "/admin/settings", label: "General Settings", icon: "⚙", resource: "settings" },
+  { href: "/admin/users", label: "User Management", icon: "◎", resource: "users" },
+  { href: "/admin/roles", label: "Roles", icon: "⚙", resource: "roles" },
 ];
-
-function getInitials(name: string | null, email: string) {
-  const source = name?.trim() || email;
-  const parts = source.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  }
-  return source.slice(0, 2).toUpperCase();
-}
 
 function canSeeNavItem(
   profile: AdminSidebarProps["profile"],
@@ -53,11 +47,7 @@ function canSeeNavItem(
 
 type AdminSidebarProps = {
   profile: {
-    email: string;
-    display_name: string | null;
     role_slug: string;
-    role_name: string;
-    badge_color: string;
     permissions: AdminPermissions;
   };
   onNavigate?: () => void;
@@ -65,7 +55,6 @@ type AdminSidebarProps = {
 
 export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
-  const displayName = profile.display_name ?? "مشرف";
   const settingsActive = SETTINGS_CHILDREN.some((item) => pathname.startsWith(item.href));
   const [settingsOpen, setSettingsOpen] = useState(settingsActive);
 
@@ -82,25 +71,11 @@ export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
   return (
     <aside className="dash-sidebar dash-sidebar--impact">
       <div className="dash-sidebar-brand">
-        <span className="dash-sidebar-logo">لوحة التحكم</span>
-        <span className="dash-sidebar-sub">10×10</span>
+        <span className="dash-sidebar-logo">{APP_BUILD_NAME}</span>
+        <span className="dash-sidebar-sub">Direct Aid · Admin</span>
       </div>
 
-      <div className="dash-sidebar-user">
-        <span className="dash-sidebar-avatar" aria-hidden>
-          {getInitials(profile.display_name, profile.email)}
-        </span>
-        <div>
-          <p className="dash-sidebar-user-name">{displayName}</p>
-          <RoleBadge
-            label={profile.role_name}
-            color={profile.badge_color}
-            size="sm"
-          />
-        </div>
-      </div>
-
-      <nav className="dash-sidebar-nav" aria-label="تنقل لوحة التحكم">
+      <nav className="dash-sidebar-nav" aria-label="Admin navigation">
         {mainItems.map((item) => {
           const active =
             item.href === "/admin"
@@ -135,9 +110,9 @@ export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
               <span className="dash-sidebar-icon" aria-hidden>
                 ⚙
               </span>
-              الإعدادات
+              Settings
               <span className="dash-sidebar-chevron" aria-hidden>
-                {settingsOpen ? "▾" : "◂"}
+                {settingsOpen ? "▾" : "▸"}
               </span>
             </button>
             {settingsOpen ? (
@@ -161,9 +136,9 @@ export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
         ) : null}
       </nav>
 
-      <div className="dash-sidebar-status">
-        <span className="dash-sidebar-status-dot" aria-hidden />
-        النظام متصل
+      <div className="dash-sidebar-version">
+        <span className="dash-sidebar-version-label">{APP_VERSION_LABEL}</span>
+        <span className="dash-sidebar-version-meta">by {APP_DEVELOPER}</span>
       </div>
     </aside>
   );

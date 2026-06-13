@@ -1,6 +1,5 @@
 import { deleteProject, saveProject } from "@/lib/admin/actions";
-import { GalleryField } from "@/components/admin/GalleryField";
-import { ImageField } from "@/components/admin/ImageField";
+import { ProjectMediaPicker } from "@/components/admin/ProjectMediaPicker";
 import type { CategoryRow, ProjectRow } from "@/types";
 
 type ProjectFormProps = {
@@ -23,13 +22,15 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
   const isNew = !project;
 
   return (
-    <form action={saveProject} className="admin-form admin-card">
+    <form action={saveProject} className="admin-form dash-panel">
       <input type="hidden" name="is_new" value={String(isNew)} />
+
+      <h2 className="dash-panel-title">{isNew ? "New Project" : "Edit Project"}</h2>
 
       <div className="admin-row">
         <div className="admin-field">
           <label className="admin-label" htmlFor="slug">
-            معرف المشروع (slug)
+            Project ID (slug)
           </label>
           <input
             id="slug"
@@ -43,7 +44,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="title">
-            العنوان
+            Title
           </label>
           <input
             id="title"
@@ -55,30 +56,18 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
       </div>
 
-      <ImageField
-        name="image_url"
-        label="صورة البطاقة"
-        defaultValue={project?.image_url ?? ""}
-        required
+      <ProjectMediaPicker
+        imageUrl={project?.image_url ?? ""}
+        galleryUrls={project?.gallery_urls ?? []}
       />
 
       <div className="admin-field">
-        <label className="admin-label" htmlFor="short_description">
-          Short Description
-        </label>
-        <textarea
-          id="short_description"
-          name="short_description"
-          className="admin-textarea"
-          rows={2}
-          defaultValue={project?.short_description ?? ""}
-        />
-      </div>
-
-      <div className="admin-field">
         <label className="admin-label" htmlFor="description">
-          Full Description
+          Description
         </label>
+        <p className="admin-help-text">
+          First 100 characters appear on the home page project card.
+        </p>
         <textarea
           id="description"
           name="description"
@@ -88,22 +77,43 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         />
       </div>
 
-      <GalleryField
-        name="gallery_urls"
-        label="صور المعرض (صفحة المزيد)"
-        defaultValue={project?.gallery_urls ?? []}
-      />
-
-      <ImageField
-        name="icon_url"
-        label="أيقونة المشروع (اختياري)"
-        defaultValue={project?.icon_url ?? ""}
-      />
+      <div className="impact-tags-panel">
+        <h3 className="dash-panel-title">Card Impact Tag</h3>
+        <p className="admin-help-text">
+          Shown on the project card badge (e.g. 8,750 · beneficiaries). Leave empty to hide.
+        </p>
+        <div className="admin-row">
+          <div className="admin-field">
+            <label className="admin-label" htmlFor="stat_value">
+              Tag value
+            </label>
+            <input
+              id="stat_value"
+              name="stat_value"
+              className="admin-input"
+              placeholder="8,750"
+              defaultValue={project?.stat_value ?? ""}
+            />
+          </div>
+          <div className="admin-field">
+            <label className="admin-label" htmlFor="stat_label">
+              Tag label
+            </label>
+            <input
+              id="stat_label"
+              name="stat_label"
+              className="admin-input"
+              placeholder="beneficiaries"
+              defaultValue={project?.stat_label ?? ""}
+            />
+          </div>
+        </div>
+      </div>
 
       <div className="admin-row">
         <div className="admin-field">
           <label className="admin-label" htmlFor="category_slug">
-            الفئة
+            Category
           </label>
           <select
             id="category_slug"
@@ -112,7 +122,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
             defaultValue={project?.category_slug ?? ""}
             required
           >
-            <option value="">اختر فئة</option>
+            <option value="">Select category</option>
             {categories.map((category) => (
               <option key={category.slug} value={category.slug}>
                 {category.title_line_1} {category.title_line_2}
@@ -122,7 +132,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="location">
-            الموقع
+            Location
           </label>
           <input
             id="location"
@@ -136,7 +146,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       <div className="admin-row">
         <div className="admin-field">
           <label className="admin-label" htmlFor="date_label">
-            التاريخ (على البطاقة)
+            Date label (on card)
           </label>
           <input
             id="date_label"
@@ -148,7 +158,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="year_code">
-            رمز السنة (اختياري)
+            Year code (optional)
           </label>
           <input
             id="year_code"
@@ -162,33 +172,8 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
 
       <div className="admin-row">
         <div className="admin-field">
-          <label className="admin-label" htmlFor="stat_value">
-            رقم الإحصائية (اختياري)
-          </label>
-          <input
-            id="stat_value"
-            name="stat_value"
-            className="admin-input"
-            defaultValue={project?.stat_value ?? ""}
-          />
-        </div>
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="stat_label">
-            تسمية الإحصائية
-          </label>
-          <input
-            id="stat_label"
-            name="stat_label"
-            className="admin-input"
-            defaultValue={project?.stat_label ?? ""}
-          />
-        </div>
-      </div>
-
-      <div className="admin-row">
-        <div className="admin-field">
           <label className="admin-label" htmlFor="accent">
-            لون الشريط
+            Accent color
           </label>
           <select
             id="accent"
@@ -196,7 +181,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
             className="admin-select"
             defaultValue={project?.accent ?? ""}
           >
-            <option value="">افتراضي من الفئة</option>
+            <option value="">Category default</option>
             {accents.map((accent) => (
               <option key={accent} value={accent}>
                 {accent}
@@ -206,7 +191,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="sort_order">
-            ترتيب العرض
+            Sort order
           </label>
           <input
             id="sort_order"
@@ -293,7 +278,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
 
       <div className="admin-actions">
         <button type="submit" className="admin-button">
-          {isNew ? "إضافة المشروع" : "حفظ التغييرات"}
+          {isNew ? "Create project" : "Save changes"}
         </button>
       </div>
     </form>
@@ -305,7 +290,7 @@ export function ProjectDeleteForm({ slug }: { slug: string }) {
     <form action={deleteProject} className="admin-actions">
       <input type="hidden" name="slug" value={slug} />
       <button type="submit" className="admin-button admin-button-danger">
-        حذف المشروع
+        Delete project
       </button>
     </form>
   );

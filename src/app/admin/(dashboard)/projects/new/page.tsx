@@ -7,12 +7,14 @@ export default async function NewProjectPage() {
   const categories = await adminGetCategories();
 
   return (
-    <>
-      <h1 className="admin-page-title">مشروع جديد</h1>
-      <p className="admin-page-subtitle">
-        المعرف (slug) يجب أن يكون فريداً بالإنجليزية، مثل: 2024slewat5001
-      </p>
+    <div className="dash-page">
+      <header className="dash-page-header">
+        <h1 className="dash-page-title">New project</h1>
+        <p className="dash-page-subtitle" dir="ltr">
+          Slug must be unique in English, e.g. 2024slewat5001
+        </p>
+      </header>
       <ProjectForm categories={categories} />
-    </>
+    </div>
   );
 }

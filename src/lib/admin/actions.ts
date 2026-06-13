@@ -63,8 +63,7 @@ function parseProjectPayload(formData: FormData, isNew: boolean) {
     date_label: String(formData.get("date_label") ?? "").trim(),
     year_code: String(formData.get("year_code") ?? "").trim() || null,
     description: String(formData.get("description") ?? "").trim() || null,
-    short_description:
-      String(formData.get("short_description") ?? "").trim() || null,
+    short_description: null as string | null,
     location: String(formData.get("location") ?? "").trim() || null,
     gallery_urls: parseGalleryUrls(formData.get("gallery_urls")),
     stat_value: String(formData.get("stat_value") ?? "").trim() || null,
@@ -84,6 +83,10 @@ function parseProjectPayload(formData: FormData, isNew: boolean) {
   if (!payload.slug || !payload.title || !payload.image_url || !payload.category_slug) {
     throw new Error("Required: slug, title, image, category");
   }
+
+  payload.short_description = payload.description
+    ? payload.description.slice(0, 100)
+    : null;
 
   if (payload.accent && !ACCENTS.includes(payload.accent)) {
     payload.accent = null;
@@ -245,7 +248,7 @@ export async function syncWebflowProjectsToDatabase() {
     stat_label: row.stat_label,
     icon_url: row.icon_url,
     description: row.description,
-    short_description: row.description,
+    short_description: row.description ? row.description.slice(0, 100) : null,
     location: row.location,
     gallery_urls: row.gallery_urls.map((url) => normalizeCdnImageUrl(url)),
     status: row.is_published ? "published" : "draft",

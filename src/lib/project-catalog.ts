@@ -37,6 +37,17 @@ export function getCategoryLabelFromRef(category: CategoryRef) {
   return `${category.title_line_1 ?? ""} ${category.title_line_2 ?? ""}`.trim();
 }
 
+export function truncateCardDescription(
+  text: string | null | undefined,
+  max = 100,
+): string | undefined {
+  if (!text) return undefined;
+  const normalized = text.trim();
+  if (!normalized) return undefined;
+  if (normalized.length <= max) return normalized;
+  return `${normalized.slice(0, max).trim()}…`;
+}
+
 export function mapProjectRowToCard(
   row: ProjectRow,
   category?: CategoryRef | null,
@@ -62,7 +73,7 @@ export function mapProjectRowToCard(
         : undefined,
     iconUrl: row.icon_url ?? undefined,
     categoryLabel,
-    description: row.short_description ?? row.description ?? undefined,
+    description: truncateCardDescription(row.description),
   };
 }
 

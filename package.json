@@ -10,7 +10,9 @@
     "build": "next build",
     "start": "next start -H 0.0.0.0 -p ${PORT:-3000}",
     "lint": "eslint",
-    "db:migrate": "node scripts/apply-supabase-migrations.mjs"
+    "db:migrate": "node scripts/apply-supabase-migrations.mjs",
+    "scrape:webflow": "node scripts/scrape-webflow-projects.mjs",
+    "sync:webflow": "node --env-file=.env.local scripts/sync-webflow-to-db.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

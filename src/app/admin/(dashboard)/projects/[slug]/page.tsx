@@ -21,13 +21,17 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   }
 
   return (
-    <>
-      <h1 className="admin-page-title">تعديل: {project.title}</h1>
-      <p className="admin-page-subtitle">معرف المشروع: {project.slug}</p>
+    <div className="dash-page">
+      <header className="dash-page-header">
+        <h1 className="dash-page-title">Edit project</h1>
+        <p className="dash-page-subtitle" dir="ltr">
+          {project.title} · {project.slug}
+        </p>
+      </header>
       <ProjectForm project={project} categories={categories} />
       {canDeleteProjects(profile.role_slug, profile.permissions) ? (
         <ProjectDeleteForm slug={project.slug} />
       ) : null}
-    </>
+    </div>
   );
 }
