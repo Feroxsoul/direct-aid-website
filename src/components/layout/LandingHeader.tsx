@@ -89,21 +89,6 @@ export function LandingHeader({
           >
             تبرع الآن
           </a>
-          <Link href="/admin/login" className="landing-user-btn" aria-label="دخول لوحة التحكم">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path
-                d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9Z"
-                stroke="currentColor"
-                strokeWidth="1.8"
-              />
-              <path
-                d="M4.5 20.25c0-3.314 3.358-6 7.5-6s7.5 2.686 7.5 6"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-            </svg>
-          </Link>
         </div>
       </div>
     </header>

@@ -201,18 +201,6 @@
   filter: brightness(0.95);
 }
 
-.landing-user-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background: #f4f4f3;
-  color: var(--da-gray);
-  text-decoration: none;
-}
-
 /* Hero */
 .landing-hero {
   padding-block: 2rem 1rem;
