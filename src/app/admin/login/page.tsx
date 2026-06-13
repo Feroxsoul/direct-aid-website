@@ -20,36 +20,36 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
   return (
     <div className="admin-login-wrap">
       <div className="admin-login-card admin-card">
-        <h1 className="admin-page-title">تسجيل الدخول</h1>
-        <p className="admin-page-subtitle">لوحة تحكم موقع 10×10</p>
+        <h1 className="admin-page-title">Sign in</h1>
+        <p className="admin-page-subtitle">10x10 by Direct Aid — Admin Panel</p>
 
         {!supabaseConfigured ? (
           <div className="admin-setup-box">
             <p className="admin-error" style={{ marginBottom: "0.75rem" }}>
-              قاعدة البيانات غير متصلة بعد — لوحة التحكم تحتاج Supabase.
+              Database not connected — the admin panel requires Supabase.
             </p>
             <ol className="admin-setup-steps">
               <li>
-                أنشئ مشروعاً مجانياً على{" "}
+                Create a free project at{" "}
                 <a href="https://supabase.com" target="_blank" rel="noreferrer">
                   supabase.com
                 </a>
               </li>
               <li>
-                من Supabase → Project Settings → API انسخ{" "}
-                <strong>Project URL</strong> و <strong>anon public key</strong>
+                From Supabase → Project Settings → API copy{" "}
+                <strong>Project URL</strong> and <strong>anon public key</strong>
               </li>
               <li>
-                في مجلد المشروع أنشئ ملف <code>.env.local</code> وأضف:
+                In the project folder create <code>.env.local</code> and add:
                 <pre dir="ltr" className="admin-env-block">
 {`NEXT_PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...`}
                 </pre>
               </li>
-              <li>أعد تشغيل السيرفر: <code>npm run dev</code></li>
+              <li>Restart the server: <code>npm run dev</code></li>
               <li>
-                من Supabase → Authentication → Users → Add user لإنشاء حساب
-                المدير
+                From Supabase → Authentication → Users → Add user to create the
+                admin account
               </li>
             </ol>
           </div>
@@ -61,21 +61,21 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...`}
         )}
 
         {error === "supabase" ? (
-          <p className="admin-error">يجب إعداد Supabase قبل استخدام لوحة التحكم.</p>
+          <p className="admin-error">Configure Supabase before using the admin panel.</p>
         ) : null}
         {error === "unauthorized" ? (
           <p className="admin-error">
-            حسابك غير مسجّل في لوحة التحكم — تواصل مع Super Admin لإضافة بريدك.
+            Your account is not registered in the admin panel — contact a Super Admin.
           </p>
         ) : null}
         {error === "forbidden" ? (
-          <p className="admin-error">ليس لديك صلاحية الوصول لهذه الصفحة.</p>
+          <p className="admin-error">You do not have permission to access this page.</p>
         ) : null}
 
         {supabaseConfigured ? (
           <p className="admin-setup-note">
-            سجّل الدخول بالبريد المسجّل في لوحة المستخدمين. Super Admin يضيف
-            البريدات من /admin/users ثم ينشئ الحساب في Supabase.
+            Sign in with an email listed in User Management. Super Admin adds emails at
+            /admin/users, then creates the auth user in Supabase.
           </p>
         ) : null}
       </div>

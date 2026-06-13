@@ -4,27 +4,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-const CDN =
-  "https://cdn.prod.website-files.com/632a01171b125a156b28c038";
-
+const CDN = "https://cdn.prod.website-files.com/632a01171b125a156b28c038";
 const DEFAULT_LOGO = `${CDN}/64c8cde2258c815c760717a9_small.png`;
 
-const NAV_LINKS = [
-  { href: "/", label: "الرئيسية" },
-  { href: "/#hero", label: "من نحن" },
-  { href: "/#categories", label: "المشاريع" },
-  { href: "/#impact", label: "التقارير" },
-  { href: "/#transparency", label: "تواصل" },
-] as const;
+type NavLink = { href: string; label: string };
 
 type LandingHeaderProps = {
   logoUrl?: string;
   siteTitle?: string;
+  navLinks?: NavLink[];
+  donateLabel?: string;
+  donateUrl?: string;
 };
 
 export function LandingHeader({
   logoUrl = DEFAULT_LOGO,
   siteTitle = "مشاريع 10×10",
+  navLinks = [],
+  donateLabel = "تبرع الآن",
+  donateUrl = "https://directaid.org/donate",
 }: LandingHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -46,7 +44,7 @@ export function LandingHeader({
           className={`landing-nav${menuOpen ? " is-open" : ""}`}
           aria-label="التنقل الرئيسي"
         >
-          {NAV_LINKS.map((link) => (
+          {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -60,12 +58,12 @@ export function LandingHeader({
 
         <div className="landing-header-mobile-actions">
           <a
-            href="https://directaid.org/donate"
+            href={donateUrl}
             className="landing-donate-btn landing-donate-btn--mobile"
             target="_blank"
             rel="noreferrer"
           >
-            تبرع الآن
+            {donateLabel}
           </a>
           <button
             type="button"
@@ -82,12 +80,12 @@ export function LandingHeader({
 
         <div className="landing-header-actions">
           <a
-            href="https://directaid.org/donate"
+            href={donateUrl}
             className="landing-donate-btn landing-donate-btn--desktop"
             target="_blank"
             rel="noreferrer"
           >
-            تبرع الآن
+            {donateLabel}
           </a>
         </div>
       </div>

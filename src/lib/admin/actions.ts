@@ -362,27 +362,144 @@ export async function deleteProject(formData: FormData) {
 
 export async function saveCategory(formData: FormData) {
   const { supabase } = await requireSupabaseAdmin();
+  const isNew = formData.get("is_new") === "true";
   const slug = String(formData.get("slug") ?? "").trim();
 
-  const accent = String(formData.get("accent") ?? "default") as CategoryAccent;
+  const { data: accentSetting } = await supabase
+    .from("settings")
+    .select("value")
+    .eq("key", "category_accent_map")
+    .maybeSingle();
+
+  let accent: CategoryAccent = "default";
+  if (accentSetting?.value) {
+    try {
+      const map = JSON.parse(accentSetting.value) as Record<string, CategoryAccent>;
+      if (map[slug] && ACCENTS.includes(map[slug])) {
+        accent = map[slug];
+      }
+    } catch {
+      accent = "default";
+    }
+  }
+
   const payload = {
+    slug,
     title_line_1: String(formData.get("title_line_1") ?? "").trim(),
     title_line_2: String(formData.get("title_line_2") ?? "").trim(),
     icon_url: String(formData.get("icon_url") ?? "").trim(),
-    accent: ACCENTS.includes(accent) ? accent : "default",
+    accent,
     sort_order: Number(formData.get("sort_order") ?? 0),
   };
 
-  const { error } = await supabase
-    .from("categories")
-    .update(payload)
-    .eq("slug", slug);
+  if (!payload.slug || !payload.title_line_1 || !payload.title_line_2 || !payload.icon_url) {
+    throw new Error("Required: slug, titles, icon");
+  }
+
+  const { error } = isNew
+    ? await supabase.from("categories").insert(payload)
+    : await supabase
+        .from("categories")
+        .update({
+          title_line_1: payload.title_line_1,
+          title_line_2: payload.title_line_2,
+          icon_url: payload.icon_url,
+          accent: payload.accent,
+          sort_order: payload.sort_order,
+        })
+        .eq("slug", slug);
 
   if (error) throw new Error(error.message);
 
   revalidateSite();
   revalidatePath("/admin/categories");
-  redirect("/admin/categories");
+  redirect(isNew ? "/admin/categories" : `/admin/categories/${slug}`);
+}
+
+export async function saveFooterSettings(formData: FormData) {
+  const { supabase } = await requireSupabaseAdmin();
+
+  const settings = [
+    {
+      key: "footer_columns_json",
+      value: String(formData.get("footer_columns_json") ?? "").trim(),
+      is_public: true,
+    },
+    {
+      key: "footer_tagline",
+      value: String(formData.get("footer_tagline") ?? "").trim(),
+      is_public: true,
+    },
+    {
+      key: "footer_copyright",
+      value: String(formData.get("footer_copyright") ?? "").trim(),
+      is_public: true,
+    },
+  ];
+
+  for (const setting of settings) {
+    const { error } = await supabase.from("settings").upsert(
+      {
+        key: setting.key,
+        value: setting.value,
+        value_json: null,
+        is_public: setting.is_public,
+      },
+      { onConflict: "key" },
+    );
+    if (error) throw new Error(error.message);
+  }
+
+  revalidateSite();
+  revalidatePath("/admin/footer");
+  redirect("/admin/footer?saved=1");
+}
+
+export async function saveAdvancedSettings(formData: FormData) {
+  const { supabase, profile } = await requireSupabaseAdmin("super_admin");
+
+  const categoryAccentMap: Record<string, CategoryAccent> = {};
+  for (const [key, value] of formData.entries()) {
+    if (!key.startsWith("accent_")) continue;
+    const slug = key.slice("accent_".length);
+    const accent = String(value).trim() as CategoryAccent;
+    if (ACCENTS.includes(accent)) {
+      categoryAccentMap[slug] = accent;
+    }
+  }
+
+  const projectDetailTagDefs = String(formData.get("project_detail_tag_defs") ?? "").trim();
+
+  const advancedSettings = [
+    {
+      key: "category_accent_map",
+      value: JSON.stringify(categoryAccentMap),
+      is_public: true,
+    },
+    { key: "project_detail_tag_defs", value: projectDetailTagDefs, is_public: true },
+  ];
+
+  for (const setting of advancedSettings) {
+    const { error } = await supabase.from("settings").upsert(
+      {
+        key: setting.key,
+        value: setting.value,
+        value_json: null,
+        is_public: setting.is_public,
+      },
+      { onConflict: "key" },
+    );
+    if (error) throw new Error(error.message);
+  }
+
+  for (const [slug, accent] of Object.entries(categoryAccentMap)) {
+    await supabase.from("categories").update({ accent }).eq("slug", slug);
+  }
+
+  await logAuditEvent(profile, "settings.updated", "settings", "advanced");
+  revalidateSite();
+  revalidatePath("/admin/settings");
+  redirect("/admin/settings?saved=1");
 }
 
 export async function saveHomepage(formData: FormData) {
@@ -416,6 +533,23 @@ export async function saveHomepage(formData: FormData) {
     { key: "stats_box_color", value: String(formData.get("stats_box_color") ?? "").trim() },
     { key: "share_label", value: String(formData.get("share_label") ?? "").trim() },
     { key: "share_icon_url", value: String(formData.get("share_icon_url") ?? "").trim() },
+    { key: "hero_cta_label", value: String(formData.get("hero_cta_label") ?? "").trim() },
+    { key: "header_nav_json", value: String(formData.get("header_nav_json") ?? "").trim() },
+    { key: "donate_label", value: String(formData.get("donate_label") ?? "").trim() },
+    { key: "donate_url", value: String(formData.get("donate_url") ?? "").trim() },
+    { key: "transparency_title", value: String(formData.get("transparency_title") ?? "").trim() },
+    { key: "transparency_text", value: String(formData.get("transparency_text") ?? "").trim() },
+    {
+      key: "newsletter_placeholder",
+      value: String(formData.get("newsletter_placeholder") ?? "").trim(),
+    },
+    { key: "newsletter_button", value: String(formData.get("newsletter_button") ?? "").trim() },
+    { key: "impact_section_title", value: String(formData.get("impact_section_title") ?? "").trim() },
+    { key: "impact_section_subtitle", value: String(formData.get("impact_section_subtitle") ?? "").trim() },
+    {
+      key: "categories_section_title",
+      value: String(formData.get("categories_section_title") ?? "").trim(),
+    },
   ];
 
   for (const setting of settings) {

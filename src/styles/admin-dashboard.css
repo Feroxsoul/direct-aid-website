@@ -816,6 +816,10 @@
   margin-inline: 0;
 }
 
+body:has(.admin-body) .landing-footer {
+  display: none;
+}
+
 .dash-filters {
   display: flex;
   flex-wrap: wrap;
@@ -1029,7 +1033,7 @@
 
 @media (min-width: 1280px) {
   .admin-category-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

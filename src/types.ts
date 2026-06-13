@@ -199,6 +199,7 @@ export type AuditLogRow = {
   id: string;
   actor_user_id: string | null;
   actor_email: string | null;
+  actor_name?: string | null;
   action: string;
   resource_type: string | null;
   resource_id: string | null;

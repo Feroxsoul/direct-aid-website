@@ -249,10 +249,17 @@ export function ProjectsLiveEditor({
                 }`}
               >
                 <div className="impact-initiative-media">
+                  {canEdit ? (
+                    <Link
+                      href={`/admin/projects/${project.slug}`}
+                      className="impact-initiative-media-link"
+                      aria-label={`Edit ${project.title}`}
+                    />
+                  ) : null}
                   <ProjectCoverImage
                     src={project.image_url}
                     alt={project.title}
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    sizes="(max-width: 768px) 100vw, 25vw"
                   />
                   {project.stat_value && project.stat_label ? (
                     <span className="impact-initiative-stat">

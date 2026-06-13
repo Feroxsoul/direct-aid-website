@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProjectDeleteForm, ProjectForm } from "@/components/admin/ProjectForm";
 import { requirePermission } from "@/lib/admin/auth";
@@ -22,12 +23,26 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
 
   return (
     <div className="dash-page">
-      <header className="dash-page-header">
-        <h1 className="dash-page-title">Edit project</h1>
-        <p className="dash-page-subtitle" dir="ltr">
-          {project.title} · {project.slug}
-        </p>
-      </header>
+      <div className="project-edit-header">
+        <header className="dash-page-header">
+          <h1 className="dash-page-title">Edit project</h1>
+          <p className="dash-page-subtitle" dir="ltr">
+            {project.title} · {project.slug}
+          </p>
+        </header>
+        <div className="project-edit-actions">
+          <Link href="/admin/projects" className="dash-btn">
+            ← Back
+          </Link>
+          <Link
+            href={`/project/${project.slug}`}
+            target="_blank"
+            className="dash-btn dash-btn--primary"
+          >
+            View live
+          </Link>
+        </div>
+      </div>
       <ProjectForm project={project} categories={categories} />
       {canDeleteProjects(profile.role_slug, profile.permissions) ? (
         <ProjectDeleteForm slug={project.slug} />

@@ -2,7 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 import type { HomeStatisticsData } from "@/types";
 
-type StatisticsSectionProps = HomeStatisticsData;
+type StatisticsSectionProps = HomeStatisticsData & {
+  ctaLabel?: string;
+};
 
 export function StatisticsSection({
   value,
@@ -12,6 +14,7 @@ export function StatisticsSection({
   brandLine1,
   brandLine2,
   backgroundColor,
+  ctaLabel = "استكشف مهمتنا ←",
 }: StatisticsSectionProps) {
   return (
     <section id="hero" aria-label="Project impact" className="landing-hero">
@@ -34,7 +37,7 @@ export function StatisticsSection({
               <p className="landing-hero-brand-large">{brandLine2}</p>
               <p className="landing-hero-intro">{introText}</p>
               <Link href="#categories" className="landing-hero-cta">
-                استكشف مهمتنا ←
+                {ctaLabel}
               </Link>
             </div>
           </div>

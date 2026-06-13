@@ -21,7 +21,7 @@ export function StatsBoxPreview({
 }: StatsBoxPreviewProps) {
   return (
     <div className="admin-preview-card" dir="ltr">
-      <p className="admin-preview-label">معاينة الصندوق الأخضر</p>
+      <p className="admin-preview-label">Green box preview</p>
       <div className="admin-preview-stats" style={{ backgroundColor }}>
         <div className="admin-preview-stats-top">
           <div>

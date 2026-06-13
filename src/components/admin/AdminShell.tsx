@@ -13,8 +13,9 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/users": "User Management",
   "/admin/categories": "Categories",
   "/admin/homepage": "Home Page",
+  "/admin/footer": "Footer",
   "/admin/roles": "Roles",
-  "/admin/logs": "Activity Logs",
+  "/admin/logs": "Activity Log",
   "/admin/settings": "Settings",
   "/admin/notifications": "Notifications",
 };

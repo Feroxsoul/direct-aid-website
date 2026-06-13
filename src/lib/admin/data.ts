@@ -111,13 +111,33 @@ export async function adminGetAuditLogs(): Promise<AuditLogRow[]> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return [];
 
-  const { data } = await supabase
+  const { data: logs } = await supabase
     .from("audit_logs")
     .select("*")
     .order("created_at", { ascending: false })
     .limit(100);
 
-  return data ?? [];
+  if (!logs?.length) return [];
+
+  const emails = [
+    ...new Set(logs.map((log) => log.actor_email).filter(Boolean)),
+  ] as string[];
+
+  const { data: users } = emails.length
+    ? await supabase
+        .from("admin_users")
+        .select("email, display_name")
+        .in("email", emails)
+    : { data: [] as { email: string; display_name: string | null }[] };
+
+  const nameByEmail = new Map(
+    (users ?? []).map((user) => [user.email, user.display_name]),
+  );
+
+  return logs.map((log) => ({
+    ...log,
+    actor_name: log.actor_email ? nameByEmail.get(log.actor_email) ?? null : null,
+  }));
 }
 
 export async function adminGetMediaAssets(): Promise<MediaAssetRow[]> {

@@ -1,10 +1,5 @@
-import { DashboardView } from "@/components/admin/DashboardView";
-import { requirePermission } from "@/lib/admin/auth";
-import { adminGetDashboardStats } from "@/lib/admin/dashboard-data";
+import { redirect } from "next/navigation";
 
-export default async function AdminDashboardPage() {
-  await requirePermission("analytics", "view");
-  const stats = await adminGetDashboardStats();
-
-  return <DashboardView stats={stats} />;
+export default function AdminRootPage() {
+  redirect("/admin/projects");
 }

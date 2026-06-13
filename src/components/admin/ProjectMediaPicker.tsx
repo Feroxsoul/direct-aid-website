@@ -10,6 +10,16 @@ type ProjectMediaPickerProps = {
   galleryUrls?: string[];
 };
 
+async function uploadFiles(files: FileList | File[]) {
+  const uploaded: string[] = [];
+  for (const file of Array.from(files)) {
+    const formData = new FormData();
+    formData.append("file", file);
+    uploaded.push(await uploadImage(formData));
+  }
+  return uploaded;
+}
+
 export function ProjectMediaPicker({
   imageUrl,
   galleryUrls = [],
@@ -31,25 +41,19 @@ export function ProjectMediaPicker({
   );
   const [images, setImages] = useState(initialGallery);
   const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
 
   const galleryOnly = images.filter((url) => url !== mainImage);
 
-  async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const files = event.target.files;
+  async function addFiles(files: FileList | File[] | null | undefined) {
     if (!files?.length) return;
 
     setUploading(true);
     setError("");
 
     try {
-      const uploaded: string[] = [];
-      for (const file of Array.from(files)) {
-        const formData = new FormData();
-        formData.append("file", file);
-        uploaded.push(await uploadImage(formData));
-      }
-
+      const uploaded = await uploadFiles(files);
       setImages((current) => Array.from(new Set([...current, ...uploaded])));
       if (!mainImage && uploaded[0]) {
         setMainImage(uploaded[0]);
@@ -58,8 +62,12 @@ export function ProjectMediaPicker({
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
       setUploading(false);
-      event.target.value = "";
     }
+  }
+
+  async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    await addFiles(event.target.files);
+    event.target.value = "";
   }
 
   function removeImage(url: string) {
@@ -73,15 +81,50 @@ export function ProjectMediaPicker({
     <div className="admin-field project-media-picker">
       <label className="admin-label">Project Images</label>
       <p className="admin-help-text">
-        Upload multiple images, then click any thumbnail to set it as the main card image.
+        Drag and drop multiple images, or browse. Click any thumbnail to set the main card image.
       </p>
 
       <input type="hidden" name="image_url" value={mainImage} required />
       <input type="hidden" name="gallery_urls" value={galleryOnly.join("\n")} />
 
+      <div
+        className={`project-media-dropzone${dragging ? " is-dragging" : ""}`}
+        onDragOver={(event) => {
+          event.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(event) => {
+          event.preventDefault();
+          setDragging(false);
+          void addFiles(event.dataTransfer.files);
+        }}
+        onClick={() => document.getElementById("project-media-input")?.click()}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            document.getElementById("project-media-input")?.click();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+      >
+        {uploading ? "Uploading…" : "Drop images here or click to browse"}
+      </div>
+
+      <input
+        id="project-media-input"
+        type="file"
+        accept="image/*"
+        multiple
+        className="sr-only"
+        onChange={handleUpload}
+        disabled={uploading}
+      />
+
       <div className="project-media-grid">
         {images.length === 0 ? (
-          <p className="admin-setup-note">No images yet. Upload project photos below.</p>
+          <p className="admin-setup-note">No images yet.</p>
         ) : (
           images.map((url) => {
             const isMain = url === mainImage;
@@ -118,18 +161,6 @@ export function ProjectMediaPicker({
           })
         )}
       </div>
-
-      <label className="admin-upload-button">
-        {uploading ? "Uploading…" : "Upload images (multiple)"}
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          className="sr-only"
-          onChange={handleUpload}
-          disabled={uploading}
-        />
-      </label>
 
       {error ? <p className="admin-error">{error}</p> : null}
     </div>

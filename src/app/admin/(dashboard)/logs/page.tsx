@@ -8,31 +8,33 @@ export default async function AdminLogsPage() {
   return (
     <div className="dash-page">
       <header className="dash-page-header">
-        <h1 className="dash-page-title">سجل النشاط</h1>
+        <h1 className="dash-page-title">Activity Log</h1>
         <p className="dash-page-subtitle">
-          سجل تدقيق لتسجيلات الدخول والتعديلات والحذف وتغييرات الأدوار.
+          Audit trail of logins, edits, deletes, and role changes across the platform.
         </p>
       </header>
 
       <div className="dash-panel">
         {logs.length === 0 ? (
-          <p className="dash-empty">لا يوجد نشاط مسجّل بعد.</p>
+          <p className="dash-empty">No activity recorded yet.</p>
         ) : (
           <div className="dash-table-wrap">
             <table className="dash-table">
               <thead>
                 <tr>
-                  <th>الوقت</th>
-                  <th>المستخدم</th>
-                  <th>الإجراء</th>
-                  <th>المورد</th>
+                  <th>Time</th>
+                  <th>Admin</th>
+                  <th>Email</th>
+                  <th>Action</th>
+                  <th>Resource</th>
                 </tr>
               </thead>
               <tbody>
                 {logs.map((log) => (
                   <tr key={log.id}>
-                    <td>{new Date(log.created_at).toLocaleString()}</td>
-                    <td>{log.actor_email ?? "—"}</td>
+                    <td>{new Date(log.created_at).toLocaleString("en-GB")}</td>
+                    <td>{log.actor_name ?? "—"}</td>
+                    <td dir="ltr">{log.actor_email ?? "—"}</td>
                     <td>{log.action}</td>
                     <td>
                       {log.resource_type}

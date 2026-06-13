@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
-import { getPublicSettings } from "@/lib/data";
+import { getPublicContentSettings } from "@/lib/public-content";
 import "./globals.css";
 
 const DIRECT_AID_FAVICON = "https://directaid.org/favicon.ico";
@@ -23,13 +23,19 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const settings = await getPublicSettings();
+  const content = await getPublicContentSettings();
 
   return (
     <html lang="ar" dir="rtl">
       <body className="flex min-h-screen flex-col bg-white text-da-black antialiased">
         <main className="flex flex-1 flex-col">{children}</main>
-        <Footer logoUrl={settings.logo_url} siteTitle={settings.site_title} />
+        <Footer
+          logoUrl={content.logo_url}
+          siteTitle={content.site_title}
+          tagline={content.footer_tagline}
+          copyright={content.footer_copyright}
+          columns={content.footer_columns}
+        />
       </body>
     </html>
   );

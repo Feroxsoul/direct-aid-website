@@ -9,6 +9,9 @@ import type { HomepageCategory, ProjectCardData } from "@/types";
 type HomeProjectsExplorerProps = {
   categories: HomepageCategory[];
   projects: ProjectCardData[];
+  categoriesSectionTitle?: string;
+  impactSectionTitle?: string;
+  impactSectionSubtitle?: string;
 };
 
 function oneProjectPerCategory(
@@ -31,6 +34,9 @@ function oneProjectPerCategory(
 export function HomeProjectsExplorer({
   categories,
   projects,
+  categoriesSectionTitle = "فئات المشاريع",
+  impactSectionTitle = "آخر نشاط للأثر",
+  impactSectionSubtitle = "مشروع مميز من كل فئة — اختر فئة أعلاه لعرض المزيد.",
 }: HomeProjectsExplorerProps) {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
 
@@ -68,7 +74,7 @@ export function HomeProjectsExplorer({
         className="landing-section landing-section--categories"
       >
         <div className="landing-container">
-          <h2 className="landing-section-title landing-reveal">فئات المشاريع</h2>
+          <h2 className="landing-section-title landing-reveal">{categoriesSectionTitle}</h2>
           <div className="landing-categories-scroll">
             {categories.map((category, index) => {
               const short = category.titleLine2 || category.titleLine1;
@@ -108,11 +114,11 @@ export function HomeProjectsExplorer({
         <div className="landing-container">
           <div className="landing-section-header">
             <div>
-              <h2 className="landing-section-title">آخر نشاط للأثر</h2>
+              <h2 className="landing-section-title">{impactSectionTitle}</h2>
               <p className="landing-section-subtitle">
                 {activeLabel
                   ? `جميع المشاريع (${visibleProjects.length}) في ${activeLabel}.`
-                  : "مشروع مميز من كل فئة — اختر فئة أعلاه لعرض المزيد."}
+                  : impactSectionSubtitle}
               </p>
             </div>
             {activeSlug ? (

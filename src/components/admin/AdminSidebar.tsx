@@ -19,11 +19,11 @@ type NavItem = {
 };
 
 const MAIN_NAV: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: "▦", resource: "analytics" },
   { href: "/admin/homepage", label: "Home Page", icon: "⌂", resource: "homepage" },
   { href: "/admin/categories", label: "Categories", icon: "▦", resource: "categories" },
   { href: "/admin/projects", label: "Projects", icon: "◫", resource: "projects" },
-  { href: "/admin/logs", label: "Activity", icon: "☰", resource: "audit_logs" },
+  { href: "/admin/footer", label: "Footer", icon: "⊞", resource: "homepage" },
+  { href: "/admin/logs", label: "Activity Log", icon: "☰", resource: "audit_logs" },
 ];
 
 const SETTINGS_CHILDREN: NavItem[] = [
