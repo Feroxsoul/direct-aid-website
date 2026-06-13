@@ -576,18 +576,38 @@
 .dash-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   border: 1px solid;
   border-radius: 999px;
-  padding: 0.2rem 0.55rem;
+  padding: 0.25rem 0.75rem;
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   white-space: nowrap;
+  line-height: 1.2;
 }
 
 .dash-badge--sm {
   font-size: 0.625rem;
-  padding: 0.15rem 0.45rem;
+  padding: 0.2rem 0.6rem;
+}
+
+.dash-bar-row:has(.dash-badge) {
+  grid-template-columns: minmax(9rem, max-content) 1fr auto;
+}
+
+.dash-bar-row .dash-badge {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.dash-role-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .dash-link {

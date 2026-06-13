@@ -34,7 +34,7 @@ export default async function AdminRolesPage() {
       <div className="dash-panel">
         <div className="dash-bar-chart" style={{ marginBottom: "1rem" }}>
           {roles.map((role) => (
-            <div key={role.slug} className="dash-bar-row">
+            <div key={role.slug} className="dash-role-row">
               <RoleBadge label={role.name} color={role.badge_color} />
               <span className="dash-bar-label">{role.slug}</span>
               <span className="dash-bar-value">
