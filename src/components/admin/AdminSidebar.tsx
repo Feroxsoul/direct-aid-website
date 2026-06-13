@@ -14,17 +14,26 @@ export type NavItem = {
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: "◫", resource: "analytics" },
-  { href: "/admin/projects", label: "Projects", icon: "◧", resource: "projects" },
+  { href: "/admin", label: "Dashboard", icon: "▦", resource: "analytics" },
+  { href: "/admin/projects", label: "Projects", icon: "◫", resource: "projects" },
+  { href: "/admin/users", label: "User Management", icon: "◎", resource: "users" },
+  { href: "/admin/media", label: "Media Library", icon: "▣", resource: "media" },
   { href: "/admin/donations", label: "Donations", icon: "◈", resource: "donations" },
-  { href: "/admin/media", label: "Media", icon: "▣", resource: "media" },
   { href: "/admin/categories", label: "Categories", icon: "▦", resource: "categories" },
   { href: "/admin/homepage", label: "Homepage", icon: "⌂", resource: "homepage" },
-  { href: "/admin/users", label: "Users", icon: "◎", resource: "users" },
   { href: "/admin/roles", label: "Roles", icon: "⚙", resource: "roles" },
   { href: "/admin/logs", label: "Activity", icon: "☰", resource: "audit_logs" },
   { href: "/admin/settings", label: "Settings", icon: "⚙", resource: "settings" },
 ];
+
+function getInitials(name: string | null, email: string) {
+  const source = name?.trim() || email;
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+  }
+  return source.slice(0, 2).toUpperCase();
+}
 
 type AdminSidebarProps = {
   profile: {
@@ -40,6 +49,7 @@ type AdminSidebarProps = {
 
 export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
+  const displayName = profile.display_name ?? "Admin User";
 
   const visibleItems = NAV_ITEMS.filter((item) => {
     if (item.resource === "roles") {
@@ -60,10 +70,23 @@ export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
   });
 
   return (
-    <aside className="dash-sidebar">
+    <aside className="dash-sidebar dash-sidebar--impact">
       <div className="dash-sidebar-brand">
-        <span className="dash-sidebar-logo">10×10</span>
-        <span className="dash-sidebar-sub">Admin Console</span>
+        <span className="dash-sidebar-logo">IMPACT ADMIN</span>
+      </div>
+
+      <div className="dash-sidebar-user">
+        <span className="dash-sidebar-avatar" aria-hidden>
+          {getInitials(profile.display_name, profile.email)}
+        </span>
+        <div>
+          <p className="dash-sidebar-user-name">{displayName}</p>
+          <RoleBadge
+            label={profile.role_name}
+            color={profile.badge_color}
+            size="sm"
+          />
+        </div>
       </div>
 
       <nav className="dash-sidebar-nav" aria-label="Admin navigation">
@@ -89,13 +112,9 @@ export function AdminSidebar({ profile, onNavigate }: AdminSidebarProps) {
         })}
       </nav>
 
-      <div className="dash-sidebar-footer">
-        <RoleBadge
-          label={profile.role_name}
-          color={profile.badge_color}
-          size="sm"
-        />
-        <p className="dash-sidebar-email">{profile.display_name ?? profile.email}</p>
+      <div className="dash-sidebar-status">
+        <span className="dash-sidebar-status-dot" aria-hidden />
+        System Online
       </div>
     </aside>
   );

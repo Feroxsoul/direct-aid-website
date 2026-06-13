@@ -5,16 +5,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ImageField } from "@/components/admin/ImageField";
-import { saveProjectInline, syncWebflowProjectsToDatabase } from "@/lib/admin/actions";
+import {
+  deleteProjectInline,
+  saveProjectInline,
+  syncWebflowProjectsToDatabase,
+} from "@/lib/admin/actions";
 import type { AdminProjectsEditorData, AdminProjectEditorItem } from "@/lib/admin/project-editor-data";
 import { CATEGORY_SHORT, getCategoryLabelFromRef, mapProjectRowToCard } from "@/lib/project-catalog";
-import { categoryAccentColors } from "@/lib/design-tokens";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { CategoryRow, ProjectRow } from "@/types";
+
+const PAGE_SIZE = 6;
 
 type ProjectsLiveEditorProps = AdminProjectsEditorData & {
   canCreate: boolean;
   canEdit: boolean;
+  canDelete: boolean;
   supabaseUrl: string;
   supabaseAnonKey: string;
 };
@@ -69,17 +75,20 @@ function enrichProject(
   };
 }
 
+function truncate(text: string, max = 120) {
+  if (text.length <= max) return text;
+  return `${text.slice(0, max).trim()}…`;
+}
+
 export function ProjectsLiveEditor({
   projects: initialProjects,
   categories,
-  statistics,
   dbProjectCount,
   webflowProjectCount,
   liveUsesWebflow,
-  publishedCount,
-  draftCount,
   canCreate,
   canEdit,
+  canDelete,
   supabaseUrl,
   supabaseAnonKey,
 }: ProjectsLiveEditorProps) {
@@ -87,10 +96,11 @@ export function ProjectsLiveEditor({
   const [projects, setProjects] = useState(initialProjects);
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
   const [draft, setDraft] = useState<DraftState | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
-  const [showPreview, setShowPreview] = useState(true);
-  const [previewKey, setPreviewKey] = useState(0);
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [page, setPage] = useState(1);
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [message, setMessage] = useState("");
@@ -101,7 +111,12 @@ export function ProjectsLiveEditor({
   const filteredProjects = useMemo(() => {
     const query = search.trim().toLowerCase();
     return projects.filter((project) => {
-      if (categoryFilter && project.category_slug !== categoryFilter) return false;
+      if (categoryFilter !== "all" && project.category_slug !== categoryFilter) {
+        return false;
+      }
+      if (statusFilter !== "all" && project.statusLabel !== statusFilter) {
+        return false;
+      }
       if (!query) return true;
       const haystack = [
         project.title,
@@ -113,10 +128,16 @@ export function ProjectsLiveEditor({
         .toLowerCase();
       return haystack.includes(query);
     });
-  }, [projects, categoryFilter, search]);
+  }, [projects, categoryFilter, statusFilter, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredProjects.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pagedProjects = filteredProjects.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE,
+  );
 
   const refreshPreview = useCallback(() => {
-    setPreviewKey((value) => value + 1);
     router.refresh();
   }, [router]);
 
@@ -125,15 +146,17 @@ export function ProjectsLiveEditor({
   }, [initialProjects]);
 
   useEffect(() => {
+    setPage(1);
+  }, [categoryFilter, statusFilter, search]);
+
+  useEffect(() => {
     const supabase = createSupabaseBrowserClient(supabaseUrl, supabaseAnonKey);
     const channel = supabase
       .channel("admin-projects-live")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "projects" },
-        () => {
-          router.refresh();
-        },
+        () => router.refresh(),
       )
       .subscribe();
 
@@ -163,22 +186,18 @@ export function ProjectsLiveEditor({
     setSyncing(true);
     setError("");
     setMessage("");
-
     const result = await syncWebflowProjectsToDatabase();
     setSyncing(false);
-
     if (!result.ok) {
       setError(result.error);
       return;
     }
-
-    setMessage(`Synced ${result.count} projects from the live site catalog.`);
+    setMessage(`Synced ${result.count} projects from the live catalog.`);
     refreshPreview();
   }
 
   async function handlePublish() {
     if (!draft || !canEdit) return;
-
     setSaving(true);
     setError("");
     setMessage("");
@@ -210,211 +229,229 @@ export function ProjectsLiveEditor({
     setProjects((current) =>
       current.map((project) => (project.slug === updated.slug ? updated : project)),
     );
-    setMessage("Published live — homepage updated.");
+    setMessage("Published live — changes are on the public site.");
     refreshPreview();
   }
 
-  const previewUrl =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/?live=${previewKey}`
-      : `/?live=${previewKey}`;
+  async function handleDelete(slug: string) {
+    if (!canDelete || !window.confirm("Delete this project permanently?")) return;
+    const result = await deleteProjectInline(slug);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    setProjects((current) => current.filter((project) => project.slug !== slug));
+    if (selectedSlug === slug) closeEditor();
+    setMessage("Project deleted.");
+    refreshPreview();
+  }
 
   return (
-    <div className="live-editor">
-      <header className="live-editor-header">
-        <div>
-          <h1 className="live-editor-brand">DirectAid</h1>
-          <p className="live-editor-subtitle">
-            Live Site Editor — changes publish to the public homepage instantly.
-          </p>
-        </div>
-        <div className="live-editor-actions">
-          <button
-            type="button"
-            className="live-editor-btn live-editor-btn--ghost"
-            onClick={() => setShowPreview((value) => !value)}
-          >
-            {showPreview ? "Hide Preview" : "Show Live Preview"}
-          </button>
-          <Link href="/admin/logs" className="live-editor-btn live-editor-btn--ghost">
-            View Logs
-          </Link>
-          {canCreate ? (
-            <Link href="/admin/projects/new" className="live-editor-btn live-editor-btn--primary">
-              New Initiative
-            </Link>
-          ) : null}
-        </div>
-      </header>
-
-      {liveUsesWebflow || dbProjectCount < webflowProjectCount ? (
-        <div className="live-editor-sync-banner">
+    <div className="impact-projects">
+      {(liveUsesWebflow || dbProjectCount < webflowProjectCount) && (
+        <div className="impact-sync-banner">
           <span>
-            {liveUsesWebflow
-              ? `The public site is still reading bundled Webflow data (${webflowProjectCount} projects).`
-              : `Only ${dbProjectCount} of ${webflowProjectCount} live projects are in the database.`}{" "}
-            Sync them so you can edit exactly what visitors see on the homepage.
+            Sync {webflowProjectCount} live projects into the database to edit what visitors see.
           </span>
           <button
             type="button"
-            className="live-editor-btn live-editor-btn--primary"
+            className="impact-btn impact-btn--primary"
             onClick={handleSync}
             disabled={syncing}
           >
-            {syncing ? "Syncing…" : `Sync ${webflowProjectCount} Projects`}
+            {syncing ? "Syncing…" : "Sync Live Data"}
           </button>
         </div>
-      ) : null}
+      )}
 
-      {message ? <p className="live-editor-success">{message}</p> : null}
-      {error ? <p className="live-editor-error">{error}</p> : null}
+      {message ? <p className="impact-alert impact-alert--success">{message}</p> : null}
+      {error ? <p className="impact-alert impact-alert--error">{error}</p> : null}
 
-      <div className="live-editor-stats">
-        <div className="live-editor-stat">
-          <p className="live-editor-stat-label">Total Beneficiaries</p>
-          <p className="live-editor-stat-value">
-            {statistics?.value ?? "6,284,069"}
-          </p>
-          <p className="live-editor-stat-note">{statistics?.label ?? "people served"}</p>
-        </div>
-        <div className="live-editor-stat">
-          <p className="live-editor-stat-label">Published Projects</p>
-          <p className="live-editor-stat-value">{publishedCount}</p>
-          <p className="live-editor-stat-note">Visible on homepage</p>
-        </div>
-        <div className="live-editor-stat live-editor-stat--accent">
-          <p className="live-editor-stat-label">In Database</p>
-          <p className="live-editor-stat-value">{dbProjectCount}</p>
-          <p className="live-editor-stat-note">
-            {draftCount} draft{draftCount === 1 ? "" : "s"}
+      <header className="impact-projects-header">
+        <div>
+          <h2 className="impact-projects-title">All Initiatives</h2>
+          <p className="impact-projects-subtitle">
+            Overview and control of humanitarian operations.
           </p>
         </div>
-      </div>
+        {canCreate ? (
+          <Link href="/admin/projects/new" className="impact-btn impact-btn--primary impact-btn--lg">
+            + New Project
+          </Link>
+        ) : null}
+      </header>
 
-      <div className={`live-editor-layout${showPreview ? " has-preview" : ""}`}>
-        <section>
-          <h2 className="live-editor-section-title">Recent Impact Activity</h2>
-          <p className="live-editor-subtitle" style={{ marginBottom: "0.75rem" }}>
-            Same projects shown on the homepage — tap any card to edit.
-          </p>
-
+      <div className="impact-toolbar">
+        <div className="impact-filters">
+          <span className="impact-filters-label">FILTER BY:</span>
+          <select
+            className="impact-select"
+            value={categoryFilter}
+            onChange={(event) => setCategoryFilter(event.target.value)}
+          >
+            <option value="all">All Categories</option>
+            {categories.map((category) => (
+              <option key={category.slug} value={category.slug}>
+                {category.title_line_2 || category.title_line_1}
+              </option>
+            ))}
+          </select>
+          <select
+            className="impact-select"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+          >
+            <option value="all">All Statuses</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+            <option value="archived">Archived</option>
+          </select>
           <input
             type="search"
-            className="admin-input live-editor-search"
-            placeholder="Search projects…"
+            className="impact-search"
+            placeholder="Search initiatives…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
-
-          <div className="live-editor-filters">
-            <button
-              type="button"
-              className={`live-editor-pill${categoryFilter === null ? " is-active" : ""}`}
-              onClick={() => setCategoryFilter(null)}
-            >
-              ALL
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.slug}
-                type="button"
-                className={`live-editor-pill${
-                  categoryFilter === category.slug ? " is-active" : ""
-                }`}
-                onClick={() =>
-                  setCategoryFilter((current) =>
-                    current === category.slug ? null : category.slug,
-                  )
-                }
-              >
-                {CATEGORY_SHORT[category.slug] ?? category.title_line_2}
-              </button>
-            ))}
-          </div>
-
-          {filteredProjects.length === 0 ? (
-            <p className="live-editor-empty">
-              No projects found. Sync live data or create a new project.
-            </p>
-          ) : (
-            <div className="live-editor-impact-list">
-              {filteredProjects.map((project) => {
-                const accent =
-                  categoryAccentColors[
-                    project.preview.categoryAccent as keyof typeof categoryAccentColors
-                  ] ?? "#2c9942";
-
-                return (
-                  <button
-                    key={project.slug}
-                    type="button"
-                    className={`live-impact-card${
-                      selectedSlug === project.slug ? " is-selected" : ""
-                    }${project.statusLabel !== "published" ? " is-draft" : ""}`}
-                    onClick={() => openEditor(project)}
-                  >
-                    <div className="live-impact-media">
-                      <Image
-                        src={project.image_url}
-                        alt={project.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 900px) 100vw, 50vw"
-                        unoptimized
-                      />
-                    </div>
-                    <div className="live-impact-body">
-                      <span className="live-impact-tag">
-                        <span
-                          className="live-impact-dot"
-                          style={{ backgroundColor: accent }}
-                          aria-hidden
-                        />
-                        {project.categoryShort}
-                      </span>
-                      <h3 className="live-impact-title">{project.title}</h3>
-                      <p className="live-impact-desc">
-                        {project.short_description ??
-                          project.description ??
-                          project.preview.description ??
-                          "No description yet."}
-                      </p>
-                      <div className="live-impact-footer">
-                        <span>{project.date_label}</span>
-                        <span
-                          className={`live-impact-status${
-                            project.statusLabel === "published" ? " is-published" : ""
-                          }`}
-                        >
-                          {project.statusLabel}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        {showPreview ? (
-          <aside className="live-editor-preview">
-            <h2 className="live-editor-section-title">Live Homepage Preview</h2>
-            <iframe
-              key={previewKey}
-              title="Live site preview"
-              src={previewUrl}
-              className="live-editor-preview-frame"
-            />
-          </aside>
-        ) : null}
+        </div>
+        <div className="impact-view-toggle" role="group" aria-label="View mode">
+          <button
+            type="button"
+            className={`impact-view-btn${viewMode === "grid" ? " is-active" : ""}`}
+            onClick={() => setViewMode("grid")}
+            aria-pressed={viewMode === "grid"}
+            title="Grid view"
+          >
+            ▦
+          </button>
+          <button
+            type="button"
+            className={`impact-view-btn${viewMode === "list" ? " is-active" : ""}`}
+            onClick={() => setViewMode("list")}
+            aria-pressed={viewMode === "list"}
+            title="List view"
+          >
+            ☰
+          </button>
+        </div>
       </div>
 
-      {canCreate ? (
-        <Link href="/admin/projects/new" className="live-editor-fab" aria-label="New project">
-          +
-        </Link>
-      ) : null}
+      {pagedProjects.length === 0 ? (
+        <p className="impact-empty">No projects match your filters.</p>
+      ) : (
+        <div
+          className={`impact-initiative-grid${
+            viewMode === "list" ? " impact-initiative-grid--list" : ""
+          }`}
+        >
+          {pagedProjects.map((project) => (
+            <article
+              key={project.slug}
+              className={`impact-initiative-card${
+                viewMode === "list" ? " impact-initiative-card--list" : ""
+              }`}
+            >
+              <div className="impact-initiative-media">
+                <Image
+                  src={project.image_url}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  unoptimized
+                />
+              </div>
+              <div className="impact-initiative-body">
+                <div className="impact-initiative-head">
+                  <h3 className="impact-initiative-title">{project.title}</h3>
+                  <span
+                    className={`impact-status impact-status--${project.statusLabel}`}
+                  >
+                    {project.statusLabel}
+                  </span>
+                </div>
+                <p className="impact-initiative-desc">
+                  {truncate(
+                    project.short_description ??
+                      project.description ??
+                      project.preview.description ??
+                      "No description yet.",
+                  )}
+                </p>
+                <div className="impact-initiative-meta">
+                  <span>📁 {project.categoryShort}</span>
+                  <span>🕐 {project.date_label}</span>
+                </div>
+                <div className="impact-initiative-actions">
+                  <Link
+                    href={`/project/${project.slug}`}
+                    target="_blank"
+                    className="impact-action impact-action--view"
+                  >
+                    👁 View Live
+                  </Link>
+                  {canEdit ? (
+                    <button
+                      type="button"
+                      className="impact-action impact-action--edit"
+                      onClick={() => openEditor(project)}
+                    >
+                      ✎ Edit
+                    </button>
+                  ) : null}
+                  {canDelete ? (
+                    <button
+                      type="button"
+                      className="impact-action impact-action--delete"
+                      onClick={() => handleDelete(project.slug)}
+                    >
+                      🗑
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      <footer className="impact-pagination">
+        <p>
+          Showing {pagedProjects.length} of {filteredProjects.length} initiatives
+        </p>
+        <div className="impact-pagination-controls">
+          <button
+            type="button"
+            className="impact-page-btn"
+            disabled={currentPage <= 1}
+            onClick={() => setPage((value) => Math.max(1, value - 1))}
+          >
+            ‹
+          </button>
+          {Array.from({ length: totalPages }, (_, index) => index + 1)
+            .slice(0, 5)
+            .map((pageNumber) => (
+              <button
+                key={pageNumber}
+                type="button"
+                className={`impact-page-btn${
+                  pageNumber === currentPage ? " is-active" : ""
+                }`}
+                onClick={() => setPage(pageNumber)}
+              >
+                {pageNumber}
+              </button>
+            ))}
+          <button
+            type="button"
+            className="impact-page-btn"
+            disabled={currentPage >= totalPages}
+            onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+          >
+            ›
+          </button>
+        </div>
+      </footer>
 
       {selectedProject && draft ? (
         <>
@@ -424,7 +461,7 @@ export function ProjectsLiveEditor({
             aria-label="Close editor"
             onClick={closeEditor}
           />
-          <aside className="live-editor-drawer" aria-label="Project editor">
+          <aside className="live-editor-drawer" aria-label="Live site editor">
             <header className="live-editor-drawer-header">
               <div>
                 <p className="live-editor-drawer-kicker">Live Site Editor</p>
@@ -457,7 +494,7 @@ export function ProjectsLiveEditor({
                 </div>
                 <div className="admin-field">
                   <label className="admin-label" htmlFor="live-short">
-                    Card Description (homepage)
+                    Card description (homepage)
                   </label>
                   <textarea
                     id="live-short"
@@ -472,7 +509,7 @@ export function ProjectsLiveEditor({
                 </div>
                 <div className="admin-field">
                   <label className="admin-label" htmlFor="live-desc">
-                    Full Description
+                    Full description
                   </label>
                   <textarea
                     id="live-desc"
@@ -491,7 +528,7 @@ export function ProjectsLiveEditor({
                   <ImageField
                     key={draft.slug}
                     name="image_url"
-                    label="Main Image"
+                    label="Main image"
                     defaultValue={draft.image_url}
                     onUrlChange={(url) => updateDraft("image_url", url)}
                     required
@@ -524,7 +561,7 @@ export function ProjectsLiveEditor({
                 <div className="admin-row">
                   <div className="admin-field">
                     <label className="admin-label" htmlFor="live-date">
-                      Date Label
+                      Date label
                     </label>
                     <input
                       id="live-date"
@@ -551,51 +588,17 @@ export function ProjectsLiveEditor({
                     </select>
                   </div>
                 </div>
-                <div className="admin-row">
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="live-stat-value">
-                      Stat Value
-                    </label>
-                    <input
-                      id="live-stat-value"
-                      className="admin-input"
-                      value={draft.stat_value}
-                      onChange={(event) => updateDraft("stat_value", event.target.value)}
-                      disabled={!canEdit}
-                    />
-                  </div>
-                  <div className="admin-field">
-                    <label className="admin-label" htmlFor="live-stat-label">
-                      Stat Label
-                    </label>
-                    <input
-                      id="live-stat-label"
-                      className="admin-input"
-                      value={draft.stat_label}
-                      onChange={(event) => updateDraft("stat_label", event.target.value)}
-                      disabled={!canEdit}
-                    />
-                  </div>
-                </div>
               </section>
-
-              <Link
-                href={`/project/${selectedProject.slug}`}
-                target="_blank"
-                className="live-editor-btn"
-              >
-                Open Public Page
-              </Link>
             </div>
 
             <footer className="live-editor-drawer-footer">
-              <button type="button" className="live-editor-btn" onClick={closeEditor}>
+              <button type="button" className="impact-btn" onClick={closeEditor}>
                 Discard
               </button>
               {canEdit ? (
                 <button
                   type="button"
-                  className="live-editor-btn live-editor-btn--primary"
+                  className="impact-btn impact-btn--primary"
                   onClick={handlePublish}
                   disabled={saving}
                 >

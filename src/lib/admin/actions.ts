@@ -265,6 +265,33 @@ export async function syncWebflowProjectsToDatabase() {
   return { ok: true as const, count: payloads.length };
 }
 
+export async function deleteProjectInline(slug: string) {
+  try {
+    const { supabase, profile } = await requireSupabaseAdmin("admin");
+    await assertCanDeleteProjects(profile as AdminProfile);
+
+    if (!slug.trim()) {
+      return { ok: false as const, error: "Project slug required" };
+    }
+
+    const { error } = await supabase.from("projects").delete().eq("slug", slug);
+    if (error) {
+      return { ok: false as const, error: error.message };
+    }
+
+    await logAuditEvent(profile, "project.deleted", "project", slug);
+    revalidateSite();
+    revalidatePath("/admin/projects");
+
+    return { ok: true as const };
+  } catch (error) {
+    return {
+      ok: false as const,
+      error: error instanceof Error ? error.message : "Delete failed",
+    };
+  }
+}
+
 export async function deleteProject(formData: FormData) {
   const { supabase, profile } = await requireSupabaseAdmin("admin");
   await assertCanDeleteProjects(profile as AdminProfile);

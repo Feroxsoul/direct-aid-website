@@ -1,7 +1,6 @@
 import { AdminShell } from "@/components/admin/AdminShell";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminGetUnreadNotificationCount } from "@/lib/admin/data";
-import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
 
 export default async function AdminDashboardLayout({
   children,
@@ -12,12 +11,7 @@ export default async function AdminDashboardLayout({
   );
 
   return (
-    <AdminShell
-      profile={profile}
-      supabaseUrl={getSupabaseUrl()}
-      supabaseAnonKey={getSupabaseAnonKey()}
-      notificationCount={notificationCount}
-    >
+    <AdminShell profile={profile} notificationCount={notificationCount}>
       {children}
     </AdminShell>
   );

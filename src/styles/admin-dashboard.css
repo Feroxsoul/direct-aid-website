@@ -2,18 +2,19 @@
 
 :root,
 [data-admin-theme="light"] {
-  --dash-bg: #f6f7f9;
+  --dash-bg: #f4f6f8;
   --dash-surface: #ffffff;
   --dash-surface-2: #f1f3f5;
-  --dash-border: #e6e8ec;
+  --dash-border: #e2e8f0;
   --dash-text: #111827;
-  --dash-muted: #6b7280;
-  --dash-accent: #2c9942;
+  --dash-muted: #64748b;
+  --dash-accent: #1a4d2e;
   --dash-accent-soft: #e8f3e0;
-  --dash-sidebar-bg: #0f1117;
-  --dash-sidebar-text: #c9cdd4;
-  --dash-sidebar-active: #ffffff;
-  --dash-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 8px 24px rgba(16, 24, 40, 0.06);
+  --dash-sidebar-bg: #ffffff;
+  --dash-sidebar-text: #475569;
+  --dash-sidebar-active: #1a4d2e;
+  --dash-sidebar-active-bg: #eef6f0;
+  --dash-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.05);
 }
 
 [data-admin-theme="dark"] {
@@ -52,32 +53,120 @@
   flex-direction: column;
   background: var(--dash-sidebar-bg);
   color: var(--dash-sidebar-text);
-  border-inline-end: 1px solid rgba(255, 255, 255, 0.06);
+  border-inline-end: 1px solid var(--dash-border);
   z-index: 40;
+  box-shadow: 2px 0 16px rgba(15, 23, 42, 0.04);
+}
+
+.dash-sidebar--impact .dash-sidebar-brand {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--dash-border);
+}
+
+.dash-sidebar--impact .dash-sidebar-logo {
+  font-size: 1.125rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--dash-accent);
+}
+
+.dash-sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1rem;
+  padding: 0.875rem;
+  border: 1px solid var(--dash-border);
+  border-radius: 0.875rem;
+  background: var(--dash-surface-2);
+}
+
+.dash-sidebar-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: var(--dash-accent);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.dash-sidebar-user-name {
+  margin: 0 0 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--dash-text);
 }
 
 .dash-sidebar-brand {
   padding: 1.25rem 1rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--dash-border);
 }
 
 .dash-sidebar-logo {
   display: block;
   font-size: 1.125rem;
   font-weight: 800;
+  color: var(--dash-accent);
+}
+
+.dash-sidebar-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--dash-border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--dash-muted);
+}
+
+.dash-sidebar-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.dash-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dash-topbar-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--dash-text);
+}
+
+.dash-topbar-live {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0 1rem;
+  border-radius: 0.5rem;
+  background: var(--dash-accent);
+  border: 1px solid var(--dash-accent);
   color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+
+.dash-topbar--impact {
+  background: var(--dash-surface);
 }
 
 .dash-sidebar-sub {
-  display: block;
-  margin-top: 0.15rem;
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.65;
-}
-
-.dash-sidebar-nav {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -103,6 +192,17 @@
 .dash-sidebar-link.is-active {
   background: rgba(255, 255, 255, 0.08);
   color: var(--dash-sidebar-active);
+}
+
+.dash-sidebar--impact .dash-sidebar-link:hover {
+  background: var(--dash-surface-2);
+  color: var(--dash-text);
+}
+
+.dash-sidebar--impact .dash-sidebar-link.is-active {
+  background: var(--dash-sidebar-active-bg);
+  color: var(--dash-sidebar-active);
+  font-weight: 700;
 }
 
 .dash-sidebar-icon {
@@ -203,6 +303,10 @@
 .dash-content {
   flex: 1;
   padding: 1.25rem;
+}
+
+.dash-shell--impact .dash-content {
+  padding: 1.5rem 1.75rem 2rem;
 }
 
 .dash-page-header {

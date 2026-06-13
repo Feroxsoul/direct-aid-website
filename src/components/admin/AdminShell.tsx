@@ -1,29 +1,45 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { AdminPresence } from "@/components/admin/AdminPresence";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { signOut } from "@/lib/admin/actions";
 import type { AdminProfile } from "@/types";
 
+const PAGE_TITLES: Record<string, string> = {
+  "/admin": "Dashboard",
+  "/admin/projects": "Project Management",
+  "/admin/users": "User Management",
+  "/admin/media": "Media Library",
+  "/admin/donations": "Donations",
+  "/admin/categories": "Categories",
+  "/admin/homepage": "Homepage",
+  "/admin/roles": "Roles",
+  "/admin/logs": "Activity Logs",
+  "/admin/settings": "Settings",
+  "/admin/notifications": "Notifications",
+};
+
 type AdminShellProps = {
   profile: AdminProfile;
-  supabaseUrl: string;
-  supabaseAnonKey: string;
   notificationCount?: number;
   children: React.ReactNode;
 };
 
 export function AdminShell({
   profile,
-  supabaseUrl,
-  supabaseAnonKey,
   notificationCount = 0,
   children,
 }: AdminShellProps) {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  const pageTitle =
+    Object.entries(PAGE_TITLES).find(([path]) =>
+      path === "/admin" ? pathname === "/admin" : pathname.startsWith(path),
+    )?.[1] ?? "Admin";
 
   useEffect(() => {
     const stored = localStorage.getItem("admin-theme");
@@ -41,7 +57,7 @@ export function AdminShell({
   }
 
   return (
-    <div className="dash-shell">
+    <div className="dash-shell dash-shell--impact">
       <div
         className={`dash-sidebar-overlay${mobileOpen ? " is-open" : ""}`}
         onClick={() => setMobileOpen(false)}
@@ -56,29 +72,21 @@ export function AdminShell({
       </div>
 
       <div className="dash-main-wrap">
-        <header className="dash-topbar">
-          <button
-            type="button"
-            className="dash-topbar-menu"
-            aria-label="Open menu"
-            onClick={() => setMobileOpen(true)}
-          >
-            ☰
-          </button>
+        <header className="dash-topbar dash-topbar--impact">
+          <div className="dash-topbar-left">
+            <button
+              type="button"
+              className="dash-topbar-menu"
+              aria-label="Open menu"
+              onClick={() => setMobileOpen(true)}
+            >
+              ☰
+            </button>
+            <h1 className="dash-topbar-title">{pageTitle}</h1>
+          </div>
 
           <div className="dash-topbar-actions">
-            <AdminPresence
-              supabaseUrl={supabaseUrl}
-              supabaseAnonKey={supabaseAnonKey}
-              currentUser={{
-                key: profile.user_id ?? profile.id,
-                email: profile.email,
-                role: profile.role_slug,
-                displayName: profile.display_name,
-              }}
-            />
-
-            <Link href="/admin/notifications" className="dash-topbar-bell">
+            <Link href="/admin/notifications" className="dash-topbar-bell" aria-label="Notifications">
               🔔
               {notificationCount > 0 ? (
                 <span className="dash-topbar-bell-count">{notificationCount}</span>
@@ -94,8 +102,8 @@ export function AdminShell({
               {theme === "light" ? "🌙" : "☀️"}
             </button>
 
-            <Link href="/" className="dash-topbar-link" target="_blank">
-              View site
+            <Link href="/" className="dash-topbar-live" target="_blank">
+              LIVE SITE
             </Link>
 
             <form action={signOut}>

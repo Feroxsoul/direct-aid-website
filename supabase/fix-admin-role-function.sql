@@ -1,9 +1,7 @@
--- ============================================================
--- Direct Aid 10x10 — APPLY ON EXISTING DATABASE
--- Safe to re-run. Does not recreate categories/projects seed data.
--- ============================================================
+-- Run this if apply-existing-db.sql failed partway through.
+-- Safe to re-run. Adds missing columns/tables, then fixes functions + policies.
 
--- ─── Admin base (from add-admin-roles.sql) ─────────────────────
+-- ─── Prerequisite schema (skipped if apply-existing-db.sql failed early) ───
 DO $$ BEGIN
   CREATE TYPE public.admin_role AS ENUM ('super_admin', 'admin', 'editor');
 EXCEPTION
@@ -22,34 +20,6 @@ CREATE TABLE IF NOT EXISTS public.admin_users (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-DROP TRIGGER IF EXISTS admin_users_set_updated_at ON public.admin_users;
-CREATE TRIGGER admin_users_set_updated_at
-  BEFORE UPDATE ON public.admin_users
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
-
-CREATE INDEX IF NOT EXISTS admin_users_user_id_idx ON public.admin_users (user_id);
-CREATE INDEX IF NOT EXISTS admin_users_email_idx ON public.admin_users (email);
-
-CREATE OR REPLACE FUNCTION public.link_admin_user_on_signup()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $$
-BEGIN
-  UPDATE public.admin_users
-  SET user_id = NEW.id, updated_at = now()
-  WHERE lower(email) = lower(NEW.email) AND user_id IS NULL;
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS on_auth_user_created_link_admin ON auth.users;
-CREATE TRIGGER on_auth_user_created_link_admin
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.link_admin_user_on_signup();
-
--- ─── Enterprise admin tables & columns ───────────────────────────
 CREATE TABLE IF NOT EXISTS public.admin_roles (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slug TEXT NOT NULL UNIQUE,
@@ -60,11 +30,6 @@ CREATE TABLE IF NOT EXISTS public.admin_roles (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
-DROP TRIGGER IF EXISTS admin_roles_set_updated_at ON public.admin_roles;
-CREATE TRIGGER admin_roles_set_updated_at
-  BEFORE UPDATE ON public.admin_roles
-  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 ALTER TABLE public.admin_users
   ADD COLUMN IF NOT EXISTS role_slug TEXT,
@@ -105,9 +70,6 @@ CREATE TABLE IF NOT EXISTS public.donations (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS donations_created_at_idx ON public.donations (created_at DESC);
-CREATE INDEX IF NOT EXISTS donations_project_slug_idx ON public.donations (project_slug);
-
 CREATE TABLE IF NOT EXISTS public.audit_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   actor_user_id UUID,
@@ -119,8 +81,6 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS audit_logs_created_at_idx ON public.audit_logs (created_at DESC);
-
 CREATE TABLE IF NOT EXISTS public.admin_notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   target_user_id UUID,
@@ -130,9 +90,6 @@ CREATE TABLE IF NOT EXISTS public.admin_notifications (
   is_read BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-
-CREATE INDEX IF NOT EXISTS admin_notifications_user_idx
-  ON public.admin_notifications (target_user_id, is_read, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS public.media_assets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -144,8 +101,6 @@ CREATE TABLE IF NOT EXISTS public.media_assets (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX IF NOT EXISTS media_assets_created_at_idx ON public.media_assets (created_at DESC);
-
 INSERT INTO public.admin_roles (slug, name, badge_color, is_system, permissions) VALUES
   ('super_admin', 'Super Admin', '#7c3aed', true, '{"*":{"*":true}}'::jsonb),
   ('admin', 'Admin', '#dc2626', true, '{}'::jsonb),
@@ -156,8 +111,7 @@ INSERT INTO public.admin_roles (slug, name, badge_color, is_system, permissions)
   ('viewer', 'Viewer', '#6b7280', true, '{}'::jsonb)
 ON CONFLICT (slug) DO NOTHING;
 
--- ─── Auth helper functions (TEXT roles + suspended check) ────────
--- Drop policies that depend on get_my_admin_role() before changing return type
+-- ─── Fix auth functions (drop dependents first) ──────────────────
 DROP POLICY IF EXISTS "Active admin delete projects" ON public.projects;
 DROP POLICY IF EXISTS "Active admin delete media" ON storage.objects;
 DROP POLICY IF EXISTS "Admin delete projects" ON public.projects;
@@ -207,7 +161,6 @@ AS $$
   );
 $$;
 
--- ─── RLS: admin_users ────────────────────────────────────────────
 ALTER TABLE public.admin_users ENABLE ROW LEVEL SECURITY;
 
 DROP POLICY IF EXISTS "Admins read own profile" ON public.admin_users;
@@ -221,7 +174,6 @@ CREATE POLICY "Super admin manage admin users"
   ON public.admin_users FOR ALL TO authenticated
   USING (public.is_super_admin()) WITH CHECK (public.is_super_admin());
 
--- ─── RLS: content tables (replace open policies) ───────────────
 DROP POLICY IF EXISTS "Admin read all projects" ON public.projects;
 DROP POLICY IF EXISTS "Admin insert projects" ON public.projects;
 DROP POLICY IF EXISTS "Admin update projects" ON public.projects;
@@ -279,7 +231,6 @@ CREATE POLICY "Active admin delete media"
   ON storage.objects FOR DELETE TO authenticated
   USING (bucket_id = 'media' AND public.get_my_admin_role() IN ('super_admin', 'admin'));
 
--- ─── RLS: enterprise tables ──────────────────────────────────────
 ALTER TABLE public.admin_roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.donations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
@@ -336,7 +287,6 @@ CREATE POLICY "Active admin manage media"
   ON public.media_assets FOR ALL TO authenticated
   USING (public.is_active_admin()) WITH CHECK (public.is_active_admin());
 
--- ─── Super Admin seed + auth link ────────────────────────────────
 INSERT INTO public.admin_users (email, role, role_slug, display_name, is_active)
 VALUES ('demo@directaid10x10.com', 'super_admin', 'super_admin', 'Developer', true)
 ON CONFLICT (email) DO UPDATE
