@@ -257,7 +257,7 @@ export function ProjectsLiveEditor({
       {(liveUsesWebflow || dbProjectCount < webflowProjectCount) && (
         <div className="impact-sync-banner">
           <span>
-            مزامنة {webflowProjectCount} مشروعاً مباشراً إلى قاعدة البيانات لتعديل ما يراه الزوار.
+            مزامنة {webflowProjectCount} مشروعاً من الموقع المباشر إلى قاعدة البيانات لتعديل ما يراه الزوار.
           </span>
           <button
             type="button"

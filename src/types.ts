@@ -277,7 +277,12 @@ export type Database = {
       media_assets: TableDef<MediaAssetRow>;
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      admin_bulk_upsert_projects: {
+        Args: { payload: unknown };
+        Returns: number;
+      };
+    };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;
   };

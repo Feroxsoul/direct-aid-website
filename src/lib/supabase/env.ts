@@ -18,7 +18,10 @@ export function getSupabaseAnonKey() {
 }
 
 export function getSupabaseServiceRoleKey() {
-  return clean(process.env.SUPABASE_SERVICE_ROLE_KEY);
+  return (
+    clean(process.env.SUPABASE_SERVICE_ROLE_KEY) ||
+    clean(process.env.SUPABASE_SERVICE_KEY)
+  );
 }
 
 export function isSupabaseConfigured() {

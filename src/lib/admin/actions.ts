@@ -210,7 +210,8 @@ export async function saveProjectInline(formData: FormData) {
 }
 
 export async function syncWebflowProjectsToDatabase() {
-  const { supabase, profile } = await getAdminWriteClient();
+  const { supabase, profile } = await requireSupabaseAdmin();
+  const service = createSupabaseServiceClient();
   const webflowProjects = (await import("@/data/webflow-projects.json")).default as Array<{
     slug: string;
     title: string;
@@ -254,25 +255,58 @@ export async function syncWebflowProjectsToDatabase() {
     sort_order: row.sort_order,
   }));
 
-  for (let index = 0; index < payloads.length; index += 40) {
-    const chunk = payloads.slice(index, index + 40);
-    const { error } = await supabase
-      .from("projects")
-      .upsert(chunk, { onConflict: "slug" });
+  const RPC_CHUNK = 40;
+  let syncedTotal = 0;
+
+  for (let index = 0; index < payloads.length; index += RPC_CHUNK) {
+    const chunk = payloads.slice(index, index + RPC_CHUNK);
+
+    if (service) {
+      const { error } = await service
+        .from("projects")
+        .upsert(chunk, { onConflict: "slug" });
+
+      if (error) {
+        return { ok: false as const, error: error.message };
+      }
+      syncedTotal += chunk.length;
+      continue;
+    }
+
+    const { data, error } = await supabase.rpc("admin_bulk_upsert_projects", {
+      payload: chunk,
+    });
 
     if (error) {
-      const hint = createSupabaseServiceClient()
-        ? ""
-        : " — أضِف SUPABASE_SERVICE_ROLE_KEY في Railway إن استمر الخطأ.";
-      return { ok: false as const, error: `${error.message}${hint}` };
+      const needsSql =
+        error.message.includes("admin_bulk_upsert_projects") ||
+        error.code === "PGRST202";
+      const needsKey = !createSupabaseServiceClient();
+      const hints = [
+        needsSql
+          ? "شغّل supabase/fix-projects-sync-rpc.sql في محرر SQL بـ Supabase"
+          : null,
+        needsKey
+          ? "أو أضِف SUPABASE_SERVICE_ROLE_KEY في Railway (Settings → API → service_role)"
+          : null,
+      ]
+        .filter(Boolean)
+        .join(" — ");
+
+      return {
+        ok: false as const,
+        error: hints ? `${error.message} — ${hints}` : error.message,
+      };
     }
+
+    syncedTotal += typeof data === "number" ? data : chunk.length;
   }
 
-  await logAuditEvent(profile, "projects.synced", "project", String(payloads.length));
+  await logAuditEvent(profile, "projects.synced", "project", String(syncedTotal));
   revalidateSite();
   revalidatePath("/admin/projects");
 
-  return { ok: true as const, count: payloads.length };
+  return { ok: true as const, count: syncedTotal };
 }
 
 export async function deleteProjectInline(slug: string) {
