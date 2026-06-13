@@ -63,13 +63,27 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       />
 
       <div className="admin-field">
+        <label className="admin-label" htmlFor="short_description">
+          Short Description
+        </label>
+        <textarea
+          id="short_description"
+          name="short_description"
+          className="admin-textarea"
+          rows={2}
+          defaultValue={project?.short_description ?? ""}
+        />
+      </div>
+
+      <div className="admin-field">
         <label className="admin-label" htmlFor="description">
-          الوصف (صفحة المزيد)
+          Full Description
         </label>
         <textarea
           id="description"
           name="description"
           className="admin-textarea"
+          rows={8}
           defaultValue={project?.description ?? ""}
         />
       </div>
@@ -204,14 +218,78 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
       </div>
 
-      <label className="admin-checkbox-row">
-        <input
-          type="checkbox"
-          name="is_published"
-          defaultChecked={project?.is_published ?? true}
-        />
-        <span>منشور على الموقع</span>
-      </label>
+      <div className="admin-row">
+        <div className="admin-field">
+          <label className="admin-label" htmlFor="status">
+            Status
+          </label>
+          <select
+            id="status"
+            name="status"
+            className="admin-select"
+            defaultValue={
+              project?.status ?? (project?.is_published ? "published" : "draft")
+            }
+          >
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+        <div className="admin-field">
+          <label className="admin-label" htmlFor="goal_amount">
+            Goal Amount (USD)
+          </label>
+          <input
+            id="goal_amount"
+            name="goal_amount"
+            type="number"
+            min={0}
+            className="admin-input"
+            defaultValue={project?.goal_amount ?? ""}
+            dir="ltr"
+          />
+        </div>
+        <div className="admin-field">
+          <label className="admin-label" htmlFor="amount_raised">
+            Amount Raised (USD)
+          </label>
+          <input
+            id="amount_raised"
+            name="amount_raised"
+            type="number"
+            min={0}
+            className="admin-input"
+            defaultValue={project?.amount_raised ?? 0}
+            dir="ltr"
+          />
+        </div>
+      </div>
+
+      <div className="admin-row">
+        <div className="admin-field">
+          <label className="admin-label" htmlFor="meta_title">
+            SEO Meta Title
+          </label>
+          <input
+            id="meta_title"
+            name="meta_title"
+            className="admin-input"
+            defaultValue={project?.meta_title ?? ""}
+          />
+        </div>
+        <div className="admin-field">
+          <label className="admin-label" htmlFor="meta_description">
+            SEO Meta Description
+          </label>
+          <input
+            id="meta_description"
+            name="meta_description"
+            className="admin-input"
+            defaultValue={project?.meta_description ?? ""}
+          />
+        </div>
+      </div>
 
       <div className="admin-actions">
         <button type="submit" className="admin-button">

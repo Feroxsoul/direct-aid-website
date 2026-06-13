@@ -12,7 +12,7 @@ import {
   getPublicSettings,
 } from "@/lib/data";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await getPageBySlug("home");

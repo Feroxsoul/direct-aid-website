@@ -1,9 +1,11 @@
 -- ============================================================
--- Direct Aid 10x10 — FULL DATABASE SETUP
--- Run this ONCE in Supabase → SQL Editor → New query → Run
+-- Direct Aid 10x10 — FULL DATABASE SETUP (fresh database only)
 --
--- Already ran an older version without roles?
--- Run add-admin-roles.sql instead (do NOT re-run this whole file).
+-- EXISTING database? Do NOT run this file. Use instead:
+--   npm run db:migrate
+-- (add SUPABASE_DB_PASSWORD to .env.local first)
+--
+-- Or paste supabase/apply-existing-db.sql in SQL Editor.
 -- ============================================================
 
 -- STEP 1: Tables + public read policies

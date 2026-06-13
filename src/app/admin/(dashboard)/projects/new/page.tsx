@@ -1,7 +1,9 @@
 import { ProjectForm } from "@/components/admin/ProjectForm";
+import { requirePermission } from "@/lib/admin/auth";
 import { adminGetCategories } from "@/lib/admin/data";
 
 export default async function NewProjectPage() {
+  await requirePermission("projects", "create");
   const categories = await adminGetCategories();
 
   return (

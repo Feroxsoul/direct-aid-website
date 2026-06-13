@@ -1,22 +1,26 @@
 import { saveCategory } from "@/lib/admin/actions";
 import { AccentSelect } from "@/components/admin/AccentSelect";
 import { ImageField } from "@/components/admin/ImageField";
+import { requirePermission } from "@/lib/admin/auth";
 import { adminGetCategories } from "@/lib/admin/data";
 import { categoryAccentColors } from "@/lib/design-tokens";
 
 export default async function AdminCategoriesPage() {
+  await requirePermission("categories", "view");
   const categories = await adminGetCategories();
 
   return (
-    <>
-      <h1 className="admin-page-title">الفئات</h1>
-      <p className="admin-page-subtitle">
-        عدّل بطاقات المشاريع: Educational · Health · Water · Orphans وغيرها — العنوان، الأيقونة، ولون الشريط السفلي.
-      </p>
+    <div className="dash-page">
+      <header className="dash-page-header">
+        <h1 className="dash-page-title">Categories</h1>
+        <p className="dash-page-subtitle">
+          Edit category tiles — title, icon, accent color, and sort order.
+        </p>
+      </header>
 
       <div className="admin-form" style={{ gap: "1.5rem" }}>
         {categories.map((category) => (
-          <form key={category.slug} action={saveCategory} className="admin-form admin-card">
+          <form key={category.slug} action={saveCategory} className="admin-form dash-panel">
             <input type="hidden" name="slug" value={category.slug} />
 
             <div className="admin-category-header">
@@ -79,6 +83,6 @@ export default async function AdminCategoriesPage() {
           </form>
         ))}
       </div>
-    </>
+    </div>
   );
 }

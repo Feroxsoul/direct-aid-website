@@ -1,4 +1,9 @@
+import type { AdminPermissions } from "@/lib/admin/permissions";
 import type { CategoryAccent } from "@/lib/design-tokens";
+
+export type { AdminPermissions } from "@/lib/admin/permissions";
+
+export type ProjectStatus = "draft" | "published" | "archived";
 
 // UI types
 export type HomepageCategory = {
@@ -96,6 +101,13 @@ export type ProjectRow = {
   gallery_urls: string[] | null;
   is_published: boolean;
   sort_order: number;
+  status?: ProjectStatus | string | null;
+  short_description?: string | null;
+  goal_amount?: number | null;
+  amount_raised?: number | null;
+  suggested_donations?: number[] | null;
+  meta_title?: string | null;
+  meta_description?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -134,18 +146,108 @@ export type SettingRow = {
   updated_at: string;
 };
 
-export type AdminRole = "super_admin" | "admin" | "editor";
+export type AdminRole = string;
 
 export type AdminUserRow = {
   id: string;
   user_id: string | null;
   email: string;
   role: AdminRole;
+  role_slug?: string | null;
   display_name: string | null;
+  avatar_url?: string | null;
   is_active: boolean;
+  last_login_at?: string | null;
+  suspended_at?: string | null;
+  suspended_reason?: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type AdminRoleRow = {
+  id: string;
+  slug: string;
+  name: string;
+  badge_color: string;
+  is_system: boolean;
+  permissions: AdminPermissions;
+  created_at: string;
+  updated_at: string;
+};
+
+export type AdminProfile = AdminUserRow & {
+  role_slug: string;
+  role_name: string;
+  badge_color: string;
+  permissions: AdminPermissions;
+};
+
+export type DonationRow = {
+  id: string;
+  project_slug: string | null;
+  category_slug: string | null;
+  donor_name: string | null;
+  donor_email: string | null;
+  amount: number;
+  currency: string;
+  status: string;
+  created_at: string;
+};
+
+export type AuditLogRow = {
+  id: string;
+  actor_user_id: string | null;
+  actor_email: string | null;
+  action: string;
+  resource_type: string | null;
+  resource_id: string | null;
+  details: Record<string, unknown>;
+  created_at: string;
+};
+
+export type AdminNotificationRow = {
+  id: string;
+  target_user_id: string | null;
+  type: string;
+  title: string;
+  body: string | null;
+  is_read: boolean;
+  created_at: string;
+};
+
+export type MediaAssetRow = {
+  id: string;
+  url: string;
+  filename: string | null;
+  alt_text: string | null;
+  size_bytes: number | null;
+  uploaded_by: string | null;
+  created_at: string;
+};
+
+export type DashboardStats = {
+  totalDonations: number;
+  totalDonors: number;
+  totalProjects: number;
+  activeProjects: number;
+  totalUsers: number;
+  totalRoles: number;
+  monthlyDonations: number;
+  yearlyDonations: number;
+  donationGrowth: number;
+  projectGrowth: number;
+  usersByRole: { role: string; label: string; color: string; count: number }[];
+  recentUsers: AdminUserRow[];
+  suspendedUsers: number;
+  donationsByMonth: { month: string; amount: number }[];
+  topProjects: {
+    slug: string;
+    title: string;
+    image_url: string;
+    goal_amount: number;
+    amount_raised: number;
+  }[];
 };
 
 type TableDef<Row> = {
@@ -168,6 +270,11 @@ export type Database = {
       pages: TableDef<PageRow>;
       settings: TableDef<SettingRow>;
       admin_users: TableDef<AdminUserRow>;
+      admin_roles: TableDef<AdminRoleRow>;
+      donations: TableDef<DonationRow>;
+      audit_logs: TableDef<AuditLogRow>;
+      admin_notifications: TableDef<AdminNotificationRow>;
+      media_assets: TableDef<MediaAssetRow>;
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;

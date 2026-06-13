@@ -1,18 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { categoryAccentColors } from "@/lib/design-tokens";
 import type { ProjectCardData } from "@/types";
 
 type LandingProjectCardProps = {
   project: ProjectCardData;
+  revealIndex?: number;
 };
 
-export function LandingProjectCard({ project }: LandingProjectCardProps) {
+export function LandingProjectCard({
+  project,
+  revealIndex = 0,
+}: LandingProjectCardProps) {
   const accentColor = categoryAccentColors[project.categoryAccent];
   const unoptimized = project.imageUrl.includes("cdn.prod.website-files.com");
 
   return (
-    <article className="landing-project-card">
+    <article
+      className="landing-project-card landing-reveal landing-reveal--project"
+      style={{ "--reveal-index": revealIndex } as CSSProperties}
+    >
       <div className="landing-project-media">
         <Link href={project.href} className="absolute inset-0">
           <Image

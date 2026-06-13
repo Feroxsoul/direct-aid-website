@@ -1,0 +1,2 @@
+-- Run AFTER add-admin-roles.sql in Supabase SQL Editor
+-- Copy contents from: supabase/migrations/20250613000000_enterprise_admin.sql

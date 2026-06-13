@@ -1,58 +1,28 @@
-import Link from "next/link";
-import { adminGetProjects } from "@/lib/admin/data";
+import { ProjectsLiveEditor } from "@/components/admin/ProjectsLiveEditor";
+import { requirePermission } from "@/lib/admin/auth";
+import { getAdminProjectsEditorData } from "@/lib/admin/project-editor-data";
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/env";
+import { hasPermission } from "@/lib/admin/permissions";
 
 export default async function AdminProjectsPage() {
-  const projects = await adminGetProjects();
+  const profile = await requirePermission("projects", "view");
+  const data = await getAdminProjectsEditorData();
 
   return (
-    <>
-      <div className="admin-actions" style={{ marginBottom: "1rem" }}>
-        <div>
-          <h1 className="admin-page-title">المشاريع</h1>
-          <p className="admin-page-subtitle">
-            عدّل العناوين والصور والأوصاف — التغييرات تظهر على الموقع خلال دقيقة.
-          </p>
-        </div>
-        <Link href="/admin/projects/new" className="admin-button">
-          + مشروع جديد
-        </Link>
-      </div>
-
-      <div className="admin-card">
-        {projects.length === 0 ? (
-          <p>لا توجد مشاريع في قاعدة البيانات. شغّل seed.sql أو أضف مشروعاً جديداً.</p>
-        ) : (
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>العنوان</th>
-                <th>الفئة</th>
-                <th>التاريخ</th>
-                <th>الحالة</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((project) => (
-                <tr key={project.slug}>
-                  <td>{project.title}</td>
-                  <td>{project.category_slug}</td>
-                  <td>{project.date_label}</td>
-                  <td>{project.is_published ? "منشور" : "مسودة"}</td>
-                  <td>
-                    <Link
-                      href={`/admin/projects/${project.slug}`}
-                      className="admin-link"
-                    >
-                      تعديل
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </>
+    <div className="dash-page">
+      <ProjectsLiveEditor
+        {...data}
+        canCreate={
+          profile.role_slug === "super_admin" ||
+          hasPermission(profile.permissions, profile.role_slug, "projects", "create")
+        }
+        canEdit={
+          profile.role_slug === "super_admin" ||
+          hasPermission(profile.permissions, profile.role_slug, "projects", "edit")
+        }
+        supabaseUrl={getSupabaseUrl()}
+        supabaseAnonKey={getSupabaseAnonKey()}
+      />
+    </div>
   );
 }

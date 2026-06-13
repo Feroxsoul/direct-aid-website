@@ -5,5 +5,5 @@ export const metadata = {
 export default function AdminRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <div className="admin-body">{children}</div>;
+  return <div className="admin-body dash-mode">{children}</div>;
 }

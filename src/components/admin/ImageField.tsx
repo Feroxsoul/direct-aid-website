@@ -9,6 +9,7 @@ type ImageFieldProps = {
   label: string;
   defaultValue?: string;
   required?: boolean;
+  onUrlChange?: (url: string) => void;
 };
 
 export function ImageField({
@@ -16,6 +17,7 @@ export function ImageField({
   label,
   defaultValue = "",
   required = false,
+  onUrlChange,
 }: ImageFieldProps) {
   const [url, setUrl] = useState(defaultValue);
   const [uploading, setUploading] = useState(false);
@@ -29,6 +31,15 @@ export function ImageField({
     };
   }, []);
 
+  useEffect(() => {
+    setUrl(defaultValue);
+  }, [defaultValue]);
+
+  function updateUrl(nextUrl: string) {
+    setUrl(nextUrl);
+    onUrlChange?.(nextUrl);
+  }
+
   async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -41,7 +52,7 @@ export function ImageField({
       formData.append("file", file);
       const publicUrl = await uploadImage(formData);
       if (mountedRef.current) {
-        setUrl(publicUrl);
+        updateUrl(publicUrl);
       }
     } catch (err) {
       if (mountedRef.current) {
@@ -65,7 +76,7 @@ export function ImageField({
         type="url"
         className="admin-input"
         value={url}
-        onChange={(event) => setUrl(event.target.value)}
+        onChange={(event) => updateUrl(event.target.value)}
         required={required}
         dir="ltr"
       />

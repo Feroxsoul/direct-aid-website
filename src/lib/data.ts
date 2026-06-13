@@ -12,6 +12,12 @@ import {
   getFallbackProjectsByCategorySlug,
 } from "@/data/projects";
 import type { CategoryAccent } from "@/lib/design-tokens";
+import {
+  getCategoryLabelFromRef,
+  mapProjectRowToCard,
+  useWebflowProjectCatalog,
+  type CategoryRef,
+} from "@/lib/project-catalog";
 import { createSupabaseServerClient } from "@/lib/supabase";
 import {
   getWebflowProjectBySlug,
@@ -34,13 +40,6 @@ import type {
 
 const HOMEPAGE_STATS_KEY = "homepage_beneficiaries";
 
-function useWebflowProjectCatalog() {
-  return (
-    getWebflowProjectCount() > 0 &&
-    process.env.NEXT_PUBLIC_USE_WEBFLOW_PROJECTS !== "false"
-  );
-}
-
 function mapCategory(row: CategoryRow): HomepageCategory {
   return {
     slug: row.slug,
@@ -51,49 +50,15 @@ function mapCategory(row: CategoryRow): HomepageCategory {
   };
 }
 
-type CategoryRef = {
-  slug: string;
-  accent: CategoryAccent;
-  title_line_1?: string;
-  title_line_2?: string;
-  titleLine1?: string;
-  titleLine2?: string;
-};
-
-function getCategoryLabelFromRef(category: CategoryRef) {
-  const line1 = category.title_line_1 ?? category.titleLine1 ?? "";
-  const line2 = category.title_line_2 ?? category.titleLine2 ?? "";
-  return `${line1} ${line2}`.trim();
-}
-
 function mapProject(row: ProjectRow, category?: CategoryRef | null): ProjectCardData {
-  const accent = (row.accent ?? category?.accent ?? "default") as CategoryAccent;
+  const card = mapProjectRowToCard(row, category);
   const categoryLabel = category ? getCategoryLabelFromRef(category) : undefined;
 
-  return {
-    id: row.slug,
-    title: row.title,
-    imageUrl: row.image_url,
-    imageAlt: row.image_alt ?? undefined,
-    href: `/project/${row.slug}`,
-    categorySlug: row.category_slug,
-    metadata: {
-      dateLabel: row.date_label,
-      yearCode: row.year_code ?? undefined,
-    },
-    categoryAccent: accent,
-    statistics:
-      row.stat_value && row.stat_label
-        ? { value: row.stat_value, label: row.stat_label }
-        : undefined,
-    iconUrl: row.icon_url ?? undefined,
-    categoryLabel,
-    description:
-      row.description ??
-      (categoryLabel
-        ? getDefaultDescription(row.title, categoryLabel)
-        : undefined),
-  };
+  if (!card.description && categoryLabel) {
+    card.description = getDefaultDescription(row.title, categoryLabel);
+  }
+
+  return card;
 }
 
 const HOME_STATS_SETTING_KEYS = [
@@ -159,25 +124,31 @@ export function getCategoryLabel(category: HomepageCategory): string {
 }
 
 export async function getAllProjects(): Promise<ProjectCardData[]> {
-  if (useWebflowProjectCatalog()) {
-    return getWebflowProjects();
+  const supabase = createSupabaseServerClient();
+  if (!supabase) {
+    return getWebflowProjects().length ? getWebflowProjects() : fallbackProjects;
   }
 
-  const supabase = createSupabaseServerClient();
-  if (!supabase) return getWebflowProjects().length ? getWebflowProjects() : fallbackProjects;
-
-  const [{ data, error }, categoryMap] = await Promise.all([
+  const [{ data, error }, categoryMap, { count }] = await Promise.all([
     supabase
       .from("projects")
       .select("*")
       .eq("is_published", true)
       .order("sort_order", { ascending: true }),
     getCategoryMap(supabase),
+    supabase.from("projects").select("*", { count: "exact", head: true }),
   ]);
 
-  if (error || !data?.length) {
-    return getWebflowProjects().length ? getWebflowProjects() : fallbackProjects;
+  const hasDbProjects = (count ?? 0) > 0;
+
+  if (useWebflowProjectCatalog(hasDbProjects)) {
+    return getWebflowProjects();
   }
+
+  if (error || !data?.length) {
+    return fallbackProjects;
+  }
+
   return data.map((row) => mapProject(row, categoryMap.get(row.category_slug)));
 }
 
@@ -199,10 +170,6 @@ function mapProjectDetail(
 }
 
 export async function getProjectSlugs(): Promise<string[]> {
-  if (useWebflowProjectCatalog()) {
-    return getWebflowProjectSlugs();
-  }
-
   const supabase = createSupabaseServerClient();
   if (!supabase) {
     return getWebflowProjectSlugs().length
@@ -210,15 +177,19 @@ export async function getProjectSlugs(): Promise<string[]> {
       : getFallbackProjectSlugs();
   }
 
-  const { data, error } = await supabase
-    .from("projects")
-    .select("slug")
-    .eq("is_published", true);
+  const [{ data, error }, { count }] = await Promise.all([
+    supabase.from("projects").select("slug").eq("is_published", true),
+    supabase.from("projects").select("*", { count: "exact", head: true }),
+  ]);
+
+  const hasDbProjects = (count ?? 0) > 0;
+
+  if (useWebflowProjectCatalog(hasDbProjects)) {
+    return getWebflowProjectSlugs();
+  }
 
   if (error || !data?.length) {
-    return getWebflowProjectSlugs().length
-      ? getWebflowProjectSlugs()
-      : getFallbackProjectSlugs();
+    return getFallbackProjectSlugs();
   }
   return data.map((row) => row.slug);
 }
@@ -226,11 +197,6 @@ export async function getProjectSlugs(): Promise<string[]> {
 export async function getProjectBySlug(
   slug: string,
 ): Promise<ProjectDetailData | undefined> {
-  if (useWebflowProjectCatalog()) {
-    const categories = await getCategories();
-    return getWebflowProjectBySlug(slug, categories);
-  }
-
   const supabase = createSupabaseServerClient();
   if (!supabase) {
     return (
@@ -238,7 +204,7 @@ export async function getProjectBySlug(
     );
   }
 
-  const [{ data, error }, categories] = await Promise.all([
+  const [{ data, error }, categories, { count }] = await Promise.all([
     supabase
       .from("projects")
       .select("*")
@@ -246,13 +212,17 @@ export async function getProjectBySlug(
       .eq("is_published", true)
       .maybeSingle(),
     getCategories(),
+    supabase.from("projects").select("*", { count: "exact", head: true }),
   ]);
 
+  const hasDbProjects = (count ?? 0) > 0;
+
+  if (useWebflowProjectCatalog(hasDbProjects)) {
+    return getWebflowProjectBySlug(slug, categories);
+  }
+
   if (error || !data) {
-    return (
-      getWebflowProjectBySlug(slug, categories) ??
-      getFallbackProjectBySlug(slug)
-    );
+    return getFallbackProjectBySlug(slug);
   }
 
   const category = categories.find((item) => item.slug === data.category_slug);
@@ -264,17 +234,13 @@ export async function getProjectBySlug(
 export async function getProjectsByCategorySlug(
   slug: string,
 ): Promise<ProjectCardData[]> {
-  if (useWebflowProjectCatalog()) {
-    return getWebflowProjectsByCategory(slug);
-  }
-
   const supabase = createSupabaseServerClient();
   if (!supabase) {
     const webflow = getWebflowProjectsByCategory(slug);
     return webflow.length ? webflow : getFallbackProjectsByCategorySlug(slug);
   }
 
-  const [{ data, error }, categoryMap] = await Promise.all([
+  const [{ data, error }, categoryMap, { count }] = await Promise.all([
     supabase
       .from("projects")
       .select("*")
@@ -282,11 +248,17 @@ export async function getProjectsByCategorySlug(
       .eq("category_slug", slug)
       .order("sort_order", { ascending: true }),
     getCategoryMap(supabase),
+    supabase.from("projects").select("*", { count: "exact", head: true }),
   ]);
 
+  const hasDbProjects = (count ?? 0) > 0;
+
+  if (useWebflowProjectCatalog(hasDbProjects)) {
+    return getWebflowProjectsByCategory(slug);
+  }
+
   if (error) {
-    const webflow = getWebflowProjectsByCategory(slug);
-    return webflow.length ? webflow : getFallbackProjectsByCategorySlug(slug);
+    return getFallbackProjectsByCategorySlug(slug);
   }
   return (data ?? []).map((row) =>
     mapProject(row, categoryMap.get(row.category_slug)),

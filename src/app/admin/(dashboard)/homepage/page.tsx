@@ -3,6 +3,7 @@ import { saveHomepage } from "@/lib/admin/actions";
 import { ColorField } from "@/components/admin/ColorField";
 import { ImageField } from "@/components/admin/ImageField";
 import { StatsBoxPreview } from "@/components/admin/StatsBoxPreview";
+import { requirePermission } from "@/lib/admin/auth";
 import { adminGetHomeStatistics, adminGetSettings } from "@/lib/admin/data";
 import { fallbackHomeStatistics } from "@/data/fallback";
 
@@ -19,6 +20,7 @@ type HomepageAdminProps = {
 };
 
 export default async function AdminHomepagePage({ searchParams }: HomepageAdminProps) {
+  await requirePermission("homepage", "view");
   const { saved } = await searchParams;
   const [stats, settingsRows] = await Promise.all([
     adminGetHomeStatistics(),

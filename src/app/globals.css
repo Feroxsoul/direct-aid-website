@@ -8,6 +8,8 @@
 @import "../styles/home.css";
 @import "../styles/landing.css";
 @import "../styles/admin.css";
+@import "../styles/admin-dashboard.css";
+@import "../styles/admin-live-editor.css";
 
 html {
   height: 100%;

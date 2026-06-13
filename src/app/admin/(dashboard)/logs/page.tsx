@@ -1,0 +1,50 @@
+import { requireSuperAdmin } from "@/lib/admin/auth";
+import { adminGetAuditLogs } from "@/lib/admin/data";
+
+export default async function AdminLogsPage() {
+  await requireSuperAdmin();
+  const logs = await adminGetAuditLogs();
+
+  return (
+    <div className="dash-page">
+      <header className="dash-page-header">
+        <h1 className="dash-page-title">Activity Logs</h1>
+        <p className="dash-page-subtitle">
+          Audit trail of logins, edits, deletions, and role changes.
+        </p>
+      </header>
+
+      <div className="dash-panel">
+        {logs.length === 0 ? (
+          <p className="dash-empty">No activity recorded yet.</p>
+        ) : (
+          <div className="dash-table-wrap">
+            <table className="dash-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Actor</th>
+                  <th>Action</th>
+                  <th>Resource</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map((log) => (
+                  <tr key={log.id}>
+                    <td>{new Date(log.created_at).toLocaleString()}</td>
+                    <td>{log.actor_email ?? "—"}</td>
+                    <td>{log.action}</td>
+                    <td>
+                      {log.resource_type}
+                      {log.resource_id ? `: ${log.resource_id}` : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

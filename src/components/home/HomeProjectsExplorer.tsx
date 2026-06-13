@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 import { categoryAccentColors } from "@/lib/design-tokens";
 import { LandingProjectCard } from "@/components/home/LandingProjectCard";
 import type { HomepageCategory, ProjectCardData } from "@/types";
@@ -79,9 +79,9 @@ export function HomeProjectsExplorer({
         className="landing-section landing-section--categories"
       >
         <div className="landing-container">
-          <h2 className="landing-section-title">Project Categories</h2>
+          <h2 className="landing-section-title landing-reveal">Project Categories</h2>
           <div className="landing-categories-scroll">
-            {categories.map((category) => {
+            {categories.map((category, index) => {
               const short =
                 CATEGORY_SHORT[category.slug] ??
                 (category.titleLine2 || category.titleLine1);
@@ -91,7 +91,8 @@ export function HomeProjectsExplorer({
                 <button
                   key={category.slug}
                   type="button"
-                  className={`landing-category-card landing-category-btn${isActive ? " is-active" : ""}`}
+                  className={`landing-category-card landing-category-btn landing-reveal landing-reveal--category${isActive ? " is-active" : ""}`}
+                  style={{ "--reveal-index": index } as CSSProperties}
                   onClick={() => selectCategory(category.slug)}
                   aria-pressed={isActive}
                 >
@@ -138,10 +139,15 @@ export function HomeProjectsExplorer({
             <p className="landing-section-subtitle">No projects in this category yet.</p>
           ) : (
             <div
+              key={activeSlug ?? "overview"}
               className={`landing-projects-grid${activeSlug ? " landing-projects-grid--expanded" : " landing-projects-grid--preview"}`}
             >
-              {visibleProjects.map((project) => (
-                <LandingProjectCard key={project.id} project={project} />
+              {visibleProjects.map((project, index) => (
+                <LandingProjectCard
+                  key={project.id}
+                  project={project}
+                  revealIndex={index}
+                />
               ))}
             </div>
           )}

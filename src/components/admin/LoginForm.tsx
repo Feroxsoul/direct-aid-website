@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { recordAdminLogin } from "@/lib/admin/actions";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type LoginFormProps = {
@@ -70,8 +71,9 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
         return;
       }
 
+      await recordAdminLogin();
       navigating = true;
-      router.replace("/admin/projects");
+      router.replace("/admin");
     } catch {
       setError("تعذر الاتصال بقاعدة البيانات");
     } finally {
