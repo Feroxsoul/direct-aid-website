@@ -16,6 +16,7 @@ import { hasPermission } from "@/lib/admin/permissions";
 import { canAssignRole, canManageUsers, isPrivilegedRole } from "@/lib/admin/roles";
 import type { AdminProfile } from "@/types";
 import type { CategoryAccent } from "@/lib/design-tokens";
+import { normalizeCdnImageUrl } from "@/lib/image-url";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
 async function getAdminWriteClient() {
@@ -234,7 +235,7 @@ export async function syncWebflowProjectsToDatabase() {
   const payloads = webflowProjects.map((row) => ({
     slug: row.slug,
     title: row.title,
-    image_url: row.image_url,
+    image_url: normalizeCdnImageUrl(row.image_url),
     image_alt: row.image_alt,
     category_slug: row.category_slug,
     date_label: row.date_label,
@@ -246,7 +247,7 @@ export async function syncWebflowProjectsToDatabase() {
     description: row.description,
     short_description: row.description,
     location: row.location,
-    gallery_urls: row.gallery_urls,
+    gallery_urls: row.gallery_urls.map((url) => normalizeCdnImageUrl(url)),
     status: row.is_published ? "published" : "draft",
     is_published: row.is_published,
     goal_amount: null,
@@ -301,6 +302,9 @@ export async function syncWebflowProjectsToDatabase() {
 
     syncedTotal += typeof data === "number" ? data : chunk.length;
   }
+
+  const writeClient = service ?? supabase;
+  await writeClient.from("projects").delete().like("image_url", "%images.unsplash.com%");
 
   await logAuditEvent(profile, "projects.synced", "project", String(syncedTotal));
   revalidateSite();

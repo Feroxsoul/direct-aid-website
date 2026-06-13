@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ProjectCoverImage } from "@/components/admin/ProjectCoverImage";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { categoryAccentColors } from "@/lib/design-tokens";
@@ -14,7 +14,6 @@ export function LandingProjectCard({
   revealIndex = 0,
 }: LandingProjectCardProps) {
   const accentColor = categoryAccentColors[project.categoryAccent];
-  const unoptimized = project.imageUrl.includes("cdn.prod.website-files.com");
 
   return (
     <article
@@ -23,13 +22,10 @@ export function LandingProjectCard({
     >
       <div className="landing-project-media">
         <Link href={project.href} className="absolute inset-0">
-          <Image
+          <ProjectCoverImage
             src={project.imageUrl}
             alt={project.imageAlt ?? project.title}
-            fill
-            className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            unoptimized={unoptimized}
           />
         </Link>
         {project.statistics ? (

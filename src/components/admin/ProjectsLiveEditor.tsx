@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ProjectCoverImage } from "@/components/admin/ProjectCoverImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -358,13 +358,10 @@ export function ProjectsLiveEditor({
               }`}
             >
               <div className="impact-initiative-media">
-                <Image
+                <ProjectCoverImage
                   src={project.image_url}
                   alt={project.title}
-                  fill
-                  className="object-cover"
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  unoptimized
                 />
               </div>
               <div className="impact-initiative-body">

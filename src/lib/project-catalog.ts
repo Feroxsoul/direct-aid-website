@@ -4,14 +4,14 @@ import type { ProjectCardData, ProjectRow } from "@/types";
 import { getWebflowProjectCount } from "@/lib/webflow-data";
 
 export const CATEGORY_SHORT: Record<string, string> = {
-  "health-10x10": "HEALTH",
-  "educational.10x10": "EDUCATION",
-  developments: "DEVELOPMENT",
-  "lmshryaa-ldaawy": "DA'WAH",
-  orphans: "ORPHAN",
-  "lmshryaa-lgthy": "RELIEF",
-  mosque: "MOSQUE",
-  "waters-10x10": "WATER",
+  "health-10x10": "الصحية",
+  "educational.10x10": "التعليمية",
+  developments: "التنموية",
+  "lmshryaa-ldaawy": "الدعوية",
+  orphans: "الأيتام",
+  "lmshryaa-lgthy": "الإغاثية",
+  mosque: "المساجد",
+  "waters-10x10": "المياه",
 };
 
 export type CategoryRef = {
