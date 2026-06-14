@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { MediaLibraryUpload } from "@/components/admin/MediaLibraryUpload";
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
 import { adminGetMediaAssets } from "@/lib/admin/data";
 
@@ -12,12 +13,7 @@ export default async function AdminMediaPage() {
 
   return (
     <div className="dash-page">
-      <header className="dash-page-header">
-        <h1 className="dash-page-title">مكتبة الوسائط</h1>
-        <p className="dash-page-subtitle">
-          رفع وتصفح وإعادة استخدام الصور عبر المشاريع والصفحات.
-        </p>
-      </header>
+      <AdminPageHeader titleKey="page.media" subtitleKey="media.subtitle" />
 
       {canUpload ? (
         <div className="dash-panel">
@@ -27,7 +23,7 @@ export default async function AdminMediaPage() {
 
       <div className="dash-panel">
         {assets.length === 0 ? (
-          <p className="dash-empty">لم يُرفع أي ملف بعد.</p>
+          <p className="dash-empty"><AdminText k="media.empty" /></p>
         ) : (
           <div className="dash-media-grid">
             {assets.map((asset) => (

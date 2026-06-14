@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CategoryForm } from "@/components/admin/CategoryForm";
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
 import { adminGetCategories } from "@/lib/admin/data";
 
@@ -21,22 +22,22 @@ export default async function EditCategoryPage({ params }: EditCategoryPageProps
   return (
     <div className="dash-page">
       <div className="project-edit-header">
-        <header className="dash-page-header">
-          <h1 className="dash-page-title">Edit category</h1>
+        <div>
+          <AdminPageHeader titleKey="categoryPage.edit" />
           <p className="dash-page-subtitle" dir="ltr">
             {category.title_line_1} {category.title_line_2} · {category.slug}
           </p>
-        </header>
+        </div>
         <div className="project-edit-actions">
           <Link href="/admin/categories" className="dash-btn">
-            ← Back
+            <AdminText k="common.back" />
           </Link>
           <Link
             href={`/lmshryaa/${category.slug}`}
             target="_blank"
             className="dash-btn dash-btn--primary"
           >
-            View live
+            <AdminText k="common.viewLive" />
           </Link>
         </div>
       </div>

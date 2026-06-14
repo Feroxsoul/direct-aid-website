@@ -1,5 +1,8 @@
+"use client";
+
 import { deleteProject, saveProject } from "@/lib/admin/actions";
 import { ProjectMediaPicker } from "@/components/admin/ProjectMediaPicker";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 import type { CategoryRow, ProjectRow } from "@/types";
 
 type ProjectFormProps = {
@@ -8,18 +11,21 @@ type ProjectFormProps = {
 };
 
 export function ProjectForm({ project, categories }: ProjectFormProps) {
+  const { t } = useAdminLang();
   const isNew = !project;
 
   return (
     <form action={saveProject} className="admin-form dash-panel">
       <input type="hidden" name="is_new" value={String(isNew)} />
 
-      <h2 className="dash-panel-title">{isNew ? "New Project" : "Edit Project"}</h2>
+      <h2 className="dash-panel-title">
+        {isNew ? t("projectForm.new") : t("projectForm.edit")}
+      </h2>
 
       <div className="admin-row">
         <div className="admin-field">
           <label className="admin-label" htmlFor="slug">
-            Project ID (slug)
+            {t("projectForm.slug")}
           </label>
           <input
             id="slug"
@@ -33,7 +39,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="title">
-            Title
+            {t("projectForm.title")}
           </label>
           <input
             id="title"
@@ -48,7 +54,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       <div className="admin-row">
         <div className="admin-field">
           <label className="admin-label" htmlFor="meta_title">
-            SEO Meta Title
+            {t("projectForm.metaTitle")}
           </label>
           <input
             id="meta_title"
@@ -59,7 +65,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="meta_description">
-            SEO Meta Description
+            {t("projectForm.metaDescription")}
           </label>
           <input
             id="meta_description"
@@ -70,9 +76,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
       </div>
 
-      <p className="admin-help-text">
-        Accent color is assigned automatically from the selected category (Settings → Category accent colors).
-      </p>
+      <p className="admin-help-text">{t("settings.categoryColorsHelp")}</p>
 
       <ProjectMediaPicker
         imageUrl={project?.image_url ?? ""}
@@ -81,11 +85,9 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
 
       <div className="admin-field">
         <label className="admin-label" htmlFor="description">
-          Description
+          {t("projectForm.description")}
         </label>
-        <p className="admin-help-text">
-          First 100 characters appear on the home page project card.
-        </p>
+        <p className="admin-help-text">{t("projectForm.descriptionHelp")}</p>
         <textarea
           id="description"
           name="description"
@@ -96,14 +98,12 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       </div>
 
       <div className="impact-tags-panel">
-        <h3 className="dash-panel-title">Card Impact Tag</h3>
-        <p className="admin-help-text">
-          Shown on the project card badge (e.g. 8,750 · beneficiaries). Leave empty to hide.
-        </p>
+        <h3 className="dash-panel-title">{t("projectForm.impactTag")}</h3>
+        <p className="admin-help-text">{t("projectForm.impactHelp")}</p>
         <div className="admin-row">
           <div className="admin-field">
             <label className="admin-label" htmlFor="stat_value">
-              Tag value
+              {t("projectForm.statValue")}
             </label>
             <input
               id="stat_value"
@@ -115,7 +115,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           </div>
           <div className="admin-field">
             <label className="admin-label" htmlFor="stat_label">
-              Tag label
+              {t("projectForm.statLabel")}
             </label>
             <input
               id="stat_label"
@@ -131,7 +131,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       <div className="admin-row">
         <div className="admin-field">
           <label className="admin-label" htmlFor="category_slug">
-            Category
+            {t("projectForm.category")}
           </label>
           <select
             id="category_slug"
@@ -140,7 +140,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
             defaultValue={project?.category_slug ?? ""}
             required
           >
-            <option value="">Select category</option>
+            <option value="">{t("projectForm.selectCategory")}</option>
             {categories.map((category) => (
               <option key={category.slug} value={category.slug}>
                 {category.title_line_1} {category.title_line_2}
@@ -150,7 +150,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="location">
-            Location
+            {t("projectForm.location")}
           </label>
           <input
             id="location"
@@ -164,7 +164,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       <div className="admin-row">
         <div className="admin-field">
           <label className="admin-label" htmlFor="date_label">
-            Date label (on card)
+            {t("projectForm.dateLabel")}
           </label>
           <input
             id="date_label"
@@ -176,7 +176,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="sort_order">
-            Sort order
+            {t("projectForm.sortOrder")}
           </label>
           <input
             id="sort_order"
@@ -190,7 +190,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
 
       <div className="admin-field">
         <label className="admin-label" htmlFor="status">
-          Status
+          {t("projectForm.status")}
         </label>
         <select
           id="status"
@@ -198,15 +198,15 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           className="admin-select"
           defaultValue={project?.status ?? (project?.is_published ? "published" : "draft")}
         >
-          <option value="draft">Draft</option>
-          <option value="published">Published</option>
-          <option value="archived">Archived</option>
+          <option value="draft">{t("common.draft")}</option>
+          <option value="published">{t("common.published")}</option>
+          <option value="archived">{t("common.archived")}</option>
         </select>
       </div>
 
       <div className="admin-actions">
         <button type="submit" className="admin-button">
-          {isNew ? "Create project" : "Save changes"}
+          {isNew ? t("projectForm.create") : t("projectForm.save")}
         </button>
       </div>
     </form>
@@ -214,11 +214,13 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
 }
 
 export function ProjectDeleteForm({ slug }: { slug: string }) {
+  const { t } = useAdminLang();
+
   return (
     <form action={deleteProject} className="admin-actions">
       <input type="hidden" name="slug" value={slug} />
       <button type="submit" className="admin-button admin-button-danger">
-        Delete project
+        {t("projectForm.delete")}
       </button>
     </form>
   );

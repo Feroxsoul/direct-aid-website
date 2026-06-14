@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { uploadImage } from "@/lib/admin/actions";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 import { normalizeCdnImageUrl } from "@/lib/image-url";
 
 type ProjectMediaPickerProps = {
@@ -24,6 +25,7 @@ export function ProjectMediaPicker({
   imageUrl,
   galleryUrls = [],
 }: ProjectMediaPickerProps) {
+  const { t } = useAdminLang();
   const initialGallery = useMemo(
     () =>
       Array.from(
@@ -59,7 +61,7 @@ export function ProjectMediaPicker({
         setMainImage(uploaded[0]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
+      setError(err instanceof Error ? err.message : t("common.uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -79,10 +81,8 @@ export function ProjectMediaPicker({
 
   return (
     <div className="admin-field project-media-picker">
-      <label className="admin-label">Project Images</label>
-      <p className="admin-help-text">
-        Drag and drop multiple images, or browse. Click any thumbnail to set the main card image.
-      </p>
+      <label className="admin-label">{t("projectMedia.title")}</label>
+      <p className="admin-help-text">{t("projectMedia.help")}</p>
 
       <input type="hidden" name="image_url" value={mainImage} required />
       <input type="hidden" name="gallery_urls" value={galleryOnly.join("\n")} />
@@ -109,7 +109,7 @@ export function ProjectMediaPicker({
         role="button"
         tabIndex={0}
       >
-        {uploading ? "Uploading…" : "Drop images here or click to browse"}
+        {uploading ? t("common.uploading") : t("projectMedia.drop")}
       </div>
 
       <input
@@ -124,7 +124,7 @@ export function ProjectMediaPicker({
 
       <div className="project-media-grid">
         {images.length === 0 ? (
-          <p className="admin-setup-note">No images yet.</p>
+          <p className="admin-setup-note">{t("projectMedia.empty")}</p>
         ) : (
           images.map((url) => {
             const isMain = url === mainImage;
@@ -134,10 +134,10 @@ export function ProjectMediaPicker({
                 type="button"
                 className={`project-media-thumb${isMain ? " is-main" : ""}`}
                 onClick={() => setMainImage(url)}
-                title={isMain ? "Main image" : "Set as main image"}
+                title={isMain ? t("projectMedia.main") : t("projectMedia.setMain")}
               >
                 <Image src={url} alt="" width={140} height={100} className="object-cover" unoptimized />
-                {isMain ? <span className="project-media-badge">Main</span> : null}
+                {isMain ? <span className="project-media-badge">{t("projectMedia.mainBadge")}</span> : null}
                 <span
                   role="button"
                   tabIndex={0}

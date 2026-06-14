@@ -1,3 +1,4 @@
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
 import { adminGetDonations } from "@/lib/admin/data";
 
@@ -15,36 +16,32 @@ export default async function AdminDonationsPage() {
 
   return (
     <div className="dash-page">
-      <header className="dash-page-header">
-        <h1 className="dash-page-title">Donations</h1>
-        <p className="dash-page-subtitle">
-          Track donations by project, category, and donor.
-        </p>
-      </header>
+      <AdminPageHeader titleKey="page.donations" subtitleKey="donations.subtitle" />
 
       <div className="dash-panel">
         {donations.length === 0 ? (
-          <p className="dash-empty">
-            No donations yet. Connect Stripe or import donation records to see
-            analytics here.
-          </p>
+          <p className="dash-empty"><AdminText k="donations.empty" /></p>
         ) : (
           <div className="dash-table-wrap">
             <table className="dash-table">
               <thead>
                 <tr>
-                  <th>Date</th>
-                  <th>Donor</th>
-                  <th>Project</th>
-                  <th>Amount</th>
-                  <th>Status</th>
+                  <th><AdminText k="donations.date" /></th>
+                  <th><AdminText k="donations.donor" /></th>
+                  <th><AdminText k="donations.project" /></th>
+                  <th><AdminText k="donations.amount" /></th>
+                  <th><AdminText k="donations.status" /></th>
                 </tr>
               </thead>
               <tbody>
                 {donations.map((donation) => (
                   <tr key={donation.id}>
                     <td>{new Date(donation.created_at).toLocaleDateString()}</td>
-                    <td>{donation.donor_name ?? donation.donor_email ?? "Anonymous"}</td>
+                    <td>
+                      {donation.donor_name ?? donation.donor_email ?? (
+                        <AdminText k="common.anonymous" />
+                      )}
+                    </td>
                     <td>{donation.project_slug ?? "—"}</td>
                     <td>{formatMoney(Number(donation.amount), donation.currency)}</td>
                     <td>{donation.status}</td>

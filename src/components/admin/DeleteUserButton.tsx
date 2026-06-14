@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { removeAdminUser } from "@/lib/admin/actions";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 
 type DeleteUserButtonProps = {
   userId: string;
@@ -9,12 +10,11 @@ type DeleteUserButtonProps = {
 };
 
 export function DeleteUserButton({ userId, userEmail }: DeleteUserButtonProps) {
+  const { t } = useAdminLang();
   const formRef = useRef<HTMLFormElement>(null);
 
   function handleDelete() {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete ${userEmail}?\n\nThis cannot be undone.`,
-    );
+    const confirmed = window.confirm(t("users.deleteConfirm", { email: userEmail }));
     if (confirmed) {
       formRef.current?.requestSubmit();
     }
@@ -26,7 +26,7 @@ export function DeleteUserButton({ userId, userEmail }: DeleteUserButtonProps) {
         <input type="hidden" name="id" value={userId} />
       </form>
       <button type="button" className="dash-btn dash-btn--danger" onClick={handleDelete}>
-        Delete
+        {t("common.delete")}
       </button>
     </>
   );

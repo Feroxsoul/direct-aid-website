@@ -606,6 +606,12 @@
   color: #6b7280;
 }
 
+.admin-login-lang-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
 .admin-login-page-footer {
   position: fixed;
   left: 0;

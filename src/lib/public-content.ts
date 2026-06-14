@@ -6,6 +6,7 @@ import {
   DEFAULT_FOOTER_PRIVACY_URL,
   DEFAULT_FOOTER_SOCIAL,
   DEFAULT_PUBLIC_SITE_URL,
+  DEFAULT_WHATSAPP_HEADER_URL,
   parseFooterColumns,
   parseFooterSocial,
   parseJsonSetting,
@@ -28,6 +29,7 @@ export type PublicContentSettings = {
   whatsapp_number: string;
   whatsapp_subscribe_message: string;
   whatsapp_subscribe_button: string;
+  whatsapp_header_url: string;
   impact_section_title: string;
   impact_section_subtitle: string;
   categories_section_title: string;
@@ -56,6 +58,7 @@ const DEFAULTS: PublicContentSettings = {
   whatsapp_number: "9651866888",
   whatsapp_subscribe_message: "اشتراك",
   whatsapp_subscribe_button: "اشتراك",
+  whatsapp_header_url: DEFAULT_WHATSAPP_HEADER_URL,
   impact_section_title: "آخر نشاط للأثر",
   impact_section_subtitle: "جميع المشاريع — مرّر للأسفل لتحميل المزيد.",
   categories_section_title: "فئات المشاريع",
@@ -94,6 +97,7 @@ export async function getPublicContentSettings(): Promise<PublicContentSettings>
       map.whatsapp_subscribe_message ?? DEFAULTS.whatsapp_subscribe_message,
     whatsapp_subscribe_button:
       map.whatsapp_subscribe_button ?? DEFAULTS.whatsapp_subscribe_button,
+    whatsapp_header_url: map.whatsapp_header_url ?? DEFAULTS.whatsapp_header_url,
     impact_section_title: map.impact_section_title ?? DEFAULTS.impact_section_title,
     impact_section_subtitle: map.impact_section_subtitle ?? DEFAULTS.impact_section_subtitle,
     categories_section_title: map.categories_section_title ?? DEFAULTS.categories_section_title,

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { FooterColumn, FooterSocialLink } from "@/lib/admin/settings-store";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 
 type FooterLinksEditorProps = {
   initialColumns: FooterColumn[];
@@ -22,6 +23,7 @@ export function FooterLinksEditor({
   initialPrivacyUrl,
   initialDonationPolicyUrl,
 }: FooterLinksEditorProps) {
+  const { t } = useAdminLang();
   const [columns, setColumns] = useState(initialColumns);
   const [socialLinks, setSocialLinks] = useState(initialSocial);
 
@@ -73,7 +75,7 @@ export function FooterLinksEditor({
   function addColumn() {
     setColumns((current) => [
       ...current,
-      { title: "New section", links: [{ label: "", href: "" }] },
+      { title: t("footer.newSection"), links: [{ label: "", href: "" }] },
     ]);
   }
 
@@ -100,7 +102,7 @@ export function FooterLinksEditor({
 
       <div className="admin-field">
         <label className="admin-label" htmlFor="footer_tagline">
-          Brand tagline (Arabic)
+          {t("footer.tagline")}
         </label>
         <textarea
           id="footer_tagline"
@@ -113,7 +115,7 @@ export function FooterLinksEditor({
 
       <div className="admin-field">
         <label className="admin-label" htmlFor="footer_copyright">
-          Copyright line (Arabic)
+          {t("footer.copyright")}
         </label>
         <input
           id="footer_copyright"
@@ -125,7 +127,7 @@ export function FooterLinksEditor({
 
       <div className="admin-field">
         <label className="admin-label" htmlFor="footer_legal_line">
-          Legal registration line (Arabic)
+          {t("footer.legal")}
         </label>
         <input
           id="footer_legal_line"
@@ -138,7 +140,7 @@ export function FooterLinksEditor({
       <div className="admin-row">
         <div className="admin-field">
           <label className="admin-label" htmlFor="footer_privacy_url">
-            Privacy policy URL
+            {t("footer.privacy")}
           </label>
           <input
             id="footer_privacy_url"
@@ -150,7 +152,7 @@ export function FooterLinksEditor({
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="footer_donation_policy_url">
-            Donation policy URL
+            {t("footer.donation")}
           </label>
           <input
             id="footer_donation_policy_url"
@@ -162,11 +164,11 @@ export function FooterLinksEditor({
         </div>
       </div>
 
-      <h3 className="dash-panel-title">Social links</h3>
+      <h3 className="dash-panel-title">{t("footer.social")}</h3>
       {socialLinks.map((link, index) => (
         <div key={`social-${index}`} className="admin-row">
           <div className="admin-field">
-            <label className="admin-label">Network</label>
+            <label className="admin-label">{t("footer.network")}</label>
             <input
               className="admin-input"
               value={link.label}
@@ -174,7 +176,7 @@ export function FooterLinksEditor({
             />
           </div>
           <div className="admin-field">
-            <label className="admin-label">URL</label>
+            <label className="admin-label">{t("footer.url")}</label>
             <input
               className="admin-input"
               value={link.href}
@@ -187,18 +189,18 @@ export function FooterLinksEditor({
             className="dash-btn dash-btn--danger"
             onClick={() => removeSocial(index)}
           >
-            Remove
+            {t("common.remove")}
           </button>
         </div>
       ))}
       <button type="button" className="dash-btn" onClick={addSocial}>
-        + Add social link
+        {t("footer.addSocial")}
       </button>
 
       {columns.map((column, columnIndex) => (
         <div key={`column-${columnIndex}`} className="dash-panel">
           <div className="admin-field">
-            <label className="admin-label">Section title</label>
+            <label className="admin-label">{t("footer.sectionTitle")}</label>
             <input
               className="admin-input"
               value={column.title}
@@ -208,7 +210,7 @@ export function FooterLinksEditor({
           {column.links.map((link, linkIndex) => (
             <div key={`link-${columnIndex}-${linkIndex}`} className="admin-row">
               <div className="admin-field">
-                <label className="admin-label">Link label</label>
+                <label className="admin-label">{t("footer.linkLabel")}</label>
                 <input
                   className="admin-input"
                   value={link.label}
@@ -218,7 +220,7 @@ export function FooterLinksEditor({
                 />
               </div>
               <div className="admin-field">
-                <label className="admin-label">URL</label>
+                <label className="admin-label">{t("footer.url")}</label>
                 <input
                   className="admin-input"
                   value={link.href}
@@ -233,18 +235,18 @@ export function FooterLinksEditor({
                 className="dash-btn dash-btn--danger"
                 onClick={() => removeLink(columnIndex, linkIndex)}
               >
-                Remove
+                {t("common.remove")}
               </button>
             </div>
           ))}
           <button type="button" className="dash-btn" onClick={() => addLink(columnIndex)}>
-            + Add link
+            {t("footer.addLink")}
           </button>
         </div>
       ))}
 
       <button type="button" className="dash-btn dash-btn--primary" onClick={addColumn}>
-        + Add footer section
+        {t("footer.addSection")}
       </button>
     </>
   );

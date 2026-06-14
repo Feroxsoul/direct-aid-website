@@ -3,10 +3,12 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { uploadImage } from "@/lib/admin/actions";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 
 type ImageFieldProps = {
   name: string;
-  label: string;
+  label?: string;
+  labelKey?: string;
   defaultValue?: string;
   required?: boolean;
   onUrlChange?: (url: string) => void;
@@ -15,10 +17,13 @@ type ImageFieldProps = {
 export function ImageField({
   name,
   label,
+  labelKey,
   defaultValue = "",
   required = false,
   onUrlChange,
 }: ImageFieldProps) {
+  const { t } = useAdminLang();
+  const displayLabel = labelKey ? t(labelKey) : (label ?? "");
   const [url, setUrl] = useState(defaultValue);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -56,7 +61,7 @@ export function ImageField({
       }
     } catch (err) {
       if (mountedRef.current) {
-        setError(err instanceof Error ? err.message : "فشل رفع الصورة");
+        setError(err instanceof Error ? err.message : t("common.uploadFailed"));
       }
     } finally {
       if (mountedRef.current) {
@@ -68,7 +73,7 @@ export function ImageField({
   return (
     <div className="admin-field">
       <label className="admin-label" htmlFor={name}>
-        {label}
+        {displayLabel}
       </label>
       <input
         id={name}
@@ -82,7 +87,7 @@ export function ImageField({
       />
       <div className="admin-image-row">
         <label className="admin-upload-button">
-          {uploading ? "جاري الرفع…" : "رفع صورة"}
+          {uploading ? t("common.uploading") : t("common.uploadImage")}
           <input
             type="file"
             accept="image/*"

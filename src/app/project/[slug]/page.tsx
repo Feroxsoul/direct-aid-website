@@ -68,6 +68,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         shareLabel={content.share_label}
         shareTitle={project.title}
         shareText={project.description.slice(0, 120)}
+        whatsappHeaderUrl={content.whatsapp_header_url}
       />
       <ProjectDetail
         project={project}

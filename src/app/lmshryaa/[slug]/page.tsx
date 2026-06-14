@@ -74,6 +74,7 @@ export default async function CategoryProjectsPage({ params }: CategoryPageProps
         shareLabel={content.share_label}
         shareTitle={label}
         shareText={label}
+        whatsappHeaderUrl={content.whatsapp_header_url}
       />
       <CategoryListingHeader category={category} />
       <ProjectGrid projects={projects} variant="listing" />

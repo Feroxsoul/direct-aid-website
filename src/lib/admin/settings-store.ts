@@ -20,6 +20,9 @@ export type ProjectDetailTagDef = {
 
 export const DEFAULT_PUBLIC_SITE_URL = "https://da10.direct-aid.org";
 
+export const DEFAULT_WHATSAPP_HEADER_URL =
+  "https://api.whatsapp.com/send/?phone=96597257700&text=%D8%A7%D8%B4%D8%AA%D8%B1%D8%A7%D9%83&type=phone_number&app_absent=0";
+
 export const DEFAULT_FOOTER_SOCIAL: FooterSocialLink[] = [
   { label: "Facebook", href: "https://www.facebook.com/directaidorg/" },
   { label: "YouTube", href: "https://www.youtube.com/user/directaidorg" },

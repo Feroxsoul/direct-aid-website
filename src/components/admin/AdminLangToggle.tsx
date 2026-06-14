@@ -1,32 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  ADMIN_LANG_STORAGE_KEY,
-  type AdminLang,
-} from "@/lib/admin/i18n";
+import { t, type AdminLang } from "@/lib/admin/i18n";
+import { useAdminLang, useSetAdminLang } from "@/lib/admin/i18n-context";
 
 type AdminLangToggleProps = {
   onLangChange?: (lang: AdminLang) => void;
 };
 
 export function AdminLangToggle({ onLangChange }: AdminLangToggleProps) {
-  const [lang, setLang] = useState<AdminLang>("en");
-
-  useEffect(() => {
-    const stored = localStorage.getItem(ADMIN_LANG_STORAGE_KEY);
-    if (stored === "ar" || stored === "en") {
-      setLang(stored);
-      onLangChange?.(stored);
-    }
-  }, [onLangChange]);
+  const { lang } = useAdminLang();
+  const setContextLang = useSetAdminLang();
 
   function toggle() {
     const next: AdminLang = lang === "en" ? "ar" : "en";
-    setLang(next);
-    localStorage.setItem(ADMIN_LANG_STORAGE_KEY, next);
-    document.documentElement.setAttribute("lang", next);
-    document.documentElement.setAttribute("dir", next === "ar" ? "rtl" : "ltr");
+    setContextLang(next);
     onLangChange?.(next);
   }
 
@@ -35,7 +22,7 @@ export function AdminLangToggle({ onLangChange }: AdminLangToggleProps) {
       type="button"
       className="dash-topbar-lang"
       onClick={toggle}
-      aria-label={lang === "en" ? "Switch to Arabic" : "Switch to English"}
+      aria-label={t(lang, lang === "en" ? "shell.lang.ar" : "shell.lang.en")}
       title={lang === "en" ? "العربية" : "English"}
     >
       {lang === "en" ? "ع" : "EN"}

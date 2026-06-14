@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { CategoryForm } from "@/components/admin/CategoryForm";
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
 
 export default async function NewCategoryPage() {
@@ -6,9 +8,7 @@ export default async function NewCategoryPage() {
 
   return (
     <div className="dash-page">
-      <header className="dash-page-header">
-        <h1 className="dash-page-title">New category</h1>
-      </header>
+      <AdminPageHeader titleKey="categoryPage.new" />
       <CategoryForm />
     </div>
   );

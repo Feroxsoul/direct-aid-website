@@ -39,6 +39,7 @@ export function AdminShell({
 
   const applyLang = useCallback((next: AdminLang) => {
     setLang(next);
+    localStorage.setItem(ADMIN_LANG_STORAGE_KEY, next);
     document.documentElement.setAttribute("lang", next);
     document.documentElement.setAttribute("dir", next === "ar" ? "rtl" : "ltr");
   }, []);
@@ -67,6 +68,7 @@ export function AdminShell({
   }
 
   return (
+    <AdminLangProvider lang={lang} onLangChange={applyLang}>
     <div className="dash-shell dash-shell--impact">
       <div
         className={`dash-sidebar-overlay${mobileOpen ? " is-open" : ""}`}
@@ -135,10 +137,9 @@ export function AdminShell({
           </div>
         </header>
 
-        <main className="dash-content">
-          <AdminLangProvider lang={lang}>{children}</AdminLangProvider>
-        </main>
+        <main className="dash-content">{children}</main>
       </div>
     </div>
+    </AdminLangProvider>
   );
 }

@@ -51,6 +51,7 @@ export default async function Home() {
         shareLabel={content.share_label}
         shareTitle={content.site_title}
         shareText={content.site_description || content.site_title}
+        whatsappHeaderUrl={content.whatsapp_header_url}
       />
       <StatisticsSection {...statistics} ctaLabel={content.hero_cta_label} />
       <Suspense fallback={null}>

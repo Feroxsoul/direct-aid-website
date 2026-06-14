@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { verifyAdminLogin } from "@/lib/admin/actions";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type LoginFormProps = {
@@ -10,7 +11,8 @@ type LoginFormProps = {
   supabaseAnonKey: string;
 };
 
-export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
+function LoginFormInner({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
+  const { t } = useAdminLang();
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -37,20 +39,29 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
       if (signInError) {
         const message = signInError.message.toLowerCase();
         if (message.includes("invalid api key") || message.includes("invalid jwt")) {
-          setError("مفتاح Supabase غير صحيح — استخدم Legacy anon key من Supabase → API Keys");
+          setError(t("login.errorSupabase"));
         } else if (message.includes("email not confirmed")) {
-          setError("البريد غير مؤكد — فعّل Auto Confirm User في Supabase");
+          setError(t("login.errorPending"));
         } else {
-          setError(
-            `البريد أو كلمة المرور غير صحيحة. (${signInError.message})`,
-          );
+          setError(t("login.errorInvalid"));
         }
         return;
       }
 
       const result = await verifyAdminLogin(email);
       if (!result.ok) {
-        setError(result.error);
+        if (result.error.toLowerCase().includes("pending")) {
+          setError(t("login.errorPending"));
+        } else if (
+          result.error.toLowerCase().includes("inactive") ||
+          result.error.toLowerCase().includes("suspended")
+        ) {
+          setError(t("login.errorInactive"));
+        } else if (result.error.toLowerCase().includes("not registered")) {
+          setError(t("login.errorUnauthorized"));
+        } else {
+          setError(result.error);
+        }
         return;
       }
 
@@ -58,7 +69,7 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
       router.replace("/admin");
       router.refresh();
     } catch {
-      setError("تعذر الاتصال بقاعدة البيانات");
+      setError(t("login.dbNotConnected"));
     } finally {
       if (!navigating) {
         setLoading(false);
@@ -70,7 +81,7 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
     <form onSubmit={handleSubmit} className="admin-form">
       <div className="admin-field">
         <label className="admin-label" htmlFor="email">
-          البريد الإلكتروني
+          {t("login.email")}
         </label>
         <input
           id="email"
@@ -84,7 +95,7 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
       </div>
       <div className="admin-field">
         <label className="admin-label" htmlFor="password">
-          كلمة المرور
+          {t("login.password")}
         </label>
         <div className="admin-password-wrap">
           <input
@@ -100,16 +111,20 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
             type="button"
             className="admin-password-toggle"
             onClick={() => setShowPassword((prev) => !prev)}
-            aria-label={showPassword ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+            aria-label={t("login.password")}
           >
-            {showPassword ? "إخفاء" : "إظهار"}
+            {showPassword ? t("common.no") : t("common.yes")}
           </button>
         </div>
       </div>
       {error ? <p className="admin-error">{error}</p> : null}
       <button type="submit" className="admin-button" disabled={loading}>
-        {loading ? "جاري الدخول…" : "دخول"}
+        {loading ? t("login.submitting") : t("login.submit")}
       </button>
     </form>
   );
+}
+
+export function LoginForm(props: LoginFormProps) {
+  return <LoginFormInner {...props} />;
 }

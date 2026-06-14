@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProjectDeleteForm, ProjectForm } from "@/components/admin/ProjectForm";
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
 import { canDeleteProjects } from "@/lib/admin/roles";
 import { adminGetCategories, adminGetProject } from "@/lib/admin/data";
@@ -24,22 +25,22 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
   return (
     <div className="dash-page">
       <div className="project-edit-header">
-        <header className="dash-page-header">
-          <h1 className="dash-page-title">Edit project</h1>
+        <div>
+          <AdminPageHeader titleKey="projectPage.edit" />
           <p className="dash-page-subtitle" dir="ltr">
             {project.title} · {project.slug}
           </p>
-        </header>
+        </div>
         <div className="project-edit-actions">
           <Link href="/admin/projects" className="dash-btn">
-            ← Back
+            <AdminText k="common.back" />
           </Link>
           <Link
             href={`/project/${project.slug}`}
             target="_blank"
             className="dash-btn dash-btn--primary"
           >
-            View live
+            <AdminText k="common.viewLive" />
           </Link>
         </div>
       </div>

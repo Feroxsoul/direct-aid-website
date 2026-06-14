@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { uploadImage } from "@/lib/admin/actions";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 
 type GalleryFieldProps = {
   name: string;
@@ -15,6 +16,7 @@ export function GalleryField({
   label,
   defaultValue = [],
 }: GalleryFieldProps) {
+  const { t } = useAdminLang();
   const [urls, setUrls] = useState(defaultValue);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -35,7 +37,7 @@ export function GalleryField({
       }
       setUrls((prev) => [...prev, ...uploaded]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "فشل رفع الصورة");
+      setError(err instanceof Error ? err.message : t("common.uploadFailed"));
     } finally {
       setUploading(false);
       event.target.value = "";
@@ -71,17 +73,17 @@ export function GalleryField({
                 className="admin-gallery-remove"
                 onClick={() => removeUrl(index)}
               >
-                حذف
+                {t("common.remove")}
               </button>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="admin-setup-note">لا توجد صور في المعرض بعد.</p>
+        <p className="admin-setup-note">{t("projectMedia.empty")}</p>
       )}
 
       <label className="admin-upload-button">
-        {uploading ? "جاري الرفع…" : "رفع صور للمعرض"}
+        {uploading ? t("common.uploading") : t("common.uploadImage")}
         <input
           type="file"
           accept="image/*"

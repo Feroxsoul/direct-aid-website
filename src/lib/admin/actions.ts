@@ -688,6 +688,14 @@ export async function saveHomepage(formData: FormData) {
     { key: "stats_box_color", value: String(formData.get("stats_box_color") ?? "").trim() },
     { key: "share_label", value: String(formData.get("share_label") ?? "").trim() },
     { key: "share_icon_url", value: String(formData.get("share_icon_url") ?? "").trim() },
+    ...(profile.role_slug === "super_admin"
+      ? [
+          {
+            key: "whatsapp_header_url",
+            value: String(formData.get("whatsapp_header_url") ?? "").trim(),
+          },
+        ]
+      : []),
     { key: "hero_cta_label", value: String(formData.get("hero_cta_label") ?? "").trim() },
     { key: "transparency_title", value: String(formData.get("transparency_title") ?? "").trim() },
     { key: "transparency_text", value: String(formData.get("transparency_text") ?? "").trim() },

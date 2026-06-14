@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AdminUsersPanel } from "@/components/admin/AdminUsersPanel";
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
 import { adminGetRoles, adminGetUsers } from "@/lib/admin/data";
 
@@ -27,17 +28,10 @@ export default async function AdminUsersPage({ searchParams }: UsersPageProps) {
 
   return (
     <div className="dash-page">
-      <header className="dash-page-header">
-        <h1 className="dash-page-title">إدارة المستخدمين</h1>
-        <p className="dash-page-subtitle">
-          {profile.role_slug === "super_admin"
-            ? "إنشاء المستخدمين وتعيين الأدوار وإيقاف الحسابات وإدارة المشرفين."
-            : "عرض وإدارة أعضاء الفريق ضمن صلاحياتك."}
-        </p>
-      </header>
+      <AdminPageHeader titleKey="page.users" subtitleKey="users.pageSubtitle" />
 
-      {saved ? <p className="admin-success">تم حفظ التغييرات.</p> : null}
-      {removed ? <p className="admin-success">تم حذف المستخدم.</p> : null}
+      {saved ? <p className="admin-success"><AdminText k="users.pageSaved" /></p> : null}
+      {removed ? <p className="admin-success"><AdminText k="users.pageRemoved" /></p> : null}
 
       <AdminUsersPanel
         users={users}

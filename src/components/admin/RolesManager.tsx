@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createCustomRole } from "@/lib/admin/actions";
 import { DEFAULT_ROLE_DEFINITIONS } from "@/lib/admin/permissions";
 import { RoleBadge } from "@/components/admin/RoleBadge";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 
 const BADGE_COLORS = [
   "#7c3aed",
@@ -28,6 +29,7 @@ type RolesManagerProps = {
 };
 
 export function RolesManager({ roles }: RolesManagerProps) {
+  const { t } = useAdminLang();
   const [name, setName] = useState("");
   const [color, setColor] = useState(BADGE_COLORS[0]);
   const [loading, setLoading] = useState(false);
@@ -45,7 +47,7 @@ export function RolesManager({ roles }: RolesManagerProps) {
       await createCustomRole(formData);
       window.location.reload();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create role");
+      setError(err instanceof Error ? err.message : t("roles.createFailed"));
     } finally {
       setLoading(false);
     }
@@ -53,16 +55,15 @@ export function RolesManager({ roles }: RolesManagerProps) {
 
   return (
     <div>
-      <h3 className="dash-panel-title">Create Custom Role</h3>
+      <h3 className="dash-panel-title">{t("roles.createTitle")}</h3>
       <p className="dash-page-subtitle" style={{ marginBottom: "0.75rem" }}>
-        Super Admin can add roles with a custom badge color. Default permissions
-        start as Viewer-level read-only access.
+        {t("roles.createHelp")}
       </p>
 
       <form onSubmit={handleCreate} className="admin-form-inline">
         <input
           className="admin-input"
-          placeholder="Role name"
+          placeholder={t("roles.roleName")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -78,16 +79,16 @@ export function RolesManager({ roles }: RolesManagerProps) {
             </option>
           ))}
         </select>
-        <RoleBadge label={name || "Preview"} color={color} />
+        <RoleBadge label={name || t("roles.preview")} color={color} />
         <button type="submit" className="dash-btn dash-btn--primary" disabled={loading}>
-          {loading ? "Creating…" : "Create Role"}
+          {loading ? t("roles.creating") : t("roles.create")}
         </button>
       </form>
 
       {error ? <p className="admin-error">{error}</p> : null}
 
       <details style={{ marginTop: "1rem" }}>
-        <summary className="dash-link">Default role permission templates</summary>
+        <summary className="dash-link">{t("roles.templates")}</summary>
         <ul style={{ marginTop: "0.5rem", fontSize: "0.8125rem" }}>
           {DEFAULT_ROLE_DEFINITIONS.map((role) => (
             <li key={role.slug}>

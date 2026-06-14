@@ -118,19 +118,19 @@ export function ProjectsLiveEditor({
       setError(result.error);
       return;
     }
-    setMessage(`Synced ${result.count} projects from the live Webflow catalog.`);
+    setMessage(t("projects.synced", { count: result.count }));
     router.refresh();
   }
 
   async function handleDelete(slug: string) {
-    if (!canDelete || !window.confirm("Permanently delete this project?")) return;
+    if (!canDelete || !window.confirm(t("projects.confirmDelete"))) return;
     const result = await deleteProjectInline(slug);
     if (!result.ok) {
       setError(result.error);
       return;
     }
     setProjects((current) => current.filter((project) => project.slug !== slug));
-    setMessage("Project deleted.");
+    setMessage(t("projects.deleted"));
     router.refresh();
   }
 
@@ -138,10 +138,7 @@ export function ProjectsLiveEditor({
     <div className="impact-projects">
       {(liveUsesWebflow || dbProjectCount < webflowProjectCount) && (
         <div className="impact-sync-banner">
-          <span>
-            Sync {webflowProjectCount} projects from da10.webflow.io into the database so
-            visitors see up-to-date images and content.
-          </span>
+          <span>{t("projects.syncBanner", { count: webflowProjectCount })}</span>
           <button
             type="button"
             className="impact-btn impact-btn--primary"
@@ -209,7 +206,7 @@ export function ProjectsLiveEditor({
             className={`impact-view-btn${viewMode === "grid" ? " is-active" : ""}`}
             onClick={() => setViewMode("grid")}
             aria-pressed={viewMode === "grid"}
-            title="Grid view"
+            title={t("common.gridView")}
           >
             ▦
           </button>
@@ -218,7 +215,7 @@ export function ProjectsLiveEditor({
             className={`impact-view-btn${viewMode === "list" ? " is-active" : ""}`}
             onClick={() => setViewMode("list")}
             aria-pressed={viewMode === "list"}
-            title="List view"
+            title={t("common.listView")}
           >
             ☰
           </button>

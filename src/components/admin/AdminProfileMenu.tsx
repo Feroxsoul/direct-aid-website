@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import { RoleBadge } from "@/components/admin/RoleBadge";
 import { signOut } from "@/lib/admin/actions";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 
 function getInitials(name: string | null, email: string) {
   const source = name?.trim() || email;
@@ -25,6 +26,7 @@ type AdminProfileMenuProps = {
 };
 
 export function AdminProfileMenu({ profile }: AdminProfileMenuProps) {
+  const { t } = useAdminLang();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const displayName = profile.display_name ?? profile.email;
@@ -90,7 +92,7 @@ export function AdminProfileMenu({ profile }: AdminProfileMenuProps) {
               role="menuitem"
               onClick={() => setOpen(false)}
             >
-              My Profile
+              {t("page.profile")}
             </Link>
             <Link
               href="/"
@@ -99,11 +101,11 @@ export function AdminProfileMenu({ profile }: AdminProfileMenuProps) {
               target="_blank"
               onClick={() => setOpen(false)}
             >
-              View Live Site
+              {t("common.viewLiveSite")}
             </Link>
             <form action={signOut}>
               <button type="submit" className="dash-profile-dropdown-signout" role="menuitem">
-                Sign out
+                {t("common.signOut")}
               </button>
             </form>
           </div>

@@ -2,9 +2,12 @@ export type AdminLang = "en" | "ar";
 
 export const ADMIN_LANG_STORAGE_KEY = "admin-lang";
 
+import { EXTRA_AR, EXTRA_EN } from "@/lib/admin/i18n-extra";
+
 type Dict = Record<string, string>;
 
 const en: Dict = {
+  ...EXTRA_EN,
   "nav.homepage": "Home Page",
   "nav.categories": "Categories",
   "nav.projects": "Projects",
@@ -93,6 +96,7 @@ const en: Dict = {
 };
 
 const ar: Dict = {
+  ...EXTRA_AR,
   "nav.homepage": "الصفحة الرئيسية",
   "nav.categories": "الفئات",
   "nav.projects": "المشاريع",
@@ -208,5 +212,7 @@ export function getPageTitleKey(pathname: string): string {
   if (pathname.startsWith("/admin/settings")) return "page.settings";
   if (pathname.startsWith("/admin/notifications")) return "page.notifications";
   if (pathname.startsWith("/admin/profile")) return "page.profile";
+  if (pathname.startsWith("/admin/donations")) return "page.donations";
+  if (pathname.startsWith("/admin/media")) return "page.media";
   return "page.dashboard";
 }

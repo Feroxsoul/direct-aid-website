@@ -1,3 +1,4 @@
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requireSuperAdmin } from "@/lib/admin/auth";
 import { adminGetAuditLogs } from "@/lib/admin/data";
 
@@ -13,27 +14,22 @@ export default async function AdminLogsPage() {
 
   return (
     <div className="dash-page">
-      <header className="dash-page-header">
-        <h1 className="dash-page-title">Activity Log</h1>
-        <p className="dash-page-subtitle">
-          Full audit trail — who did what and when across the admin panel.
-        </p>
-      </header>
+      <AdminPageHeader titleKey="page.logs" subtitleKey="logs.subtitle" />
 
       <div className="dash-panel">
         {logs.length === 0 ? (
-          <p className="dash-empty">No activity recorded yet.</p>
+          <p className="dash-empty"><AdminText k="common.noActivity" /></p>
         ) : (
           <div className="dash-table-wrap">
             <table className="dash-table">
               <thead>
                 <tr>
-                  <th>When</th>
-                  <th>Who</th>
-                  <th>Email</th>
-                  <th>Action</th>
-                  <th>Resource</th>
-                  <th>Details</th>
+                  <th><AdminText k="logs.when" /></th>
+                  <th><AdminText k="logs.who" /></th>
+                  <th><AdminText k="logs.email" /></th>
+                  <th><AdminText k="logs.action" /></th>
+                  <th><AdminText k="logs.resource" /></th>
+                  <th><AdminText k="logs.details" /></th>
                 </tr>
               </thead>
               <tbody>

@@ -1,5 +1,7 @@
 "use client";
 
+import { useAdminLang } from "@/lib/admin/i18n-context";
+
 type StatsBoxPreviewProps = {
   value: string;
   label: string;
@@ -17,9 +19,11 @@ export function StatsBoxPreview({
   backgroundColor,
   iconUrl,
 }: StatsBoxPreviewProps) {
+  const { t } = useAdminLang();
+
   return (
     <div className="admin-preview-card" dir="ltr">
-      <p className="admin-preview-label">Green box preview (mobile layout)</p>
+      <p className="admin-preview-label">{t("homepage.preview")}</p>
       <div className="admin-preview-stats" style={{ backgroundColor }}>
         <div className="admin-preview-stats-top">
           <div className="admin-preview-stats-cell">

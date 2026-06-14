@@ -1,6 +1,7 @@
 import { saveMyProfile } from "@/lib/admin/actions";
-import { requireAdmin } from "@/lib/admin/auth";
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { ImageField } from "@/components/admin/ImageField";
+import { requireAdmin } from "@/lib/admin/auth";
 
 type ProfilePageProps = {
   searchParams: Promise<{ saved?: string }>;
@@ -12,24 +13,24 @@ export default async function AdminProfilePage({ searchParams }: ProfilePageProp
 
   return (
     <div className="dash-page">
-      <header className="dash-page-header">
-        <h1 className="dash-page-title">My Profile</h1>
-        <p className="dash-page-subtitle">
-          Update your display name and profile photo.
-        </p>
-      </header>
-
-      {saved ? <p className="admin-success">Profile saved.</p> : null}
+      <AdminPageHeader
+        titleKey="page.profile"
+        subtitleKey="profile.subtitle"
+        saved={Boolean(saved)}
+        savedKey="profile.saved"
+      />
 
       <form action={saveMyProfile} className="dash-panel admin-form">
         <div className="admin-field">
-          <label className="admin-label">Email</label>
+          <label className="admin-label">
+            <AdminText k="profile.email" />
+          </label>
           <input className="admin-input" value={profile.email} readOnly dir="ltr" />
         </div>
 
         <div className="admin-field">
           <label className="admin-label" htmlFor="display_name">
-            Display name
+            <AdminText k="profile.displayName" />
           </label>
           <input
             id="display_name"
@@ -41,16 +42,16 @@ export default async function AdminProfilePage({ searchParams }: ProfilePageProp
 
         <ImageField
           name="avatar_url"
-          label="Profile photo URL"
+          labelKey="profile.avatar"
           defaultValue={profile.avatar_url ?? ""}
         />
 
         <p className="admin-help-text">
-          Role: {profile.role_name}. Password changes are handled by Super Admin in User Management.
+          <AdminText k="profile.roleNote" vars={{ role: profile.role_name }} />
         </p>
 
         <button type="submit" className="dash-btn dash-btn--primary">
-          Save profile
+          <AdminText k="profile.save" />
         </button>
       </form>
     </div>

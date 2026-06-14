@@ -54,6 +54,30 @@
   background: #e8f3e0;
 }
 
+.landing-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f4f4f3;
+  color: #25d366;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.landing-whatsapp-btn:hover {
+  background: #e8f3e0;
+}
+
+.landing-header-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .landing-nav {
   display: none;
   align-items: center;
@@ -568,7 +592,7 @@
 
 .landing-category-label {
   margin: 0.5rem 0;
-  font-size: 0.625rem;
+  font-size: 1rem;
   font-weight: 800;
   letter-spacing: 0.03em;
   text-align: center;
@@ -580,7 +604,7 @@
 
 @media (min-width: 900px) {
   .landing-category-label {
-    font-size: 0.6875rem;
+    font-size: 1rem;
     margin: 0.75rem 0;
   }
 }

@@ -1,5 +1,6 @@
 import { RoleBadge } from "@/components/admin/RoleBadge";
 import { RolesManager } from "@/components/admin/RolesManager";
+import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
 import { adminGetRoles } from "@/lib/admin/data";
 import { DEFAULT_ROLE_DEFINITIONS, getDefaultRoleDefinition } from "@/lib/admin/permissions";
@@ -25,14 +26,10 @@ export default async function AdminRolesPage() {
 
   return (
     <div className="dash-page">
-      <header className="dash-page-header">
-        <h1 className="dash-page-title">Roles & Permissions</h1>
-        <p className="dash-page-subtitle">
-          {canCreateRoles
-            ? "Manage role badges, colors, and access control across the platform."
-            : "View role definitions and badge colors. Only Super Admin can create custom roles."}
-        </p>
-      </header>
+      <AdminPageHeader
+        titleKey="roles.title"
+        subtitleKey={canCreateRoles ? "roles.subtitle" : "roles.subtitleViewer"}
+      />
 
       <div className="dash-panel">
         <div className="dash-bar-chart" style={{ marginBottom: "1rem" }}>
@@ -41,7 +38,11 @@ export default async function AdminRolesPage() {
               <RoleBadge label={role.name} color={role.badge_color} />
               <span className="dash-bar-label">{role.slug}</span>
               <span className="dash-bar-value">
-                {role.is_system ? "System" : "Custom"}
+                {role.is_system ? (
+                  <AdminText k="roles.system" />
+                ) : (
+                  <AdminText k="roles.custom" />
+                )}
               </span>
             </div>
           ))}
