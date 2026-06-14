@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { AdminUsersPanel } from "@/components/admin/AdminUsersPanel";
 import { requirePermission } from "@/lib/admin/auth";
 import { adminGetRoles, adminGetUsers } from "@/lib/admin/data";
@@ -8,6 +9,11 @@ type UsersPageProps = {
 
 export default async function AdminUsersPage({ searchParams }: UsersPageProps) {
   const profile = await requirePermission("users", "view");
+
+  if (profile.role_slug !== "super_admin" && profile.role_slug !== "admin") {
+    redirect("/admin/login?error=forbidden");
+  }
+
   const [users, roles] = await Promise.all([adminGetUsers(), adminGetRoles()]);
   const { saved, removed } = await searchParams;
 

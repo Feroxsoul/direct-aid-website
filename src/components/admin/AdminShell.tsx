@@ -2,43 +2,43 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { AdminLangToggle } from "@/components/admin/AdminLangToggle";
 import { AdminProfileMenu } from "@/components/admin/AdminProfileMenu";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import {
+  ADMIN_LANG_STORAGE_KEY,
+  getPageTitleKey,
+  t,
+  type AdminLang,
+} from "@/lib/admin/i18n";
 import type { AdminProfile } from "@/types";
-
-const PAGE_TITLES: Record<string, string> = {
-  "/admin": "Dashboard",
-  "/admin/projects": "Projects",
-  "/admin/users": "User Management",
-  "/admin/categories": "Categories",
-  "/admin/homepage": "Home Page",
-  "/admin/footer": "Footer",
-  "/admin/roles": "Roles",
-  "/admin/logs": "Activity Log",
-  "/admin/settings": "Settings",
-  "/admin/notifications": "Notifications",
-};
 
 type AdminShellProps = {
   profile: AdminProfile;
+  logoUrl: string;
   notificationCount?: number;
   children: React.ReactNode;
 };
 
 export function AdminShell({
   profile,
+  logoUrl,
   notificationCount = 0,
   children,
 }: AdminShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [lang, setLang] = useState<AdminLang>("en");
 
-  const pageTitle =
-    Object.entries(PAGE_TITLES).find(([path]) =>
-      path === "/admin" ? pathname === "/admin" : pathname.startsWith(path),
-    )?.[1] ?? "Dashboard";
+  const pageTitle = t(lang, getPageTitleKey(pathname));
+
+  const applyLang = useCallback((next: AdminLang) => {
+    setLang(next);
+    document.documentElement.setAttribute("lang", next);
+    document.documentElement.setAttribute("dir", next === "ar" ? "rtl" : "ltr");
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("admin-theme");
@@ -46,27 +46,15 @@ export function AdminShell({
       setTheme(stored);
       document.documentElement.setAttribute("data-admin-theme", stored);
     }
-  }, []);
 
-  useEffect(() => {
-    const previousDir = document.documentElement.getAttribute("dir");
-    const previousLang = document.documentElement.getAttribute("lang");
-    document.documentElement.setAttribute("dir", "ltr");
-    document.documentElement.setAttribute("lang", "en");
-
-    return () => {
-      if (previousDir) {
-        document.documentElement.setAttribute("dir", previousDir);
-      } else {
-        document.documentElement.setAttribute("dir", "rtl");
-      }
-      if (previousLang) {
-        document.documentElement.setAttribute("lang", previousLang);
-      } else {
-        document.documentElement.setAttribute("lang", "ar");
-      }
-    };
-  }, []);
+    const storedLang = localStorage.getItem(ADMIN_LANG_STORAGE_KEY);
+    if (storedLang === "ar" || storedLang === "en") {
+      applyLang(storedLang);
+    } else {
+      document.documentElement.setAttribute("lang", "en");
+      document.documentElement.setAttribute("dir", "ltr");
+    }
+  }, [applyLang]);
 
   function toggleTheme() {
     const next = theme === "light" ? "dark" : "light";
@@ -84,7 +72,12 @@ export function AdminShell({
       />
 
       <div className={`dash-sidebar-wrap${mobileOpen ? " is-open" : ""}`}>
-        <AdminSidebar profile={profile} onNavigate={() => setMobileOpen(false)} />
+        <AdminSidebar
+          profile={profile}
+          logoUrl={logoUrl}
+          lang={lang}
+          onNavigate={() => setMobileOpen(false)}
+        />
       </div>
 
       <div className="dash-main-wrap">
@@ -93,7 +86,7 @@ export function AdminShell({
             <button
               type="button"
               className="dash-topbar-menu"
-              aria-label="Open menu"
+              aria-label={t(lang, "shell.menu")}
               onClick={() => setMobileOpen(true)}
             >
               ☰
@@ -105,7 +98,7 @@ export function AdminShell({
             <Link
               href="/admin/notifications"
               className="dash-topbar-bell"
-              aria-label="Notifications"
+              aria-label={t(lang, "nav.notifications")}
             >
               🔔
               {notificationCount > 0 ? (
@@ -113,11 +106,13 @@ export function AdminShell({
               ) : null}
             </Link>
 
+            <AdminLangToggle onLangChange={applyLang} />
+
             <button
               type="button"
               className="dash-topbar-theme"
               onClick={toggleTheme}
-              aria-label="Toggle theme"
+              aria-label={t(lang, "shell.theme")}
             >
               {theme === "light" ? "🌙" : "☀️"}
             </button>

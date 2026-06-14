@@ -1,4 +1,6 @@
 import type { CategoryAccent } from "@/lib/design-tokens";
+import { categoryAccentColors } from "@/lib/design-tokens";
+import { isHexColor, normalizeHexColor } from "@/lib/category-colors";
 import type { SettingRow } from "@/types";
 
 export type FooterColumn = {
@@ -138,6 +140,26 @@ export function parseCategoryAccentMap(
   value: string | undefined | null,
 ): Record<string, CategoryAccent> {
   return parseJsonSetting<Record<string, CategoryAccent>>(value, {});
+}
+
+/** Hex colors per category slug; legacy accent names are converted to hex. */
+export function parseCategoryColorMap(
+  value: string | undefined | null,
+): Record<string, string> {
+  const raw = parseJsonSetting<Record<string, string>>(value, {});
+  const result: Record<string, string> = {};
+
+  for (const [slug, entry] of Object.entries(raw)) {
+    if (isHexColor(entry)) {
+      result[slug] = normalizeHexColor(entry);
+      continue;
+    }
+    if (entry in categoryAccentColors) {
+      result[slug] = categoryAccentColors[entry as CategoryAccent];
+    }
+  }
+
+  return result;
 }
 
 export function parseProjectTagDefs(value: string | undefined | null): ProjectDetailTagDef[] {

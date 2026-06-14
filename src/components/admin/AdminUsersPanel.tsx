@@ -15,7 +15,6 @@ import {
   canAssignRole,
   getRoleBadgeColor,
   getRoleLabel,
-  isPrivilegedRole,
 } from "@/lib/admin/roles";
 import type { AdminPermissions, AdminUserRow } from "@/types";
 
@@ -132,8 +131,9 @@ export function AdminUsersPanel({
         <div className="dash-panel" style={{ marginBottom: "1rem" }}>
           <h2 className="dash-panel-title">Add User</h2>
           <p className="dash-page-subtitle" style={{ marginBottom: "1rem" }}>
-            Add email and role, then create the account in Supabase → Authentication
-            → Users.
+            {isSuperAdmin
+              ? "Add email, role, and optional password so the user can log in immediately."
+              : "Add email and role. Super Admin can also set a login password."}
           </p>
           <form action={saveAdminUser} className="admin-form admin-form-inline">
             <div className="admin-field">
@@ -167,6 +167,22 @@ export function AdminUsersPanel({
                 ))}
               </select>
             </div>
+            {isSuperAdmin ? (
+              <div className="admin-field">
+                <label className="admin-label" htmlFor="new-password">
+                  Password (optional)
+                </label>
+                <input
+                  id="new-password"
+                  name="password"
+                  type="password"
+                  className="admin-input"
+                  minLength={8}
+                  dir="ltr"
+                  placeholder="Min. 8 characters"
+                />
+              </div>
+            ) : null}
             <button type="submit" className="dash-btn dash-btn--primary">
               Add User
             </button>
@@ -231,10 +247,12 @@ export function AdminUsersPanel({
                   const slug = adminUser.role_slug ?? adminUser.role;
                   const canEditUser =
                     canEdit &&
-                    (isSuperAdmin || !isPrivilegedRole(slug)) &&
-                    adminUser.id !== currentUserId;
+                    adminUser.id !== currentUserId &&
+                    (isSuperAdmin || slug !== "super_admin");
                   const canDeleteUser =
-                    canDelete && adminUser.id !== currentUserId;
+                    canDelete &&
+                    adminUser.id !== currentUserId &&
+                    (isSuperAdmin || slug !== "super_admin");
 
                   return (
                     <tr key={adminUser.id}>

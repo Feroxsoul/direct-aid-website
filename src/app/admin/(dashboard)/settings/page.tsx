@@ -1,9 +1,11 @@
 import { saveAdvancedSettings, savePlatformSettings } from "@/lib/admin/actions";
+import { HexColorField } from "@/components/admin/HexColorField";
 import { requireSuperAdmin } from "@/lib/admin/auth";
 import { adminGetCategories, adminGetSettings } from "@/lib/admin/data";
+import { resolveCategoryColor } from "@/lib/category-colors";
 import {
   DEFAULT_PUBLIC_SITE_URL,
-  parseCategoryAccentMap,
+  parseCategoryColorMap,
   parseProjectTagDefs,
   settingsMap,
 } from "@/lib/admin/settings-store";
@@ -20,14 +22,15 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
     adminGetCategories(),
   ]);
   const map = settingsMap(settingsRows);
-  const accentMap = parseCategoryAccentMap(map.category_accent_map);
+  const colorMap = parseCategoryColorMap(map.category_accent_map);
   const tagDefs = parseProjectTagDefs(map.project_detail_tag_defs);
   const publicSiteUrl = map.public_site_url ?? DEFAULT_PUBLIC_SITE_URL;
 
-  const accentMapForForm = Object.fromEntries(
+  const colorMapForForm = Object.fromEntries(
     categories.map((category) => [
       category.slug,
-      accentMap[category.slug] ?? category.accent,
+      colorMap[category.slug] ??
+        resolveCategoryColor(category.slug, category.accent, colorMap),
     ]),
   );
 
@@ -133,35 +136,15 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
       <form action={saveAdvancedSettings} className="dash-panel admin-form">
         <h2 className="dash-panel-title">Category accent colors</h2>
         <p className="admin-help-text">
-          Assign accent colors per category. Project cards inherit the color from the selected category automatically.
+          Pick a hex color per category using the color picker or type a value like #2c9942.
         </p>
         {categories.map((category) => (
-          <div key={category.slug} className="admin-row">
-            <div className="admin-field">
-              <label className="admin-label">
-                {category.title_line_1} {category.title_line_2}
-              </label>
-              <span className="admin-help-text" dir="ltr">
-                {category.slug}
-              </span>
-            </div>
-            <div className="admin-field">
-              <label className="admin-label">Accent</label>
-              <select
-                name={`accent_${category.slug}`}
-                className="admin-select"
-                defaultValue={accentMapForForm[category.slug]}
-              >
-                {["red", "green", "blue", "olive", "yellow", "orange", "water", "default"].map(
-                  (accent) => (
-                    <option key={accent} value={accent}>
-                      {accent}
-                    </option>
-                  ),
-                )}
-              </select>
-            </div>
-          </div>
+          <HexColorField
+            key={category.slug}
+            name={`color_${category.slug}`}
+            label={`${category.title_line_1} ${category.title_line_2} (${category.slug})`}
+            defaultValue={colorMapForForm[category.slug]}
+          />
         ))}
 
         <h2 className="dash-panel-title">Project detail tags</h2>

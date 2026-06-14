@@ -82,6 +82,21 @@ export function CategoryForm({ category }: CategoryFormProps) {
         required
       />
 
+      <div className="admin-field">
+        <label className="admin-label" htmlFor="status">
+          Publish status
+        </label>
+        <select
+          id="status"
+          name="status"
+          className="admin-select"
+          defaultValue={category?.status ?? "published"}
+        >
+          <option value="published">Published — visible on the public site</option>
+          <option value="draft">Draft — hidden until you publish</option>
+        </select>
+      </div>
+
       <button type="submit" className="admin-button">
         {isNew ? "Create category" : "Save changes"}
       </button>

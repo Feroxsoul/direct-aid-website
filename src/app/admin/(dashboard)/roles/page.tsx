@@ -1,12 +1,13 @@
 import { RoleBadge } from "@/components/admin/RoleBadge";
 import { RolesManager } from "@/components/admin/RolesManager";
-import { requireSuperAdmin } from "@/lib/admin/auth";
+import { requirePermission } from "@/lib/admin/auth";
 import { adminGetRoles } from "@/lib/admin/data";
 import { DEFAULT_ROLE_DEFINITIONS, getDefaultRoleDefinition } from "@/lib/admin/permissions";
 
 export default async function AdminRolesPage() {
-  await requireSuperAdmin();
+  const profile = await requirePermission("roles", "view");
   const dbRoles = await adminGetRoles();
+  const canCreateRoles = profile.role_slug === "super_admin";
 
   const roles =
     dbRoles.length > 0
@@ -27,7 +28,9 @@ export default async function AdminRolesPage() {
       <header className="dash-page-header">
         <h1 className="dash-page-title">Roles & Permissions</h1>
         <p className="dash-page-subtitle">
-          Manage role badges, colors, and access control across the platform.
+          {canCreateRoles
+            ? "Manage role badges, colors, and access control across the platform."
+            : "View role definitions and badge colors. Only Super Admin can create custom roles."}
         </p>
       </header>
 
@@ -43,18 +46,20 @@ export default async function AdminRolesPage() {
             </div>
           ))}
         </div>
-        <RolesManager
-          roles={roles.map((r) => ({
-            slug: r.slug,
-            name: r.name,
-            badgeColor: r.badge_color,
-            isSystem: r.is_system,
-            description:
-              getDefaultRoleDefinition(r.slug)?.permissions
-                ? "Configured"
-                : "Custom permissions",
-          }))}
-        />
+        {canCreateRoles ? (
+          <RolesManager
+            roles={roles.map((r) => ({
+              slug: r.slug,
+              name: r.name,
+              badgeColor: r.badge_color,
+              isSystem: r.is_system,
+              description:
+                getDefaultRoleDefinition(r.slug)?.permissions
+                  ? "Configured"
+                  : "Custom permissions",
+            }))}
+          />
+        ) : null}
       </div>
     </div>
   );

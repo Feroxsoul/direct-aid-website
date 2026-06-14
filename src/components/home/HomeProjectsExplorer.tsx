@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { categoryAccentColors } from "@/lib/design-tokens";
+import { resolveCategoryColor } from "@/lib/category-colors";
 import { LandingProjectCard } from "@/components/home/LandingProjectCard";
 import type { HomepageCategory, ProjectCardData } from "@/types";
 
@@ -12,6 +12,7 @@ const PROJECTS_BATCH = 8;
 type HomeProjectsExplorerProps = {
   categories: HomepageCategory[];
   projects: ProjectCardData[];
+  categoryColorMap?: Record<string, string>;
   categoriesSectionTitle?: string;
   impactSectionTitle?: string;
   impactSectionSubtitle?: string;
@@ -20,6 +21,7 @@ type HomeProjectsExplorerProps = {
 export function HomeProjectsExplorer({
   categories,
   projects,
+  categoryColorMap = {},
   categoriesSectionTitle = "فئات المشاريع",
   impactSectionTitle = "آخر نشاط للأثر",
   impactSectionSubtitle = "جميع المشاريع — مرّر للأسفل لتحميل المزيد.",
@@ -126,12 +128,19 @@ export function HomeProjectsExplorer({
                     width={36}
                     height={36}
                     className="landing-category-icon"
+                    loading="lazy"
                     aria-hidden
                   />
                   <span className="landing-category-label">{short}</span>
                   <span
                     className="landing-category-bar"
-                    style={{ backgroundColor: categoryAccentColors[category.accent] }}
+                    style={{
+                      backgroundColor: resolveCategoryColor(
+                        category.slug,
+                        category.accent,
+                        categoryColorMap,
+                      ),
+                    }}
                     aria-hidden
                   />
                 </button>
@@ -172,6 +181,7 @@ export function HomeProjectsExplorer({
                     key={project.id}
                     project={project}
                     revealIndex={index}
+                    categoryColorMap={categoryColorMap}
                   />
                 ))}
               </div>

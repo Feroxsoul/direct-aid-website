@@ -1,16 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ShareButton } from "@/components/layout/ShareButton";
 import type { ProjectDetailData } from "@/types";
 
 type ProjectDetailProps = {
   project: ProjectDetailData;
+  shareIconUrl?: string;
+  shareLabel?: string;
 };
 
 function isWebflowCdn(url: string) {
   return url.includes("cdn.prod.website-files.com");
 }
 
-export function ProjectDetail({ project }: ProjectDetailProps) {
+export function ProjectDetail({ project, shareIconUrl, shareLabel }: ProjectDetailProps) {
   const tags = [
     project.categoryLabel,
     project.location,
@@ -32,6 +35,13 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
           </span>
           <span>رجوع للمشاريع</span>
         </Link>
+        <ShareButton
+          iconUrl={shareIconUrl}
+          label={shareLabel}
+          title={project.title}
+          text={project.description.slice(0, 120)}
+          className="project-share-btn landing-share-btn"
+        />
       </div>
 
       <div
@@ -45,6 +55,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
           className="project-hero-image"
           sizes="(max-width: 767px) 100vw, 940px"
           priority
+          loading="eager"
           unoptimized={isWebflowCdn(project.imageUrl)}
         />
       </div>
@@ -82,6 +93,7 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
                 height={600}
                 className="project-gallery-image"
                 sizes="(max-width: 767px) 100vw, 940px"
+                loading="lazy"
                 unoptimized={isWebflowCdn(url)}
               />
             ))}

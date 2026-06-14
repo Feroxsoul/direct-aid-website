@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
+import { DEFAULT_DIRECT_AID_LOGO } from "@/lib/brand";
 import { getPublicContentSettings } from "@/lib/public-content";
 import "./globals.css";
 
-const DIRECT_AID_FAVICON = "https://directaid.org/favicon.ico";
-
 export async function generateMetadata(): Promise<Metadata> {
   const content = await getPublicContentSettings();
+  const favicon = content.logo_url || DEFAULT_DIRECT_AID_LOGO;
 
   return {
     metadataBase: new URL(content.public_site_url),
     title: "مشاريع العون المباشر 10×10",
     description: "مشاريع العون المباشر 10×10",
     icons: {
-      icon: DIRECT_AID_FAVICON,
-      shortcut: DIRECT_AID_FAVICON,
-      apple: DIRECT_AID_FAVICON,
+      icon: favicon,
+      shortcut: favicon,
+      apple: favicon,
     },
     openGraph: {
       title: "مشاريع العون المباشر 10×10",

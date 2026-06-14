@@ -15,7 +15,10 @@ import {
 import { hasPermission } from "@/lib/admin/permissions";
 import { canAssignRole, canManageUsers, isPrivilegedRole } from "@/lib/admin/roles";
 import type { AdminProfile } from "@/types";
+import type { CategoryStatus } from "@/types";
 import type { CategoryAccent } from "@/lib/design-tokens";
+import { categoryAccentColors } from "@/lib/design-tokens";
+import { isHexColor, normalizeHexColor } from "@/lib/category-colors";
 import { normalizeCdnImageUrl } from "@/lib/image-url";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
@@ -378,9 +381,11 @@ export async function deleteProject(formData: FormData) {
 }
 
 export async function saveCategory(formData: FormData) {
-  const { supabase } = await requireSupabaseAdmin();
+  const { supabase, profile } = await requireSupabaseAdmin();
   const isNew = formData.get("is_new") === "true";
   const slug = String(formData.get("slug") ?? "").trim();
+  const status = String(formData.get("status") ?? "published").trim();
+  const categoryStatus: CategoryStatus = status === "draft" ? "draft" : "published";
 
   const { data: accentSetting } = await supabase
     .from("settings")
@@ -391,9 +396,14 @@ export async function saveCategory(formData: FormData) {
   let accent: CategoryAccent = "default";
   if (accentSetting?.value) {
     try {
-      const map = JSON.parse(accentSetting.value) as Record<string, CategoryAccent>;
-      if (map[slug] && ACCENTS.includes(map[slug])) {
-        accent = map[slug];
+      const map = JSON.parse(accentSetting.value) as Record<string, string>;
+      const entry = map[slug];
+      if (entry && isHexColor(entry)) {
+        accent =
+          ACCENTS.find((name) => categoryAccentColors[name] === entry.toLowerCase()) ??
+          "default";
+      } else if (entry && ACCENTS.includes(entry as CategoryAccent)) {
+        accent = entry as CategoryAccent;
       }
     } catch {
       accent = "default";
@@ -406,6 +416,7 @@ export async function saveCategory(formData: FormData) {
     title_line_2: String(formData.get("title_line_2") ?? "").trim(),
     icon_url: String(formData.get("icon_url") ?? "").trim(),
     accent,
+    status: categoryStatus,
     sort_order: Number(formData.get("sort_order") ?? 0),
   };
 
@@ -422,11 +433,20 @@ export async function saveCategory(formData: FormData) {
           title_line_2: payload.title_line_2,
           icon_url: payload.icon_url,
           accent: payload.accent,
+          status: payload.status,
           sort_order: payload.sort_order,
         })
         .eq("slug", slug);
 
   if (error) throw new Error(error.message);
+
+  await logAuditEvent(
+    profile,
+    isNew ? "category.created" : "category.updated",
+    "category",
+    slug,
+    { status: categoryStatus },
+  );
 
   revalidateSite();
   revalidatePath("/admin/categories");
@@ -434,7 +454,7 @@ export async function saveCategory(formData: FormData) {
 }
 
 export async function saveFooterSettings(formData: FormData) {
-  const { supabase } = await requireSupabaseAdmin();
+  const { supabase, profile } = await requireSupabaseAdmin();
 
   const settings = [
     {
@@ -492,6 +512,7 @@ export async function saveFooterSettings(formData: FormData) {
     if (error) throw new Error(error.message);
   }
 
+  await logAuditEvent(profile, "footer.updated", "homepage", "footer");
   revalidateSite();
   revalidatePath("/admin/footer");
   redirect("/admin/footer?saved=1");
@@ -500,13 +521,13 @@ export async function saveFooterSettings(formData: FormData) {
 export async function saveAdvancedSettings(formData: FormData) {
   const { supabase, profile } = await requireSupabaseAdmin("super_admin");
 
-  const categoryAccentMap: Record<string, CategoryAccent> = {};
+  const categoryColorMap: Record<string, string> = {};
   for (const [key, value] of formData.entries()) {
-    if (!key.startsWith("accent_")) continue;
-    const slug = key.slice("accent_".length);
-    const accent = String(value).trim() as CategoryAccent;
-    if (ACCENTS.includes(accent)) {
-      categoryAccentMap[slug] = accent;
+    if (!key.startsWith("color_")) continue;
+    const slug = key.slice("color_".length);
+    const color = normalizeHexColor(String(value).trim());
+    if (isHexColor(color)) {
+      categoryColorMap[slug] = color;
     }
   }
 
@@ -515,7 +536,7 @@ export async function saveAdvancedSettings(formData: FormData) {
   const advancedSettings = [
     {
       key: "category_accent_map",
-      value: JSON.stringify(categoryAccentMap),
+      value: JSON.stringify(categoryColorMap),
       is_public: true,
     },
     { key: "project_detail_tag_defs", value: projectDetailTagDefs, is_public: true },
@@ -534,7 +555,8 @@ export async function saveAdvancedSettings(formData: FormData) {
     if (error) throw new Error(error.message);
   }
 
-  for (const [slug, accent] of Object.entries(categoryAccentMap)) {
+  for (const [slug, color] of Object.entries(categoryColorMap)) {
+    const accent = ACCENTS.find((name) => categoryAccentColors[name] === color) ?? "default";
     await supabase.from("categories").update({ accent }).eq("slug", slug);
   }
 
@@ -545,7 +567,7 @@ export async function saveAdvancedSettings(formData: FormData) {
 }
 
 export async function saveHomepage(formData: FormData) {
-  const { supabase } = await requireSupabaseAdmin();
+  const { supabase, profile } = await requireSupabaseAdmin();
 
   const statsPayload = {
     value: String(formData.get("stats_value") ?? "").trim(),
@@ -611,6 +633,7 @@ export async function saveHomepage(formData: FormData) {
     if (error) throw new Error(error.message);
   }
 
+  await logAuditEvent(profile, "homepage.updated", "homepage", "main");
   revalidateSite();
   revalidatePath("/admin/homepage");
   redirect("/admin/homepage?saved=1");
@@ -651,9 +674,40 @@ export async function saveAdminUser(formData: FormData) {
     throw new Error("Only Super Admin can assign Admin or Super Admin roles");
   }
   const displayName = String(formData.get("display_name") ?? "").trim() || null;
+  const password = String(formData.get("password") ?? "").trim();
 
   if (!email) {
     throw new Error("البريد الإلكتروني مطلوب");
+  }
+
+  if (password && profile.role_slug !== "super_admin") {
+    throw new Error("Only Super Admin can set login passwords");
+  }
+
+  if (password && password.length < 8) {
+    throw new Error("Password must be at least 8 characters");
+  }
+
+  let linkedUserId: string | null = null;
+
+  if (password) {
+    const service = createSupabaseServiceClient();
+    if (!service) {
+      throw new Error("Service role key is required to create login accounts");
+    }
+
+    const { data: authData, error: authError } = await service.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { display_name: displayName },
+    });
+
+    if (authError) {
+      throw new Error(authError.message);
+    }
+
+    linkedUserId = authData.user?.id ?? null;
   }
 
   const { data: existing } = await supabase
@@ -672,6 +726,7 @@ export async function saveAdminUser(formData: FormData) {
           is_active: true,
           suspended_at: null,
           created_by: user.id,
+          ...(linkedUserId ? { user_id: linkedUserId } : {}),
         })
         .eq("id", existing.id)
     : await supabase.from("admin_users").insert({
@@ -681,7 +736,7 @@ export async function saveAdminUser(formData: FormData) {
         display_name: displayName,
         is_active: true,
         created_by: user.id,
-        user_id: null,
+        user_id: linkedUserId,
       });
 
   if (error) throw new Error(error.message);
@@ -719,12 +774,8 @@ export async function updateAdminUser(formData: FormData) {
     .maybeSingle();
 
   const existingRole = existingUser?.role_slug ?? existingUser?.role;
-  if (
-    existingRole &&
-    isPrivilegedRole(existingRole) &&
-    profile.role_slug !== "super_admin"
-  ) {
-    throw new Error("Only Super Admin can modify Admin accounts");
+  if (existingRole === "super_admin" && profile.role_slug !== "super_admin") {
+    throw new Error("Only Super Admin can modify Super Admin accounts");
   }
   const displayName = String(formData.get("display_name") ?? "").trim() || null;
   const isActive = formData.get("is_active") === "on";
@@ -780,12 +831,8 @@ export async function removeAdminUser(formData: FormData) {
     .maybeSingle();
 
   const targetRole = target?.role_slug ?? target?.role;
-  if (
-    targetRole &&
-    isPrivilegedRole(targetRole) &&
-    profile.role_slug !== "super_admin"
-  ) {
-    throw new Error("Only Super Admin can remove Admin accounts");
+  if (targetRole === "super_admin" && profile.role_slug !== "super_admin") {
+    throw new Error("Only Super Admin can remove Super Admin accounts");
   }
 
   const { error } = await supabase.from("admin_users").delete().eq("id", id);

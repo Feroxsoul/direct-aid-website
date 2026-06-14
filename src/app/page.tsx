@@ -8,6 +8,7 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import {
   getAllProjects,
   getCategories,
+  getCategoryColorMap,
   getHomeStatistics,
   getPageBySlug,
 } from "@/lib/data";
@@ -33,11 +34,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [statistics, categories, projects, content] = await Promise.all([
+  const [statistics, categories, projects, content, categoryColorMap] = await Promise.all([
     getHomeStatistics(),
     getCategories(),
     getAllProjects(),
     getPublicContentSettings(),
+    getCategoryColorMap(),
   ]);
 
   return (
@@ -55,6 +57,7 @@ export default async function Home() {
         <HomeProjectsExplorer
           categories={categories}
           projects={projects}
+          categoryColorMap={categoryColorMap}
           categoriesSectionTitle={content.categories_section_title}
           impactSectionTitle={content.impact_section_title}
           impactSectionSubtitle={content.impact_section_subtitle}

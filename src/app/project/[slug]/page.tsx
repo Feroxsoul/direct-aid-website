@@ -69,7 +69,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         shareTitle={project.title}
         shareText={project.description.slice(0, 120)}
       />
-      <ProjectDetail project={project} />
+      <ProjectDetail
+        project={project}
+        shareIconUrl={content.share_icon_url}
+        shareLabel={content.share_label}
+      />
     </PageContainer>
   );
 }

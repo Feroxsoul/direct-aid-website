@@ -4,6 +4,7 @@ import type { CategoryAccent } from "@/lib/design-tokens";
 export type { AdminPermissions } from "@/lib/admin/permissions";
 
 export type ProjectStatus = "draft" | "published" | "archived";
+export type CategoryStatus = "draft" | "published";
 
 // UI types
 export type HomepageCategory = {
@@ -81,6 +82,7 @@ export type CategoryRow = {
   title_line_2: string;
   icon_url: string;
   accent: CategoryAccent;
+  status: CategoryStatus;
   sort_order: number;
   created_at: string;
   updated_at: string;

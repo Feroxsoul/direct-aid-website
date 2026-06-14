@@ -1,6 +1,12 @@
 import { requireSuperAdmin } from "@/lib/admin/auth";
 import { adminGetAuditLogs } from "@/lib/admin/data";
 
+function formatDetails(details: Record<string, unknown>) {
+  const entries = Object.entries(details ?? {});
+  if (!entries.length) return "—";
+  return entries.map(([key, value]) => `${key}: ${String(value)}`).join(", ");
+}
+
 export default async function AdminLogsPage() {
   await requireSuperAdmin();
   const logs = await adminGetAuditLogs();
@@ -10,7 +16,7 @@ export default async function AdminLogsPage() {
       <header className="dash-page-header">
         <h1 className="dash-page-title">Activity Log</h1>
         <p className="dash-page-subtitle">
-          Audit trail of logins, edits, deletes, and role changes across the platform.
+          Full audit trail — who did what and when across the admin panel.
         </p>
       </header>
 
@@ -22,11 +28,12 @@ export default async function AdminLogsPage() {
             <table className="dash-table">
               <thead>
                 <tr>
-                  <th>Time</th>
-                  <th>Admin</th>
+                  <th>When</th>
+                  <th>Who</th>
                   <th>Email</th>
                   <th>Action</th>
                   <th>Resource</th>
+                  <th>Details</th>
                 </tr>
               </thead>
               <tbody>
@@ -40,6 +47,7 @@ export default async function AdminLogsPage() {
                       {log.resource_type}
                       {log.resource_id ? `: ${log.resource_id}` : ""}
                     </td>
+                    <td>{formatDetails(log.details)}</td>
                   </tr>
                 ))}
               </tbody>

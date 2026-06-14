@@ -19,6 +19,7 @@ import {
   type CategoryRef,
 } from "@/lib/project-catalog";
 import { createSupabaseServerClient } from "@/lib/supabase";
+import { parseCategoryColorMap } from "@/lib/admin/settings-store";
 import {
   getWebflowProjectBySlug,
   getWebflowProjectCount,
@@ -96,6 +97,19 @@ async function getCategoryMap(
   return new Map((data ?? []).map((category) => [category.slug, category as CategoryRef]));
 }
 
+export async function getCategoryColorMap(): Promise<Record<string, string>> {
+  const supabase = createSupabaseServerClient();
+  if (!supabase) return {};
+
+  const { data } = await supabase
+    .from("settings")
+    .select("value")
+    .eq("key", "category_accent_map")
+    .maybeSingle();
+
+  return parseCategoryColorMap(data?.value);
+}
+
 export async function getCategories(): Promise<HomepageCategory[]> {
   const supabase = createSupabaseServerClient();
   if (!supabase) return fallbackCategories;
@@ -103,9 +117,19 @@ export async function getCategories(): Promise<HomepageCategory[]> {
   const { data, error } = await supabase
     .from("categories")
     .select("*")
+    .eq("status", "published")
     .order("sort_order", { ascending: true });
 
-  if (error || !data?.length) return fallbackCategories;
+  if (error) {
+    const fallbackQuery = await supabase
+      .from("categories")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    if (fallbackQuery.error || !fallbackQuery.data?.length) return fallbackCategories;
+    return fallbackQuery.data.map(mapCategory);
+  }
+
+  if (!data?.length) return fallbackCategories;
   return data.map(mapCategory);
 }
 

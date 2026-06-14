@@ -1,19 +1,25 @@
 import { ProjectCoverImage } from "@/components/admin/ProjectCoverImage";
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { categoryAccentColors } from "@/lib/design-tokens";
+import { resolveCategoryColor } from "@/lib/category-colors";
 import type { ProjectCardData } from "@/types";
 
 type LandingProjectCardProps = {
   project: ProjectCardData;
   revealIndex?: number;
+  categoryColorMap?: Record<string, string>;
 };
 
 export function LandingProjectCard({
   project,
   revealIndex = 0,
+  categoryColorMap = {},
 }: LandingProjectCardProps) {
-  const accentColor = categoryAccentColors[project.categoryAccent];
+  const accentColor = resolveCategoryColor(
+    project.categorySlug,
+    project.categoryAccent,
+    categoryColorMap,
+  );
 
   return (
     <article

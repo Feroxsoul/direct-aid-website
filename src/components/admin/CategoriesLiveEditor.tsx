@@ -97,7 +97,9 @@ export function CategoriesLiveEditor({
             viewMode === "list" ? " impact-category-grid--list" : ""
           }`}
         >
-          {paged.map((category) => (
+          {paged.map((category) => {
+            const status = category.status ?? "published";
+            return (
             <article
               key={category.slug}
               className={`impact-category-card${
@@ -125,13 +127,17 @@ export function CategoriesLiveEditor({
                     {category.title_line_1} {category.title_line_2}
                   </h3>
                   <span
-                    className="impact-status impact-status--published"
+                    className={`impact-status ${
+                      status === "draft"
+                        ? "impact-status--draft"
+                        : "impact-status--published"
+                    }`}
                     style={{
                       background: `color-mix(in srgb, ${categoryAccentColors[category.accent]} 25%, white)`,
                       color: categoryAccentColors[category.accent],
                     }}
                   >
-                    {category.accent}
+                    {status === "draft" ? "Draft" : "Published"}
                   </span>
                 </div>
                 <p className="impact-initiative-desc" dir="ltr">
@@ -159,7 +165,8 @@ export function CategoriesLiveEditor({
                 ) : null}
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       )}
 

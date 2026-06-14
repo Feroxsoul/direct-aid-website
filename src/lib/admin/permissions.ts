@@ -63,6 +63,7 @@ export const DEFAULT_ROLE_DEFINITIONS: RoleDefinition[] = [
       categories: all(["view", "edit"]),
       homepage: all(["view", "edit"]),
       notifications: viewOnly,
+      roles: viewOnly,
     },
   },
   {
@@ -75,6 +76,7 @@ export const DEFAULT_ROLE_DEFINITIONS: RoleDefinition[] = [
       projects: all(["view", "create", "edit", "publish"]),
       media: all(["view", "create"]),
       categories: viewOnly,
+      roles: viewOnly,
     },
   },
   {
@@ -86,6 +88,7 @@ export const DEFAULT_ROLE_DEFINITIONS: RoleDefinition[] = [
       analytics: { view: true },
       donations: all(["view", "export", "manage"]),
       projects: viewOnly,
+      roles: viewOnly,
     },
   },
   {
@@ -98,6 +101,7 @@ export const DEFAULT_ROLE_DEFINITIONS: RoleDefinition[] = [
       categories: all(["view", "edit"]),
       homepage: all(["view", "edit"]),
       media: all(["view", "create"]),
+      roles: viewOnly,
     },
   },
   {
@@ -110,6 +114,7 @@ export const DEFAULT_ROLE_DEFINITIONS: RoleDefinition[] = [
       categories: all(["view", "edit"]),
       homepage: all(["view", "edit"]),
       media: all(["view", "create"]),
+      roles: viewOnly,
     },
   },
   {
@@ -124,6 +129,7 @@ export const DEFAULT_ROLE_DEFINITIONS: RoleDefinition[] = [
       categories: viewOnly,
       homepage: viewOnly,
       media: viewOnly,
+      roles: viewOnly,
     },
   },
 ];

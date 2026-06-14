@@ -73,6 +73,13 @@
   color: var(--dash-accent);
 }
 
+.dash-sidebar--impact .dash-sidebar-logo-img {
+  width: auto;
+  height: 2.25rem;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 .dash-sidebar-sub {
   display: block;
   margin-top: 0.15rem;
@@ -320,6 +327,7 @@
 
 .dash-topbar-bell,
 .dash-topbar-theme,
+.dash-topbar-lang,
 .dash-topbar-link,
 .dash-topbar-signout {
   display: inline-flex;
@@ -334,6 +342,12 @@
   font-size: 0.8125rem;
   text-decoration: none;
   cursor: pointer;
+}
+
+.dash-topbar-lang {
+  min-width: 2.25rem;
+  font-weight: 800;
+  font-size: 0.875rem;
 }
 
 .dash-topbar-bell {
