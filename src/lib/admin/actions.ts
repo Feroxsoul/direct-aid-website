@@ -572,6 +572,10 @@ export async function saveHomepage(formData: FormData) {
   const settings = [
     { key: "stats_brand_line_1", value: String(formData.get("stats_brand_line_1") ?? "").trim() },
     { key: "stats_brand_line_2", value: String(formData.get("stats_brand_line_2") ?? "").trim() },
+    {
+      key: "stats_brand_logo_url",
+      value: String(formData.get("stats_brand_logo_url") ?? "").trim(),
+    },
     { key: "stats_box_color", value: String(formData.get("stats_box_color") ?? "").trim() },
     { key: "share_label", value: String(formData.get("share_label") ?? "").trim() },
     { key: "share_icon_url", value: String(formData.get("share_icon_url") ?? "").trim() },

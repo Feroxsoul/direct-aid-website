@@ -22,6 +22,7 @@ export type HomeStatisticsData = {
   introText: string;
   brandLine1: string;
   brandLine2: string;
+  brandLogoUrl: string;
   backgroundColor: string;
 };
 

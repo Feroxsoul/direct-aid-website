@@ -202,14 +202,16 @@
 .landing-hero-shell {
   border-radius: var(--landing-radius);
   background: var(--landing-hero-bg);
-  padding: 2rem;
+  padding: 1rem;
   overflow: hidden;
 }
 
 .landing-hero-grid {
   display: grid;
-  gap: 0.75rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
   align-items: stretch;
+  direction: ltr;
 }
 
 .landing-hero-brand-card {
@@ -217,31 +219,34 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 1rem;
-  background: #fff;
-  padding: 1.5rem 1rem;
-  box-shadow: 0 12px 40px rgba(5, 5, 5, 0.08);
+  border-radius: 0.875rem;
+  background: #d4dfc8;
+  padding: 1rem 0.75rem;
   text-align: center;
   min-height: 100%;
 }
 
-.landing-hero-brand-logo {
-  margin: 0;
-  font-size: clamp(2.5rem, 10vw, 4.5rem);
-  font-weight: 800;
-  line-height: 0.95;
-  color: var(--da-black);
-  letter-spacing: -0.04em;
+.landing-hero-brand-logo-img {
+  width: auto;
+  height: clamp(3.5rem, 16vw, 5rem);
+  max-width: 100%;
+  object-fit: contain;
 }
 
 .landing-hero-copy {
   grid-column: 1 / -1;
+  direction: rtl;
 }
 
 @media (min-width: 900px) {
+  .landing-hero-shell {
+    padding: 2rem;
+  }
+
   .landing-hero-grid {
     grid-template-columns: 1fr 1fr;
     gap: 1.25rem;
+    direction: rtl;
   }
 
   .landing-stat-card {
@@ -252,6 +257,9 @@
   .landing-hero-brand-card {
     grid-column: 1;
     grid-row: 2;
+    background: #fff;
+    box-shadow: 0 12px 40px rgba(5, 5, 5, 0.08);
+    padding: 1.5rem 1rem;
   }
 
   .landing-hero-copy {
@@ -260,38 +268,63 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    direction: rtl;
   }
 
-  .landing-hero-brand-card {
-    min-height: auto;
+  .landing-hero-brand-logo-img {
+    height: clamp(4rem, 8vw, 5.5rem);
   }
 }
 
 .landing-stat-card {
-  border-radius: 1rem;
-  background: #fff;
-  padding: 2rem;
-  box-shadow: 0 12px 40px rgba(5, 5, 5, 0.08);
+  border-radius: 0.875rem;
+  background: #d4dfc8;
+  padding: 1rem 0.75rem;
   text-align: center;
+}
+
+@media (min-width: 900px) {
+  .landing-stat-card {
+    border-radius: 1rem;
+    background: #fff;
+    padding: 2rem;
+    box-shadow: 0 12px 40px rgba(5, 5, 5, 0.08);
+  }
 }
 
 .landing-stat-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
-  background: #e8f3e0;
-  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 900px) {
+  .landing-stat-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    background: #e8f3e0;
+    margin-bottom: 1rem;
+  }
 }
 
 .landing-stat-value {
   margin: 0;
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(1.125rem, 4.8vw, 1.5rem);
   font-weight: 800;
   line-height: 1.1;
-  color: var(--da-green);
+  color: var(--da-black);
+}
+
+@media (min-width: 900px) {
+  .landing-stat-value {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    color: var(--da-green);
+  }
 }
 
 .landing-stat-label {
@@ -318,13 +351,41 @@
 .landing-hero-intro {
   margin: 0;
   border-radius: 0.875rem;
-  background: #fff;
-  padding: 1.25rem 1.5rem;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--da-gray);
-  box-shadow: 0 8px 24px rgba(5, 5, 5, 0.06);
+  background: #d4dfc8;
+  padding: 1rem 1.125rem;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--da-black);
   text-align: start;
+}
+
+@media (min-width: 900px) {
+  .landing-hero-intro {
+    background: #fff;
+    padding: 1.25rem 1.5rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--da-gray);
+    box-shadow: 0 8px 24px rgba(5, 5, 5, 0.06);
+  }
+}
+
+.landing-hero-cta {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .landing-hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 1.25rem;
+    color: var(--da-green);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+  }
 }
 
 .landing-load-more-sentinel {
@@ -337,18 +398,6 @@
   color: var(--landing-muted);
   font-size: 0.8125rem;
   font-weight: 600;
-}
-
-.landing-hero-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-top: 1.25rem;
-  color: var(--da-green);
-  font-size: 0.8125rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-decoration: none;
 }
 
 /* Entrance animations */

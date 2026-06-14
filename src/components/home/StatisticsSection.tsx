@@ -11,8 +11,7 @@ export function StatisticsSection({
   label,
   iconUrl,
   introText,
-  brandLine1,
-  brandLine2,
+  brandLogoUrl,
   backgroundColor,
   ctaLabel = "استكشف مهمتنا ←",
 }: StatisticsSectionProps) {
@@ -21,22 +20,26 @@ export function StatisticsSection({
       <div className="landing-container">
         <div
           className="landing-hero-shell"
-          style={{ backgroundColor: backgroundColor || "#e8f3e0" }}
+          style={{ backgroundColor: backgroundColor || "#e2eed6" }}
         >
           <div className="landing-hero-grid">
             <div className="landing-stat-card">
               <div className="landing-stat-icon">
-                <Image src={iconUrl} alt="" width={28} height={28} aria-hidden />
+                <Image src={iconUrl} alt="" width={28} height={28} aria-hidden unoptimized />
               </div>
               <p className="landing-stat-value">{value}</p>
               <p className="landing-stat-label">{label}</p>
             </div>
 
             <div className="landing-hero-brand-card">
-              <p className="landing-hero-brand-small">{brandLine1}</p>
-              <p className="landing-hero-brand-logo" dir="ltr">
-                {brandLine2}
-              </p>
+              <Image
+                src={brandLogoUrl}
+                alt="10×10"
+                width={132}
+                height={88}
+                className="landing-hero-brand-logo-img"
+                unoptimized
+              />
             </div>
 
             <div className="landing-hero-copy">

@@ -307,7 +307,18 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
-  padding: 1rem;
+  padding: 0.75rem;
+}
+
+.admin-preview-stats-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: #d4dfc8;
+  padding: 0.75rem 0.5rem;
+  min-height: 7rem;
 }
 
 .admin-preview-icon {
@@ -317,34 +328,36 @@
 
 .admin-preview-value {
   margin: 0.5rem 0 0;
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #050505;
 }
 
 .admin-preview-label-text {
   margin: 0.15rem 0 0;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  color: #050505;
 }
 
 .admin-preview-brand {
   text-align: center;
-  font-weight: 700;
 }
 
-.admin-preview-brand p {
-  margin: 0;
-}
-
-.admin-preview-brand p:last-child {
-  font-size: 1.25rem;
+.admin-preview-brand-logo {
+  width: auto;
+  height: 3.5rem;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 .admin-preview-intro {
   margin: 0;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.55);
+  padding: 0.875rem 1rem;
+  background: #d4dfc8;
   font-size: 0.85rem;
   text-align: right;
+  border-radius: 0.75rem;
+  margin: 0 0.75rem 0.75rem;
 }
 
 .admin-color-input {

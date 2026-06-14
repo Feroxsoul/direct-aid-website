@@ -64,6 +64,7 @@ function mapProject(row: ProjectRow, category?: CategoryRef | null): ProjectCard
 const HOME_STATS_SETTING_KEYS = [
   "stats_brand_line_1",
   "stats_brand_line_2",
+  "stats_brand_logo_url",
   "stats_box_color",
 ] as const;
 
@@ -80,6 +81,7 @@ function mapHomeStatistics(
     introText: row.intro_text ?? defaults.introText,
     brandLine1: settings.stats_brand_line_1 ?? defaults.brandLine1,
     brandLine2: settings.stats_brand_line_2 ?? defaults.brandLine2,
+    brandLogoUrl: settings.stats_brand_logo_url ?? defaults.brandLogoUrl,
     backgroundColor: settings.stats_box_color ?? defaults.backgroundColor,
   };
 }
@@ -292,6 +294,7 @@ export async function getHomeStatistics(): Promise<HomeStatisticsData> {
       ...fallbackHomeStatistics,
       brandLine1: settings.stats_brand_line_1 ?? fallbackHomeStatistics.brandLine1,
       brandLine2: settings.stats_brand_line_2 ?? fallbackHomeStatistics.brandLine2,
+      brandLogoUrl: settings.stats_brand_logo_url ?? fallbackHomeStatistics.brandLogoUrl,
       backgroundColor: settings.stats_box_color ?? fallbackHomeStatistics.backgroundColor,
     };
   }

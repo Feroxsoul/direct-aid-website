@@ -28,8 +28,8 @@ export default async function AdminHomepagePage({ searchParams }: HomepageAdminP
   ]);
 
   const settings = settingsMap(settingsRows);
-  const brandLine1 = settings.stats_brand_line_1 ?? fallbackHomeStatistics.brandLine1;
-  const brandLine2 = settings.stats_brand_line_2 ?? fallbackHomeStatistics.brandLine2;
+  const brandLogoUrl =
+    settings.stats_brand_logo_url ?? fallbackHomeStatistics.brandLogoUrl;
   const boxColor = settings.stats_box_color ?? fallbackHomeStatistics.backgroundColor;
 
   return (
@@ -46,8 +46,7 @@ export default async function AdminHomepagePage({ searchParams }: HomepageAdminP
       <StatsBoxPreview
         value={stats?.value ?? ""}
         label={stats?.label ?? ""}
-        brandLine1={brandLine1}
-        brandLine2={brandLine2}
+        brandLogoUrl={brandLogoUrl}
         introText={stats?.intro_text ?? ""}
         backgroundColor={boxColor}
         iconUrl={stats?.icon_url ?? ""}
@@ -78,22 +77,11 @@ export default async function AdminHomepagePage({ searchParams }: HomepageAdminP
           </div>
         </div>
 
-        <div className="admin-row">
-          <div className="admin-field">
-            <label className="admin-label">Brand line 1 (Arabic)</label>
-            <input name="stats_brand_line_1" className="admin-input" defaultValue={brandLine1} required />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label">Brand line 2</label>
-            <input
-              name="stats_brand_line_2"
-              className="admin-input"
-              defaultValue={brandLine2}
-              required
-              dir="ltr"
-            />
-          </div>
-        </div>
+        <ImageField
+          name="stats_brand_logo_url"
+          label="10×10 brand logo (SVG)"
+          defaultValue={brandLogoUrl}
+        />
 
         <div className="admin-field">
           <label className="admin-label">Intro paragraph (Arabic)</label>
