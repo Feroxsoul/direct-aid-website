@@ -9,6 +9,7 @@ import {
   parseFooterColumns,
   parseFooterSocial,
   parseJsonSetting,
+  parsePublicBoolean,
   sanitizePublicCopyright,
   sanitizePublicTagline,
 } from "@/lib/admin/settings-store";
@@ -37,6 +38,8 @@ export type PublicContentSettings = {
   footer_donation_policy_url: string;
   footer_columns: FooterColumn[];
   footer_social: FooterSocialLink[];
+  show_whatsapp_block: boolean;
+  show_footer: boolean;
 };
 
 const DEFAULTS: PublicContentSettings = {
@@ -54,7 +57,7 @@ const DEFAULTS: PublicContentSettings = {
   whatsapp_subscribe_message: "اشتراك",
   whatsapp_subscribe_button: "اشتراك",
   impact_section_title: "آخر نشاط للأثر",
-  impact_section_subtitle: "مشروع مميز من كل فئة — اختر فئة أعلاه لعرض المزيد.",
+  impact_section_subtitle: "جميع المشاريع — مرّر للأسفل لتحميل المزيد.",
   categories_section_title: "فئات المشاريع",
   footer_tagline:
     "جمعية العون المباشر — مؤسسة خيرية كويتية تعمل على تقديم العون الإنساني والتنموي في أكثر من 30 دولة.",
@@ -64,6 +67,8 @@ const DEFAULTS: PublicContentSettings = {
   footer_donation_policy_url: DEFAULT_FOOTER_DONATION_POLICY_URL,
   footer_columns: DEFAULT_FOOTER_COLUMNS,
   footer_social: DEFAULT_FOOTER_SOCIAL,
+  show_whatsapp_block: true,
+  show_footer: true,
 };
 
 export async function getPublicContentSettings(): Promise<PublicContentSettings> {
@@ -100,6 +105,8 @@ export async function getPublicContentSettings(): Promise<PublicContentSettings>
       map.footer_donation_policy_url ?? DEFAULTS.footer_donation_policy_url,
     footer_columns: parseFooterColumns(map.footer_columns_json),
     footer_social: parseFooterSocial(map.footer_social_json),
+    show_whatsapp_block: parsePublicBoolean(map.show_whatsapp_block, true),
+    show_footer: parsePublicBoolean(map.show_footer, true),
   };
 }
 

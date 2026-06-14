@@ -27,10 +27,10 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
     <div className="project-page landing-container">
       <div className="project-toolbar landing-reveal">
         <Link href="/#impact" className="project-back-link">
-          <span>رجوع للمشاريع</span>
           <span className="project-back-icon" aria-hidden>
-            →
+            ←
           </span>
+          <span>رجوع للمشاريع</span>
         </Link>
       </div>
 

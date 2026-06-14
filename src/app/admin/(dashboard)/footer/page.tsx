@@ -41,6 +41,20 @@ export default async function AdminFooterPage({ searchParams }: FooterAdminPageP
       {saved ? <p className="admin-success">Footer saved successfully.</p> : null}
 
       <form action={saveFooterSettings} className="admin-form dash-panel">
+        <div className="admin-field">
+          <label className="admin-checkbox-label">
+            <input
+              type="checkbox"
+              name="show_footer"
+              defaultChecked={(settings.show_footer ?? "true") !== "false"}
+            />
+            Show footer on public site
+          </label>
+          <p className="admin-help-text">
+            Hide from the frontend only — all footer links and text remain editable below.
+          </p>
+        </div>
+
         <FooterLinksEditor
           initialColumns={columns.length ? columns : DEFAULT_FOOTER_COLUMNS}
           initialSocial={social.length ? social : DEFAULT_FOOTER_SOCIAL}

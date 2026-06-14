@@ -75,7 +75,7 @@ export const fallbackHomeStatistics: HomeStatisticsData = {
   introText:
     "مشروع البركة 10×10 من باب مشاركة الأثر معكم نقوم برفع التقارير الخاصة في هذا الموقع بشكل دوري",
   brandLine1: "عشرة",
-  brandLine2: "10×10",
+  brandLine2: "10*",
   backgroundColor: "#e2eed6",
 };
 

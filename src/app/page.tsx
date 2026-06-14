@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { HomeProjectsExplorer } from "@/components/home/HomeProjectsExplorer";
 import { StatisticsSection } from "@/components/home/StatisticsSection";
 import { TransparencySection } from "@/components/home/TransparencySection";
@@ -50,20 +51,24 @@ export default async function Home() {
         shareText={content.site_description || content.site_title}
       />
       <StatisticsSection {...statistics} ctaLabel={content.hero_cta_label} />
-      <HomeProjectsExplorer
-        categories={categories}
-        projects={projects}
-        categoriesSectionTitle={content.categories_section_title}
-        impactSectionTitle={content.impact_section_title}
-        impactSectionSubtitle={content.impact_section_subtitle}
-      />
-      <TransparencySection
-        title={content.transparency_title}
-        text={content.transparency_text}
-        whatsappNumber={content.whatsapp_number}
-        whatsappMessage={content.whatsapp_subscribe_message}
-        subscribeButtonLabel={content.whatsapp_subscribe_button}
-      />
+      <Suspense fallback={null}>
+        <HomeProjectsExplorer
+          categories={categories}
+          projects={projects}
+          categoriesSectionTitle={content.categories_section_title}
+          impactSectionTitle={content.impact_section_title}
+          impactSectionSubtitle={content.impact_section_subtitle}
+        />
+      </Suspense>
+      {content.show_whatsapp_block ? (
+        <TransparencySection
+          title={content.transparency_title}
+          text={content.transparency_text}
+          whatsappNumber={content.whatsapp_number}
+          whatsappMessage={content.whatsapp_subscribe_message}
+          subscribeButtonLabel={content.whatsapp_subscribe_button}
+        />
+      ) : null}
     </PageContainer>
   );
 }

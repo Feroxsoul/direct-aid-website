@@ -149,3 +149,11 @@ export function parseProjectTagValues(
 ): Record<string, Record<string, string>> {
   return parseJsonSetting<Record<string, Record<string, string>>>(value, {});
 }
+
+export function parsePublicBoolean(
+  value: string | undefined | null,
+  defaultValue = true,
+): boolean {
+  if (value == null || value === "") return defaultValue;
+  return value === "true" || value === "1";
+}

@@ -472,6 +472,11 @@ export async function saveFooterSettings(formData: FormData) {
       value: String(formData.get("footer_donation_policy_url") ?? "").trim(),
       is_public: true,
     },
+    {
+      key: "show_footer",
+      value: formData.get("show_footer") === "on" ? "true" : "false",
+      is_public: true,
+    },
   ];
 
   for (const setting of settings) {
@@ -587,6 +592,10 @@ export async function saveHomepage(formData: FormData) {
     {
       key: "categories_section_title",
       value: String(formData.get("categories_section_title") ?? "").trim(),
+    },
+    {
+      key: "show_whatsapp_block",
+      value: formData.get("show_whatsapp_block") === "on" ? "true" : "false",
     },
   ];
 

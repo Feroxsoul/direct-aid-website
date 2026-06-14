@@ -32,9 +32,14 @@ export function StatisticsSection({
               <p className="landing-stat-label">{label}</p>
             </div>
 
-            <div>
+            <div className="landing-hero-brand-card">
               <p className="landing-hero-brand-small">{brandLine1}</p>
-              <p className="landing-hero-brand-large">{brandLine2}</p>
+              <p className="landing-hero-brand-logo" dir="ltr">
+                {brandLine2}
+              </p>
+            </div>
+
+            <div className="landing-hero-copy">
               <p className="landing-hero-intro">{introText}</p>
               <Link href="#categories" className="landing-hero-cta">
                 {ctaLabel}

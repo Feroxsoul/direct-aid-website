@@ -35,17 +35,19 @@ export default async function RootLayout({
     <html lang="ar" dir="rtl">
       <body className="flex min-h-screen flex-col bg-white text-da-black antialiased">
         <main className="flex flex-1 flex-col">{children}</main>
-        <Footer
-          logoUrl={content.logo_url}
-          siteTitle={content.site_title}
-          tagline={content.footer_tagline}
-          copyright={content.footer_copyright}
-          legalLine={content.footer_legal_line}
-          privacyUrl={content.footer_privacy_url}
-          donationPolicyUrl={content.footer_donation_policy_url}
-          columns={content.footer_columns}
-          socialLinks={content.footer_social}
-        />
+        {content.show_footer ? (
+          <Footer
+            logoUrl={content.logo_url}
+            siteTitle={content.site_title}
+            tagline={content.footer_tagline}
+            copyright={content.footer_copyright}
+            legalLine={content.footer_legal_line}
+            privacyUrl={content.footer_privacy_url}
+            donationPolicyUrl={content.footer_donation_policy_url}
+            columns={content.footer_columns}
+            socialLinks={content.footer_social}
+          />
+        ) : null}
       </body>
     </html>
   );

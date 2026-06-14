@@ -1,10 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState, type CSSProperties } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { categoryAccentColors } from "@/lib/design-tokens";
 import { LandingProjectCard } from "@/components/home/LandingProjectCard";
 import type { HomepageCategory, ProjectCardData } from "@/types";
+
+const PROJECTS_BATCH = 8;
 
 type HomeProjectsExplorerProps = {
   categories: HomepageCategory[];
@@ -14,41 +17,37 @@ type HomeProjectsExplorerProps = {
   impactSectionSubtitle?: string;
 };
 
-function oneProjectPerCategory(
-  categories: HomepageCategory[],
-  projects: ProjectCardData[],
-) {
-  const firstByCategory = new Map<string, ProjectCardData>();
-
-  for (const project of projects) {
-    if (!firstByCategory.has(project.categorySlug)) {
-      firstByCategory.set(project.categorySlug, project);
-    }
-  }
-
-  return categories
-    .map((category) => firstByCategory.get(category.slug))
-    .filter((project): project is ProjectCardData => Boolean(project));
-}
-
 export function HomeProjectsExplorer({
   categories,
   projects,
   categoriesSectionTitle = "فئات المشاريع",
   impactSectionTitle = "آخر نشاط للأثر",
-  impactSectionSubtitle = "مشروع مميز من كل فئة — اختر فئة أعلاه لعرض المزيد.",
+  impactSectionSubtitle = "جميع المشاريع — مرّر للأسفل لتحميل المزيد.",
 }: HomeProjectsExplorerProps) {
-  const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const previewProjects = useMemo(
-    () => oneProjectPerCategory(categories, projects),
-    [categories, projects],
+  const categoryFromUrl = searchParams.get("category");
+  const [activeSlug, setActiveSlug] = useState<string | null>(categoryFromUrl);
+  const [visibleCount, setVisibleCount] = useState(PROJECTS_BATCH);
+
+  useEffect(() => {
+    setActiveSlug(categoryFromUrl);
+    setVisibleCount(PROJECTS_BATCH);
+  }, [categoryFromUrl]);
+
+  const filteredProjects = useMemo(() => {
+    if (!activeSlug) return projects;
+    return projects.filter((project) => project.categorySlug === activeSlug);
+  }, [activeSlug, projects]);
+
+  const visibleProjects = useMemo(
+    () => filteredProjects.slice(0, visibleCount),
+    [filteredProjects, visibleCount],
   );
 
-  const visibleProjects = useMemo(() => {
-    if (!activeSlug) return previewProjects;
-    return projects.filter((project) => project.categorySlug === activeSlug);
-  }, [activeSlug, previewProjects, projects]);
+  const hasMore = visibleCount < filteredProjects.length;
 
   const activeLabel = activeSlug
     ? (categories.find((category) => category.slug === activeSlug)?.titleLine2 ??
@@ -56,15 +55,47 @@ export function HomeProjectsExplorer({
       activeSlug)
     : null;
 
+  const updateCategory = useCallback(
+    (slug: string | null) => {
+      setActiveSlug(slug);
+      setVisibleCount(PROJECTS_BATCH);
+      if (slug) {
+        router.push(`/?category=${encodeURIComponent(slug)}#impact`, { scroll: false });
+      } else {
+        router.push("/#impact", { scroll: false });
+      }
+    },
+    [router],
+  );
+
   function selectCategory(slug: string) {
-    setActiveSlug((current) => (current === slug ? null : slug));
+    updateCategory(activeSlug === slug ? null : slug);
     document.getElementById("impact")?.scrollIntoView({ behavior: "smooth" });
   }
 
-  function showOverview() {
-    setActiveSlug(null);
+  function showAllProjects() {
+    updateCategory(null);
     document.getElementById("impact")?.scrollIntoView({ behavior: "smooth" });
   }
+
+  useEffect(() => {
+    if (!hasMore || !loadMoreRef.current) return;
+
+    const node = loadMoreRef.current;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisibleCount((current) =>
+            Math.min(current + PROJECTS_BATCH, filteredProjects.length),
+          );
+        }
+      },
+      { rootMargin: "240px 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [filteredProjects.length, hasMore]);
 
   return (
     <>
@@ -117,13 +148,13 @@ export function HomeProjectsExplorer({
               <h2 className="landing-section-title">{impactSectionTitle}</h2>
               <p className="landing-section-subtitle">
                 {activeLabel
-                  ? `جميع المشاريع (${visibleProjects.length}) في ${activeLabel}.`
-                  : impactSectionSubtitle}
+                  ? `جميع المشاريع (${filteredProjects.length}) في ${activeLabel}.`
+                  : `${impactSectionSubtitle} (${filteredProjects.length} مشروع)`}
               </p>
             </div>
             {activeSlug ? (
-              <button type="button" className="landing-section-link" onClick={showOverview}>
-                العودة للنظرة العامة ←
+              <button type="button" className="landing-section-link" onClick={showAllProjects}>
+                عرض كل المشاريع ←
               </button>
             ) : null}
           </div>
@@ -131,18 +162,25 @@ export function HomeProjectsExplorer({
           {visibleProjects.length === 0 ? (
             <p className="landing-section-subtitle">لا توجد مشاريع في هذه الفئة حالياً.</p>
           ) : (
-            <div
-              key={activeSlug ?? "overview"}
-              className={`landing-projects-grid${activeSlug ? " landing-projects-grid--expanded" : " landing-projects-grid--preview"}`}
-            >
-              {visibleProjects.map((project, index) => (
-                <LandingProjectCard
-                  key={project.id}
-                  project={project}
-                  revealIndex={index}
-                />
-              ))}
-            </div>
+            <>
+              <div
+                key={activeSlug ?? "all"}
+                className="landing-projects-grid landing-projects-grid--expanded"
+              >
+                {visibleProjects.map((project, index) => (
+                  <LandingProjectCard
+                    key={project.id}
+                    project={project}
+                    revealIndex={index}
+                  />
+                ))}
+              </div>
+              {hasMore ? (
+                <div ref={loadMoreRef} className="landing-load-more-sentinel" aria-hidden>
+                  <span className="landing-load-more-label">جاري تحميل المزيد…</span>
+                </div>
+              ) : null}
+            </>
           )}
         </div>
       </section>

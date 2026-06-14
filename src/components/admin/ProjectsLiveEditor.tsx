@@ -12,7 +12,7 @@ import type { AdminProjectsEditorData } from "@/lib/admin/project-editor-data";
 import { CATEGORY_SHORT, getCategoryLabelFromRef, truncateCardDescription } from "@/lib/project-catalog";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-const PAGE_SIZE = 9;
+const PAGE_SIZE = 8;
 
 const STATUS_LABELS: Record<string, string> = {
   published: "Published",

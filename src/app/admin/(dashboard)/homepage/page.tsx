@@ -223,6 +223,19 @@ export default async function AdminHomepagePage({ searchParams }: HomepageAdminP
             defaultValue={settings.whatsapp_subscribe_button ?? "اشتراك"}
           />
         </div>
+        <div className="admin-field">
+          <label className="admin-checkbox-label">
+            <input
+              type="checkbox"
+              name="show_whatsapp_block"
+              defaultChecked={(settings.show_whatsapp_block ?? "true") !== "false"}
+            />
+            Show WhatsApp block on public site
+          </label>
+          <p className="admin-help-text">
+            Hide from the frontend only — content stays saved here for when you turn it back on.
+          </p>
+        </div>
 
         <button type="submit" className="admin-button">
           Save home page
