@@ -748,90 +748,99 @@ async function parseAdminRole(
   return role;
 }
 
-export async function saveAdminUser(formData: FormData) {
-  const { supabase, user, profile } = await requireSupabaseAdmin("viewer");
-  if (!hasPermission(profile.permissions, profile.role_slug, "users", "create")) {
-    throw new Error("ليس لديك صلاحية إضافة المستخدمين");
-  }
+export type UserActionResult = { ok: true } | { ok: false; error: string };
 
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
-  const role = await parseAdminRole(supabase, formData.get("role"));
+export async function saveAdminUser(formData: FormData): Promise<UserActionResult> {
+  try {
+    const { supabase, user, profile } = await requireSupabaseAdmin("viewer");
+    if (!hasPermission(profile.permissions, profile.role_slug, "users", "create")) {
+      return { ok: false, error: "ليس لديك صلاحية إضافة المستخدمين" };
+    }
 
-  if (!canAssignRole(profile.role_slug, role)) {
-    throw new Error("Only Super Admin can assign Admin or Super Admin roles");
-  }
-  const displayName = String(formData.get("display_name") ?? "").trim() || null;
-  const password = String(formData.get("password") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim().toLowerCase();
+    const role = await parseAdminRole(supabase, formData.get("role"));
 
-  if (!email) {
-    throw new Error("البريد الإلكتروني مطلوب");
-  }
+    if (!canAssignRole(profile.role_slug, role)) {
+      return { ok: false, error: "Only Super Admin can assign Admin or Super Admin roles" };
+    }
+    const displayName = String(formData.get("display_name") ?? "").trim() || null;
+    const password = String(formData.get("password") ?? "");
 
-  const { data: existing } = await supabase
-    .from("admin_users")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
+    if (!email) {
+      return { ok: false, error: "البريد الإلكتروني مطلوب" };
+    }
 
-  if (password && !canManageLoginAccounts(profile.role_slug)) {
-    throw new Error("Only Admin or Super Admin can set login passwords");
-  }
+    const { data: existing } = await supabase
+      .from("admin_users")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
 
-  if (!existing && !password) {
-    throw new Error("Password is required when creating a new user");
-  }
+    if (password && !canManageLoginAccounts(profile.role_slug)) {
+      return { ok: false, error: "Only Admin or Super Admin can set login passwords" };
+    }
 
-  if (password && password.length < 8) {
-    throw new Error("Password must be at least 8 characters");
-  }
+    if (!existing && !password) {
+      return { ok: false, error: "Password is required when creating a new user" };
+    }
 
-  let serviceClient: ReturnType<typeof createSupabaseServiceClient> = null;
-  let linkedUserId: string | null = null;
+    if (password && password.length < 8) {
+      return { ok: false, error: "Password must be at least 8 characters" };
+    }
 
-  if (password) {
-    const linked = await createOrLinkAuthUser(email, password, displayName);
-    serviceClient = linked.service;
-    linkedUserId = linked.authUserId;
-  }
+    let serviceClient: ReturnType<typeof createSupabaseServiceClient> = null;
+    let linkedUserId: string | null = null;
 
-  const db = serviceClient ?? (await createSupabaseServiceClient()) ?? supabase;
+    if (password) {
+      const linked = await createOrLinkAuthUser(email, password, displayName);
+      serviceClient = linked.service;
+      linkedUserId = linked.authUserId;
+    }
 
-  const { error } = existing
-    ? await db
-        .from("admin_users")
-        .update({
+    const db = serviceClient ?? (await createSupabaseServiceClient()) ?? supabase;
+
+    const { error } = existing
+      ? await db
+          .from("admin_users")
+          .update({
+            role,
+            role_slug: role,
+            display_name: displayName,
+            is_active: true,
+            suspended_at: null,
+            created_by: user.id,
+            ...(linkedUserId ? { user_id: linkedUserId } : {}),
+          })
+          .eq("id", existing.id)
+      : await db.from("admin_users").insert({
+          email,
           role,
           role_slug: role,
           display_name: displayName,
           is_active: true,
-          suspended_at: null,
           created_by: user.id,
-          ...(linkedUserId ? { user_id: linkedUserId } : {}),
-        })
-        .eq("id", existing.id)
-    : await db.from("admin_users").insert({
-        email,
-        role,
-        role_slug: role,
-        display_name: displayName,
-        is_active: true,
-        created_by: user.id,
-        user_id: linkedUserId,
-      });
+          user_id: linkedUserId,
+        });
 
-  if (error) throw new Error(error.message);
+    if (error) return { ok: false, error: error.message };
 
-  await logAuditEvent(profile, "user.created", "user", email, { role });
-  await supabase.from("admin_notifications").insert({
-    target_user_id: null,
-    type: "user",
-    title: "New admin user added",
-    body: email,
-    is_read: false,
-  });
+    await logAuditEvent(profile, "user.created", "user", email, { role });
+    await supabase.from("admin_notifications").insert({
+      target_user_id: null,
+      type: "user",
+      title: "New admin user added",
+      body: email,
+      is_read: false,
+    });
 
-  revalidatePath("/admin/users");
-  redirect("/admin/users?saved=1");
+    revalidatePath("/admin/users");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Failed to add user",
+    };
+  }
 }
 
 export async function updateAdminUser(formData: FormData) {
@@ -859,7 +868,7 @@ export async function updateAdminUser(formData: FormData) {
   }
   const displayName = String(formData.get("display_name") ?? "").trim() || null;
   const isActive = formData.get("is_active") === "on";
-  const newPassword = String(formData.get("new_password") ?? "").trim();
+  const newPassword = String(formData.get("new_password") ?? "");
 
   if (newPassword && profile.role_slug !== "super_admin") {
     throw new Error("Only Super Admin can reset passwords");

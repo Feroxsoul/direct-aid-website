@@ -1,10 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import {
-  saveAdminUser,
-  updateAdminUser,
-} from "@/lib/admin/actions";
+import { AddUserForm } from "@/components/admin/AddUserForm";
+import { updateAdminUser } from "@/lib/admin/actions";
 import { DeleteUserButton } from "@/components/admin/DeleteUserButton";
 import { NavPageVisibilityEditor } from "@/components/admin/NavPageVisibilityEditor";
 import { RoleBadge } from "@/components/admin/RoleBadge";
@@ -19,6 +17,7 @@ import {
   getRoleLabel,
 } from "@/lib/admin/roles";
 import type { AdminPermissions, AdminUserRow } from "@/types";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 
 type RoleOption = {
   slug: string;
@@ -34,8 +33,8 @@ type AdminUsersPanelProps = {
   customRoles?: RoleOption[];
 };
 
-function formatLastLogin(value: string | null | undefined) {
-  if (!value) return "Never";
+function formatLastLogin(value: string | null | undefined, neverLabel: string) {
+  if (!value) return neverLabel;
   return new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -74,6 +73,7 @@ export function AdminUsersPanel({
   permissions,
   customRoles = [],
 }: AdminUsersPanelProps) {
+  const { t } = useAdminLang();
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -132,74 +132,22 @@ export function AdminUsersPanel({
     <>
       {canCreate ? (
         <div className="dash-panel" style={{ marginBottom: "1rem" }}>
-          <h2 className="dash-panel-title">Add User</h2>
+          <h2 className="dash-panel-title">{t("users.addTitle")}</h2>
           <p className="dash-page-subtitle" style={{ marginBottom: "1rem" }}>
-            Add email, role, and password — the user can log in immediately without Supabase.
+            {t("users.addSubtitle")}
           </p>
-          <form action={saveAdminUser} className="admin-form admin-form-inline">
-            <div className="admin-field">
-              <label className="admin-label" htmlFor="new-email">
-                Email
-              </label>
-              <input
-                id="new-email"
-                name="email"
-                type="email"
-                className="admin-input"
-                required
-                dir="ltr"
-              />
-            </div>
-            <div className="admin-field">
-              <label className="admin-label" htmlFor="new-display-name">
-                Name
-              </label>
-              <input id="new-display-name" name="display_name" type="text" className="admin-input" />
-            </div>
-            <div className="admin-field">
-              <label className="admin-label" htmlFor="new-role">
-                Role
-              </label>
-              <select id="new-role" name="role" className="admin-input" defaultValue="editor">
-                {assignableRoles.map((role) => (
-                  <option key={role.slug} value={role.slug}>
-                    {role.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {canSetPassword ? (
-              <div className="admin-field">
-                <label className="admin-label" htmlFor="new-password">
-                  Password
-                </label>
-                <input
-                  id="new-password"
-                  name="password"
-                  type="password"
-                  className="admin-input"
-                  minLength={8}
-                  required
-                  dir="ltr"
-                  placeholder="Min. 8 characters"
-                />
-              </div>
-            ) : null}
-            <button type="submit" className="dash-btn dash-btn--primary">
-              Add User
-            </button>
-          </form>
+          <AddUserForm assignableRoles={assignableRoles} canSetPassword={canSetPassword} />
         </div>
       ) : null}
 
       <div className="dash-panel">
         <div className="dash-panel-header">
-          <h2 className="dash-panel-title">All Users</h2>
+          <h2 className="dash-panel-title">{t("users.allTitle")}</h2>
           <div className="dash-filters">
             <input
               type="search"
               className="admin-input"
-              placeholder="Search by name or email…"
+              placeholder={t("users.search")}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               dir="ltr"
@@ -209,7 +157,7 @@ export function AdminUsersPanel({
               value={roleFilter}
               onChange={(event) => setRoleFilter(event.target.value)}
             >
-              <option value="all">All roles</option>
+              <option value="all">{t("users.allRoles")}</option>
               {allRoles.map((role) => (
                 <option key={role.slug} value={role.slug}>
                   {role.name}
@@ -221,26 +169,26 @@ export function AdminUsersPanel({
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
             >
-              <option value="all">All statuses</option>
-              <option value="active">Active</option>
-              <option value="suspended">Suspended</option>
-              <option value="inactive">Inactive</option>
+              <option value="all">{t("users.allStatuses")}</option>
+              <option value="active">{t("users.active")}</option>
+              <option value="suspended">{t("users.suspended")}</option>
+              <option value="inactive">{t("users.inactive")}</option>
             </select>
           </div>
         </div>
 
         {filteredUsers.length === 0 ? (
-          <p className="dash-empty">No users match your filters.</p>
+          <p className="dash-empty">{t("users.empty")}</p>
         ) : (
           <div className="dash-table-wrap">
             <table className="dash-table">
               <thead>
                 <tr>
-                  <th>User</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                  <th>Last login</th>
-                  <th>Linked</th>
+                  <th>{t("users.colUser")}</th>
+                  <th>{t("users.colRole")}</th>
+                  <th>{t("users.colStatus")}</th>
+                  <th>{t("users.colLastLogin")}</th>
+                  <th>{t("users.colLinked")}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -284,22 +232,22 @@ export function AdminUsersPanel({
                       </td>
                       <td>
                         {adminUser.suspended_at
-                          ? "Suspended"
+                          ? t("users.suspended")
                           : adminUser.is_active
-                            ? "Active"
-                            : "Inactive"}
+                            ? t("users.active")
+                            : t("users.inactive")}
                       </td>
-                      <td>{formatLastLogin(adminUser.last_login_at)}</td>
-                      <td>{adminUser.user_id ? "Yes" : "Pending login"}</td>
+                      <td>{formatLastLogin(adminUser.last_login_at, t("users.never"))}</td>
+                      <td>{adminUser.user_id ? t("users.linkedYes") : t("users.linkedPending")}</td>
                       <td>
                         {canEditUser || canDeleteUser ? (
                           <details className="admin-details">
-                            <summary className="dash-link">Edit</summary>
+                            <summary className="dash-link">{t("common.edit")}</summary>
                             {canEditUser ? (
                               <form action={updateAdminUser} className="admin-form admin-form-stack">
                                 <input type="hidden" name="id" value={adminUser.id} />
                                 <div className="admin-field">
-                                  <label className="admin-label">Name</label>
+                                  <label className="admin-label">{t("users.name")}</label>
                                   <input
                                     name="display_name"
                                     type="text"
@@ -308,7 +256,7 @@ export function AdminUsersPanel({
                                   />
                                 </div>
                                 <div className="admin-field">
-                                  <label className="admin-label">Role</label>
+                                  <label className="admin-label">{t("users.role")}</label>
                                   <select
                                     name="role"
                                     className="admin-input"
@@ -330,27 +278,26 @@ export function AdminUsersPanel({
                                     name="is_active"
                                     defaultChecked={adminUser.is_active}
                                   />
-                                  <span>Active</span>
+                                  <span>{t("users.active")}</span>
                                 </label>
                                 <label className="admin-checkbox">
                                   <input type="checkbox" name="suspend" />
-                                  <span>Suspend user</span>
+                                  <span>{t("users.suspend")}</span>
                                 </label>
                                 {isSuperAdmin ? (
                                   <>
                                     <div className="admin-field">
-                                      <label className="admin-label">Set new password</label>
+                                      <label className="admin-label">{t("users.newPassword")}</label>
                                       <input
                                         name="new_password"
                                         type="password"
                                         className="admin-input"
                                         minLength={8}
+                                        autoComplete="new-password"
                                         dir="ltr"
-                                        placeholder="Leave blank to keep current"
+                                        placeholder={t("users.passwordKeep")}
                                       />
-                                      <p className="admin-help-text">
-                                        Stored passwords cannot be viewed — only reset to a new value.
-                                      </p>
+                                      <p className="admin-help-text">{t("users.passwordHelp")}</p>
                                     </div>
                                     <NavPageVisibilityEditor
                                       hiddenPages={parseNavHiddenPages(
@@ -360,7 +307,7 @@ export function AdminUsersPanel({
                                   </>
                                 ) : null}
                                 <button type="submit" className="dash-btn">
-                                  Save
+                                  {t("common.save")}
                                 </button>
                               </form>
                             ) : null}

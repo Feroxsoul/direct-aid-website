@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AdminLangToggle } from "@/components/admin/AdminLangToggle";
 import { AdminProfileMenu } from "@/components/admin/AdminProfileMenu";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { AdminLangProvider } from "@/lib/admin/i18n-context";
 import {
   ADMIN_LANG_STORAGE_KEY,
   getPageTitleKey,
@@ -17,6 +18,7 @@ import type { AdminProfile } from "@/types";
 type AdminShellProps = {
   profile: AdminProfile;
   logoUrl: string;
+  publicSiteUrl: string;
   notificationCount?: number;
   children: React.ReactNode;
 };
@@ -24,6 +26,7 @@ type AdminShellProps = {
 export function AdminShell({
   profile,
   logoUrl,
+  publicSiteUrl,
   notificationCount = 0,
   children,
 }: AdminShellProps) {
@@ -95,6 +98,17 @@ export function AdminShell({
           </div>
 
           <div className="dash-topbar-actions">
+            <a
+              href={publicSiteUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="dash-topbar-link"
+              aria-label={t(lang, "shell.preview")}
+              title={t(lang, "shell.preview")}
+            >
+              ↗
+            </a>
+
             <Link
               href="/admin/notifications"
               className="dash-topbar-bell"
@@ -121,7 +135,9 @@ export function AdminShell({
           </div>
         </header>
 
-        <main className="dash-content">{children}</main>
+        <main className="dash-content">
+          <AdminLangProvider lang={lang}>{children}</AdminLangProvider>
+        </main>
       </div>
     </div>
   );

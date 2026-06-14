@@ -82,7 +82,7 @@ export default async function AdminLoginPage({ searchParams }: LoginPageProps) {
       </div>
 
       <footer className="admin-login-page-footer">
-        <p>Provided Direct Aid</p>
+        <p>Powered by Direct Aid</p>
         <p>by {APP_DEVELOPER}</p>
       </footer>
     </div>

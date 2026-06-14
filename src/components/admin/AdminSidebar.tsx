@@ -157,8 +157,10 @@ export function AdminSidebar({ profile, logoUrl, lang, onNavigate }: AdminSideba
 
       <div className="dash-sidebar-version">
         <span className="dash-sidebar-version-label">{APP_VERSION_LABEL}</span>
-        <span className="dash-sidebar-version-meta">Provided Direct Aid</span>
-        <span className="dash-sidebar-version-meta">by {APP_DEVELOPER}</span>
+        <span className="dash-sidebar-version-meta">{t(lang, "sidebar.poweredBy")}</span>
+        <span className="dash-sidebar-version-meta">
+          {t(lang, "sidebar.byDeveloper", { name: APP_DEVELOPER })}
+        </span>
       </div>
     </aside>
   );

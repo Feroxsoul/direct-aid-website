@@ -11,13 +11,14 @@ import {
 import type { AdminProjectsEditorData } from "@/lib/admin/project-editor-data";
 import { CATEGORY_SHORT, getCategoryLabelFromRef, truncateCardDescription } from "@/lib/project-catalog";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 
 const PAGE_SIZE = 8;
 
-const STATUS_LABELS: Record<string, string> = {
-  published: "Published",
-  draft: "Draft",
-  archived: "Archived",
+const STATUS_KEYS: Record<string, string> = {
+  published: "common.published",
+  draft: "common.draft",
+  archived: "common.archived",
 };
 
 type ProjectsLiveEditorProps = AdminProjectsEditorData & {
@@ -40,6 +41,7 @@ export function ProjectsLiveEditor({
   supabaseUrl,
   supabaseAnonKey,
 }: ProjectsLiveEditorProps) {
+  const { t } = useAdminLang();
   const router = useRouter();
   const [projects, setProjects] = useState(initialProjects);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -146,7 +148,7 @@ export function ProjectsLiveEditor({
             onClick={handleSync}
             disabled={syncing}
           >
-            {syncing ? "Syncing…" : "Sync from Webflow"}
+            {syncing ? t("projects.syncing") : t("projects.syncFromWebflow")}
           </button>
         </div>
       )}
@@ -156,27 +158,27 @@ export function ProjectsLiveEditor({
 
       <header className="impact-projects-header">
         <div>
-          <h2 className="impact-projects-title">All Projects</h2>
+          <h2 className="impact-projects-title">{t("projects.title")}</h2>
           <p className="impact-projects-subtitle">
-            {filteredProjects.length} initiatives · manage content, images, and impact tags.
+            {t("projects.subtitle", { count: filteredProjects.length })}
           </p>
         </div>
         {canCreate ? (
           <Link href="/admin/projects/new" className="impact-btn impact-btn--primary impact-btn--lg">
-            + New project
+            {t("projects.new")}
           </Link>
         ) : null}
       </header>
 
       <div className="impact-toolbar">
         <div className="impact-filters">
-          <span className="impact-filters-label">FILTER BY</span>
+          <span className="impact-filters-label">{t("common.filterBy")}</span>
           <select
             className="impact-select"
             value={categoryFilter}
             onChange={(event) => setCategoryFilter(event.target.value)}
           >
-            <option value="all">All categories</option>
+            <option value="all">{t("projects.allCategories")}</option>
             {categories.map((category) => (
               <option key={category.slug} value={category.slug}>
                 {category.title_line_2 || category.title_line_1}
@@ -188,20 +190,20 @@ export function ProjectsLiveEditor({
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value)}
           >
-            <option value="all">All statuses</option>
-            <option value="published">Published</option>
-            <option value="draft">Draft</option>
-            <option value="archived">Archived</option>
+            <option value="all">{t("projects.allStatuses")}</option>
+            <option value="published">{t("common.published")}</option>
+            <option value="draft">{t("common.draft")}</option>
+            <option value="archived">{t("common.archived")}</option>
           </select>
           <input
             type="search"
             className="impact-search"
-            placeholder="Search projects…"
+            placeholder={t("projects.search")}
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
         </div>
-        <div className="impact-view-toggle" role="group" aria-label="View mode">
+        <div className="impact-view-toggle" role="group" aria-label={t("common.viewMode")}>
           <button
             type="button"
             className={`impact-view-btn${viewMode === "grid" ? " is-active" : ""}`}
@@ -224,7 +226,7 @@ export function ProjectsLiveEditor({
       </div>
 
       {pagedProjects.length === 0 ? (
-        <p className="impact-empty">No projects match your filters.</p>
+        <p className="impact-empty">{t("projects.empty")}</p>
       ) : (
         <div
           className={`impact-initiative-grid${
@@ -273,11 +275,13 @@ export function ProjectsLiveEditor({
                     <span
                       className={`impact-status impact-status--${project.statusLabel}`}
                     >
-                      {STATUS_LABELS[project.statusLabel] ?? project.statusLabel}
+                      {STATUS_KEYS[project.statusLabel]
+                        ? t(STATUS_KEYS[project.statusLabel])
+                        : project.statusLabel}
                     </span>
                   </div>
                   <p className="impact-initiative-desc">
-                    {truncateCardDescription(project.description) ?? "No description yet."}
+                    {truncateCardDescription(project.description) ?? t("projects.noDescription")}
                   </p>
                   <div className="impact-initiative-meta">
                     <span>📁 {categoryShort}</span>
@@ -289,14 +293,14 @@ export function ProjectsLiveEditor({
                       target="_blank"
                       className="impact-action impact-action--view"
                     >
-                      View live
+                      {t("common.viewLive")}
                     </Link>
                     {canEdit ? (
                       <Link
                         href={`/admin/projects/${project.slug}`}
                         className="impact-action impact-action--edit"
                       >
-                        Edit
+                        {t("common.edit")}
                       </Link>
                     ) : null}
                     {canDelete ? (
@@ -305,7 +309,7 @@ export function ProjectsLiveEditor({
                         className="impact-action impact-action--delete"
                         onClick={() => handleDelete(project.slug)}
                       >
-                        Delete
+                        {t("common.delete")}
                       </button>
                     ) : null}
                   </div>
@@ -318,7 +322,7 @@ export function ProjectsLiveEditor({
 
       <footer className="impact-pagination">
         <p>
-          Showing {pagedProjects.length} of {filteredProjects.length} projects
+          {t("common.showingProjects", { shown: pagedProjects.length, total: filteredProjects.length })}
         </p>
         <div className="impact-pagination-controls">
           <button

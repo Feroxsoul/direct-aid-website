@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { categoryAccentColors } from "@/lib/design-tokens";
+import { useAdminLang } from "@/lib/admin/i18n-context";
 import type { CategoryRow } from "@/types";
 
 const PAGE_SIZE = 8;
@@ -19,6 +20,7 @@ export function CategoriesLiveEditor({
   canCreate,
   canEdit,
 }: CategoriesLiveEditorProps) {
+  const { t } = useAdminLang();
   const [categories] = useState(initialCategories);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -43,25 +45,25 @@ export function CategoriesLiveEditor({
     <div className="impact-projects">
       <header className="impact-projects-header">
         <div>
-          <h2 className="impact-projects-title">All Categories</h2>
+          <h2 className="impact-projects-title">{t("categories.title")}</h2>
           <p className="impact-projects-subtitle">
-            {filtered.length} categories · accent colors are managed in Settings.
+            {t("categories.subtitle", { count: filtered.length })}
           </p>
         </div>
         {canCreate ? (
           <Link href="/admin/categories/new" className="impact-btn impact-btn--primary impact-btn--lg">
-            + New category
+            {t("categories.new")}
           </Link>
         ) : null}
       </header>
 
       <div className="impact-toolbar">
         <div className="impact-filters">
-          <span className="impact-filters-label">FILTER BY</span>
+          <span className="impact-filters-label">{t("common.filterBy")}</span>
           <input
             type="search"
             className="impact-search"
-            placeholder="Search categories…"
+            placeholder={t("categories.search")}
             value={search}
             onChange={(event) => {
               setSearch(event.target.value);
@@ -69,7 +71,7 @@ export function CategoriesLiveEditor({
             }}
           />
         </div>
-        <div className="impact-view-toggle" role="group" aria-label="View mode">
+        <div className="impact-view-toggle" role="group" aria-label={t("common.viewMode")}>
           <button
             type="button"
             className={`impact-view-btn${viewMode === "grid" ? " is-active" : ""}`}
@@ -90,7 +92,7 @@ export function CategoriesLiveEditor({
       </div>
 
       {paged.length === 0 ? (
-        <p className="impact-empty">No categories match your search.</p>
+        <p className="impact-empty">{t("categories.empty")}</p>
       ) : (
         <div
           className={`impact-category-grid${
@@ -137,14 +139,14 @@ export function CategoriesLiveEditor({
                       color: categoryAccentColors[category.accent],
                     }}
                   >
-                    {status === "draft" ? "Draft" : "Published"}
+                    {status === "draft" ? t("common.draft") : t("common.published")}
                   </span>
                 </div>
                 <p className="impact-initiative-desc" dir="ltr">
                   {category.slug}
                 </p>
                 <div className="impact-initiative-meta">
-                  <span>Order: {category.sort_order}</span>
+                  <span>{t("common.order")}: {category.sort_order}</span>
                 </div>
                 {canEdit ? (
                   <div className="impact-initiative-actions">
@@ -153,13 +155,13 @@ export function CategoriesLiveEditor({
                       target="_blank"
                       className="impact-action impact-action--view"
                     >
-                      View live
+                      {t("common.viewLive")}
                     </Link>
                     <Link
                       href={`/admin/categories/${category.slug}`}
                       className="impact-action impact-action--edit"
                     >
-                      Edit
+                      {t("common.edit")}
                     </Link>
                   </div>
                 ) : null}
@@ -172,7 +174,7 @@ export function CategoriesLiveEditor({
 
       <footer className="impact-pagination">
         <p>
-          Showing {paged.length} of {filtered.length} categories
+          {t("common.showingCategories", { shown: paged.length, total: filtered.length })}
         </p>
         <div className="impact-pagination-controls">
           <button
