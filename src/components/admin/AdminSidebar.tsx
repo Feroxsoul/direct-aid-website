@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { canAccessNav, hasPermission } from "@/lib/admin/permissions";
 import type { AdminPermissions } from "@/lib/admin/permissions";
 import { t, type AdminLang } from "@/lib/admin/i18n";
+import { isNavPageHidden } from "@/lib/admin/nav-pages";
 import {
   APP_DEVELOPER,
   APP_VERSION_LABEL,
@@ -37,6 +38,9 @@ function canSeeNavItem(
   profile: AdminSidebarProps["profile"],
   item: NavItem,
 ) {
+  const hidden = profile.nav_hidden_pages ?? [];
+  if (isNavPageHidden(item.href, hidden)) return false;
+
   if (item.href === "/admin/users") {
     return profile.role_slug === "super_admin" || profile.role_slug === "admin";
   }
@@ -56,6 +60,7 @@ type AdminSidebarProps = {
   profile: {
     role_slug: string;
     permissions: AdminPermissions;
+    nav_hidden_pages?: string[] | null;
   };
   logoUrl: string;
   lang: AdminLang;
@@ -80,10 +85,10 @@ export function AdminSidebar({ profile, logoUrl, lang, onNavigate }: AdminSideba
       <div className="dash-sidebar-brand">
         <Image
           src={logoUrl}
-          alt="Direct Aid"
-          width={140}
-          height={44}
-          className="dash-sidebar-logo-img"
+          alt="10×10"
+          width={120}
+          height={72}
+          className="dash-sidebar-logo-img dash-sidebar-logo-img--10x10"
           unoptimized
         />
         <span className="dash-sidebar-sub">{t(lang, "sidebar.sub")}</span>
@@ -152,6 +157,7 @@ export function AdminSidebar({ profile, logoUrl, lang, onNavigate }: AdminSideba
 
       <div className="dash-sidebar-version">
         <span className="dash-sidebar-version-label">{APP_VERSION_LABEL}</span>
+        <span className="dash-sidebar-version-meta">Provided Direct Aid</span>
         <span className="dash-sidebar-version-meta">by {APP_DEVELOPER}</span>
       </div>
     </aside>

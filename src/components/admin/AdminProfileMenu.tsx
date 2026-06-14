@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { RoleBadge } from "@/components/admin/RoleBadge";
 import { signOut } from "@/lib/admin/actions";
-import { APP_DEVELOPER } from "@/lib/app-version";
 
 function getInitials(name: string | null, email: string) {
   const source = name?.trim() || email;
@@ -19,6 +18,7 @@ type AdminProfileMenuProps = {
   profile: {
     email: string;
     display_name: string | null;
+    avatar_url?: string | null;
     role_name: string;
     badge_color: string;
   };
@@ -48,12 +48,22 @@ export function AdminProfileMenu({ profile }: AdminProfileMenuProps) {
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <span className="dash-profile-avatar" aria-hidden>
-          {getInitials(profile.display_name, profile.email)}
-        </span>
+        {profile.avatar_url ? (
+          <img
+            src={profile.avatar_url}
+            alt=""
+            className="dash-profile-avatar dash-profile-avatar--img"
+            width={36}
+            height={36}
+          />
+        ) : (
+          <span className="dash-profile-avatar" aria-hidden>
+            {getInitials(profile.display_name, profile.email)}
+          </span>
+        )}
         <span className="dash-profile-meta">
           <span className="dash-profile-name">{displayName}</span>
-          <span className="dash-profile-dev">Developer · {APP_DEVELOPER}</span>
+          <span className="dash-profile-dev">{profile.role_name}</span>
         </span>
         <span className="dash-profile-chevron" aria-hidden>
           ▾
@@ -75,12 +85,12 @@ export function AdminProfileMenu({ profile }: AdminProfileMenuProps) {
           </div>
           <div className="dash-profile-dropdown-actions">
             <Link
-              href="/admin/settings"
+              href="/admin/profile"
               className="dash-profile-dropdown-link"
               role="menuitem"
               onClick={() => setOpen(false)}
             >
-              Profile & Settings
+              My Profile
             </Link>
             <Link
               href="/"

@@ -75,9 +75,21 @@
 
 .dash-sidebar--impact .dash-sidebar-logo-img {
   width: auto;
-  height: 2.25rem;
   max-width: 100%;
   object-fit: contain;
+}
+
+.dash-sidebar--impact .dash-sidebar-logo-img--10x10 {
+  height: 3.25rem;
+}
+
+.dash-sidebar-version-meta + .dash-sidebar-version-meta {
+  margin-top: 0.1rem;
+}
+
+.dash-profile-avatar--img {
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .dash-sidebar-sub {

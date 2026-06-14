@@ -29,6 +29,7 @@ const en: Dict = {
   "page.logs": "Activity Log",
   "page.settings": "Settings",
   "page.notifications": "Notifications",
+  "page.profile": "My Profile",
   "sidebar.sub": "Direct Aid · Admin",
 };
 
@@ -57,6 +58,7 @@ const ar: Dict = {
   "page.logs": "سجل النشاط",
   "page.settings": "الإعدادات",
   "page.notifications": "الإشعارات",
+  "page.profile": "ملفي الشخصي",
   "sidebar.sub": "العون المباشر · الإدارة",
 };
 
@@ -77,5 +79,6 @@ export function getPageTitleKey(pathname: string): string {
   if (pathname.startsWith("/admin/logs")) return "page.logs";
   if (pathname.startsWith("/admin/settings")) return "page.settings";
   if (pathname.startsWith("/admin/notifications")) return "page.notifications";
+  if (pathname.startsWith("/admin/profile")) return "page.profile";
   return "page.dashboard";
 }

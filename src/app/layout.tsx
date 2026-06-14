@@ -1,21 +1,20 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/layout/Footer";
-import { DEFAULT_DIRECT_AID_LOGO } from "@/lib/brand";
+import { BRAND_10X10_LOGO_SVG } from "@/lib/brand";
 import { getPublicContentSettings } from "@/lib/public-content";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await getPublicContentSettings();
-  const favicon = content.logo_url || DEFAULT_DIRECT_AID_LOGO;
 
   return {
     metadataBase: new URL(content.public_site_url),
     title: "مشاريع العون المباشر 10×10",
     description: "مشاريع العون المباشر 10×10",
     icons: {
-      icon: favicon,
-      shortcut: favicon,
-      apple: favicon,
+      icon: BRAND_10X10_LOGO_SVG,
+      shortcut: BRAND_10X10_LOGO_SVG,
+      apple: BRAND_10X10_LOGO_SVG,
     },
     openGraph: {
       title: "مشاريع العون المباشر 10×10",

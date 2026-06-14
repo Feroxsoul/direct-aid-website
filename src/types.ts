@@ -161,6 +161,7 @@ export type AdminUserRow = {
   role_slug?: string | null;
   display_name: string | null;
   avatar_url?: string | null;
+  nav_hidden_pages?: string[] | null;
   is_active: boolean;
   last_login_at?: string | null;
   suspended_at?: string | null;

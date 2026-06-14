@@ -107,7 +107,9 @@ export function HomeProjectsExplorer({
         className="landing-section landing-section--categories"
       >
         <div className="landing-container">
-          <h2 className="landing-section-title landing-reveal">{categoriesSectionTitle}</h2>
+          {categoriesSectionTitle?.trim() ? (
+            <h2 className="landing-section-title landing-reveal">{categoriesSectionTitle}</h2>
+          ) : null}
           <div className="landing-categories-scroll">
             {categories.map((category, index) => {
               const short = category.titleLine2 || category.titleLine1;

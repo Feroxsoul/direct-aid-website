@@ -2,12 +2,14 @@
 
 import { useMemo, useState } from "react";
 import {
-  removeAdminUser,
   saveAdminUser,
   updateAdminUser,
 } from "@/lib/admin/actions";
+import { DeleteUserButton } from "@/components/admin/DeleteUserButton";
+import { NavPageVisibilityEditor } from "@/components/admin/NavPageVisibilityEditor";
 import { RoleBadge } from "@/components/admin/RoleBadge";
 import { hasPermission } from "@/lib/admin/permissions";
+import { parseNavHiddenPages } from "@/lib/admin/nav-pages";
 import {
   DEFAULT_ROLE_DEFINITIONS,
   ROLE_DESCRIPTIONS,
@@ -80,6 +82,7 @@ export function AdminUsersPanel({
   const canEdit = hasPermission(permissions, roleSlug, "users", "edit");
   const canDelete = hasPermission(permissions, roleSlug, "users", "delete");
   const isSuperAdmin = roleSlug === "super_admin";
+  const canSetPassword = isSuperAdmin || roleSlug === "admin";
 
   const allRoles: RoleOption[] = useMemo(() => {
     const defaults = DEFAULT_ROLE_DEFINITIONS.map((role) => ({
@@ -131,9 +134,7 @@ export function AdminUsersPanel({
         <div className="dash-panel" style={{ marginBottom: "1rem" }}>
           <h2 className="dash-panel-title">Add User</h2>
           <p className="dash-page-subtitle" style={{ marginBottom: "1rem" }}>
-            {isSuperAdmin
-              ? "Add email, role, and optional password so the user can log in immediately."
-              : "Add email and role. Super Admin can also set a login password."}
+            Add email, role, and password — the user can log in immediately without Supabase.
           </p>
           <form action={saveAdminUser} className="admin-form admin-form-inline">
             <div className="admin-field">
@@ -167,10 +168,10 @@ export function AdminUsersPanel({
                 ))}
               </select>
             </div>
-            {isSuperAdmin ? (
+            {canSetPassword ? (
               <div className="admin-field">
                 <label className="admin-label" htmlFor="new-password">
-                  Password (optional)
+                  Password
                 </label>
                 <input
                   id="new-password"
@@ -178,6 +179,7 @@ export function AdminUsersPanel({
                   type="password"
                   className="admin-input"
                   minLength={8}
+                  required
                   dir="ltr"
                   placeholder="Min. 8 characters"
                 />
@@ -334,18 +336,39 @@ export function AdminUsersPanel({
                                   <input type="checkbox" name="suspend" />
                                   <span>Suspend user</span>
                                 </label>
+                                {isSuperAdmin ? (
+                                  <>
+                                    <div className="admin-field">
+                                      <label className="admin-label">Set new password</label>
+                                      <input
+                                        name="new_password"
+                                        type="password"
+                                        className="admin-input"
+                                        minLength={8}
+                                        dir="ltr"
+                                        placeholder="Leave blank to keep current"
+                                      />
+                                      <p className="admin-help-text">
+                                        Stored passwords cannot be viewed — only reset to a new value.
+                                      </p>
+                                    </div>
+                                    <NavPageVisibilityEditor
+                                      hiddenPages={parseNavHiddenPages(
+                                        adminUser.nav_hidden_pages,
+                                      )}
+                                    />
+                                  </>
+                                ) : null}
                                 <button type="submit" className="dash-btn">
                                   Save
                                 </button>
                               </form>
                             ) : null}
                             {canDeleteUser ? (
-                              <form action={removeAdminUser} className="admin-actions">
-                                <input type="hidden" name="id" value={adminUser.id} />
-                                <button type="submit" className="dash-btn dash-btn--danger">
-                                  Delete
-                                </button>
-                              </form>
+                              <DeleteUserButton
+                                userId={adminUser.id}
+                                userEmail={adminUser.email}
+                              />
                             ) : null}
                           </details>
                         ) : (

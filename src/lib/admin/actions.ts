@@ -21,6 +21,31 @@ import { categoryAccentColors } from "@/lib/design-tokens";
 import { isHexColor, normalizeHexColor } from "@/lib/category-colors";
 import { normalizeCdnImageUrl } from "@/lib/image-url";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
+import { ADMIN_NAV_PAGES } from "@/lib/admin/nav-pages";
+
+function canManageLoginAccounts(roleSlug: string) {
+  return roleSlug === "super_admin" || roleSlug === "admin";
+}
+
+function parseNavHiddenFromForm(formData: FormData): string[] {
+  const hidden: string[] = [];
+  for (const page of ADMIN_NAV_PAGES) {
+    if (formData.get(`nav_visible_${page.key}`) !== "on") {
+      hidden.push(page.href);
+    }
+  }
+  return hidden;
+}
+
+async function setAuthUserPassword(userId: string, password: string) {
+  const service = createSupabaseServiceClient();
+  if (!service) {
+    throw new Error("Service role key is required to manage passwords");
+  }
+
+  const { error } = await service.auth.admin.updateUserById(userId, { password });
+  if (error) throw new Error(error.message);
+}
 
 async function getAdminWriteClient() {
   const { supabase, profile } = await requireSupabaseAdmin();
@@ -680,8 +705,18 @@ export async function saveAdminUser(formData: FormData) {
     throw new Error("البريد الإلكتروني مطلوب");
   }
 
-  if (password && profile.role_slug !== "super_admin") {
-    throw new Error("Only Super Admin can set login passwords");
+  const { data: existing } = await supabase
+    .from("admin_users")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (password && !canManageLoginAccounts(profile.role_slug)) {
+    throw new Error("Only Admin or Super Admin can set login passwords");
+  }
+
+  if (!existing && !password) {
+    throw new Error("Password is required when creating a new user");
   }
 
   if (password && password.length < 8) {
@@ -709,12 +744,6 @@ export async function saveAdminUser(formData: FormData) {
 
     linkedUserId = authData.user?.id ?? null;
   }
-
-  const { data: existing } = await supabase
-    .from("admin_users")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
 
   const { error } = existing
     ? await supabase
@@ -769,7 +798,7 @@ export async function updateAdminUser(formData: FormData) {
 
   const { data: existingUser } = await supabase
     .from("admin_users")
-    .select("role_slug, role")
+    .select("role_slug, role, user_id, nav_hidden_pages")
     .eq("id", id)
     .maybeSingle();
 
@@ -779,6 +808,15 @@ export async function updateAdminUser(formData: FormData) {
   }
   const displayName = String(formData.get("display_name") ?? "").trim() || null;
   const isActive = formData.get("is_active") === "on";
+  const newPassword = String(formData.get("new_password") ?? "").trim();
+
+  if (newPassword && profile.role_slug !== "super_admin") {
+    throw new Error("Only Super Admin can reset passwords");
+  }
+
+  if (newPassword && newPassword.length < 8) {
+    throw new Error("Password must be at least 8 characters");
+  }
 
   if (!id) {
     throw new Error("معرف المستخدم مطلوب");
@@ -789,6 +827,8 @@ export async function updateAdminUser(formData: FormData) {
   }
 
   const suspended = formData.get("suspend") === "on";
+  const navHiddenPages =
+    profile.role_slug === "super_admin" ? parseNavHiddenFromForm(formData) : undefined;
 
   const { error } = await supabase
     .from("admin_users")
@@ -799,12 +839,21 @@ export async function updateAdminUser(formData: FormData) {
       is_active: isActive,
       suspended_at: suspended ? new Date().toISOString() : null,
       created_by: user.id,
+      ...(navHiddenPages ? { nav_hidden_pages: navHiddenPages } : {}),
     })
     .eq("id", id);
 
   if (error) throw new Error(error.message);
 
-  await logAuditEvent(profile, "user.updated", "user", id, { role, isActive });
+  if (newPassword && existingUser?.user_id) {
+    await setAuthUserPassword(existingUser.user_id, newPassword);
+  }
+
+  await logAuditEvent(profile, "user.updated", "user", id, {
+    role,
+    isActive,
+    passwordReset: Boolean(newPassword),
+  });
   revalidatePath("/admin/users");
   redirect("/admin/users?saved=1");
 }
@@ -900,6 +949,26 @@ export async function createCustomRole(formData: FormData) {
 
   await logAuditEvent(profile, "role.created", "role", slug);
   revalidatePath("/admin/roles");
+}
+
+export async function saveMyProfile(formData: FormData) {
+  const { supabase, profile } = await requireSupabaseAdmin();
+  const displayName = String(formData.get("display_name") ?? "").trim() || null;
+  const avatarUrl = String(formData.get("avatar_url") ?? "").trim() || null;
+
+  const { error } = await supabase
+    .from("admin_users")
+    .update({
+      display_name: displayName,
+      avatar_url: avatarUrl,
+    })
+    .eq("id", profile.id);
+
+  if (error) throw new Error(error.message);
+
+  await logAuditEvent(profile, "profile.updated", "user", profile.id);
+  revalidatePath("/admin/profile");
+  redirect("/admin/profile?saved=1");
 }
 
 export async function recordAdminLogin() {

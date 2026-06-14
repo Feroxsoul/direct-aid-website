@@ -14,6 +14,7 @@ import {
   hasMinRole,
 } from "@/lib/admin/roles";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { parseNavHiddenPages } from "@/lib/admin/nav-pages";
 import type { AdminPermissions, AdminProfile, AdminUserRow } from "@/types";
 
 function enrichProfile(row: AdminUserRow): AdminProfile {
@@ -26,6 +27,7 @@ function enrichProfile(row: AdminUserRow): AdminProfile {
     role_name: roleDef?.name ?? getRoleLabel(roleSlug),
     badge_color: getRoleBadgeColor(roleSlug),
     permissions: resolveRolePermissions(roleSlug),
+    nav_hidden_pages: parseNavHiddenPages(row.nav_hidden_pages),
   };
 }
 
