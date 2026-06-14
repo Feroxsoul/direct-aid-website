@@ -1,8 +1,8 @@
 import { saveAdvancedSettings, savePlatformSettings } from "@/lib/admin/actions";
-import { AccentSelect } from "@/components/admin/AccentSelect";
 import { requireSuperAdmin } from "@/lib/admin/auth";
 import { adminGetCategories, adminGetSettings } from "@/lib/admin/data";
 import {
+  DEFAULT_PUBLIC_SITE_URL,
   parseCategoryAccentMap,
   parseProjectTagDefs,
   settingsMap,
@@ -22,6 +22,7 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
   const map = settingsMap(settingsRows);
   const accentMap = parseCategoryAccentMap(map.category_accent_map);
   const tagDefs = parseProjectTagDefs(map.project_detail_tag_defs);
+  const publicSiteUrl = map.public_site_url ?? DEFAULT_PUBLIC_SITE_URL;
 
   const accentMapForForm = Object.fromEntries(
     categories.map((category) => [
@@ -35,11 +36,36 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
       <header className="dash-page-header">
         <h1 className="dash-page-title">Settings</h1>
         <p className="dash-page-subtitle">
-          Super Admin only — branding, integrations, category colors, and project detail tags.
+          Super Admin only — branding, public domain, integrations, category colors, and project detail tags.
         </p>
       </header>
 
       {saved ? <p className="admin-success">Settings saved successfully.</p> : null}
+
+      <section className="dash-panel">
+        <h2 className="dash-panel-title">Public domain — da10.direct-aid.org</h2>
+        <p className="admin-help-text">
+          Use this custom subdomain instead of the Railway default URL. After DNS is configured, set the public site URL below and share that link with users.
+        </p>
+        <ol className="admin-help-text" style={{ marginInlineStart: "1.25rem" }}>
+          <li>
+            In your DNS provider for <strong>direct-aid.org</strong>, add a <strong>CNAME</strong> record:
+            <code dir="ltr"> da10 → &lt;your-app&gt;.up.railway.app</code>
+          </li>
+          <li>
+            In <strong>Railway</strong>: open your service → <strong>Settings → Networking → Custom Domain</strong> → add{" "}
+            <code dir="ltr">da10.direct-aid.org</code>
+          </li>
+          <li>
+            Wait for SSL to provision (usually a few minutes), then set <strong>Public site URL</strong> to{" "}
+            <code dir="ltr">https://da10.direct-aid.org</code>
+          </li>
+          <li>Redeploy if needed. Visitors should use the custom domain, not the Railway URL.</li>
+        </ol>
+        <p className="admin-help-text">
+          Current configured URL: <a href={publicSiteUrl} dir="ltr">{publicSiteUrl}</a>
+        </p>
+      </section>
 
       <form action={savePlatformSettings} className="dash-panel admin-form">
         <h2 className="dash-panel-title">General</h2>
@@ -50,6 +76,19 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
             className="admin-input"
             defaultValue={map.site_title ?? "مشاريع 10×10"}
           />
+        </div>
+        <div className="admin-field">
+          <label className="admin-label">Public site URL</label>
+          <input
+            name="public_site_url"
+            className="admin-input"
+            defaultValue={publicSiteUrl}
+            placeholder="https://da10.direct-aid.org"
+            dir="ltr"
+          />
+          <p className="admin-help-text">
+            Canonical public URL shown to admins and used for sharing metadata. Use https://da10.direct-aid.org after DNS is live.
+          </p>
         </div>
         <div className="admin-field">
           <label className="admin-label">Logo URL</label>
@@ -94,7 +133,7 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
       <form action={saveAdvancedSettings} className="dash-panel admin-form">
         <h2 className="dash-panel-title">Category accent colors</h2>
         <p className="admin-help-text">
-          Assign accent colors per category. New categories use these mappings — no color picker on the category form.
+          Assign accent colors per category. Project cards inherit the color from the selected category automatically.
         </p>
         {categories.map((category) => (
           <div key={category.slug} className="admin-row">

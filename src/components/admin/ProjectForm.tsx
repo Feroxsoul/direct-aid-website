@@ -7,17 +7,6 @@ type ProjectFormProps = {
   categories: CategoryRow[];
 };
 
-const accents = [
-  "red",
-  "green",
-  "blue",
-  "olive",
-  "yellow",
-  "orange",
-  "water",
-  "default",
-] as const;
-
 export function ProjectForm({ project, categories }: ProjectFormProps) {
   const isNew = !project;
 
@@ -55,6 +44,35 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           />
         </div>
       </div>
+
+      <div className="admin-row">
+        <div className="admin-field">
+          <label className="admin-label" htmlFor="meta_title">
+            SEO Meta Title
+          </label>
+          <input
+            id="meta_title"
+            name="meta_title"
+            className="admin-input"
+            defaultValue={project?.meta_title ?? ""}
+          />
+        </div>
+        <div className="admin-field">
+          <label className="admin-label" htmlFor="meta_description">
+            SEO Meta Description
+          </label>
+          <input
+            id="meta_description"
+            name="meta_description"
+            className="admin-input"
+            defaultValue={project?.meta_description ?? ""}
+          />
+        </div>
+      </div>
+
+      <p className="admin-help-text">
+        Accent color is assigned automatically from the selected category (Settings → Category accent colors).
+      </p>
 
       <ProjectMediaPicker
         imageUrl={project?.image_url ?? ""}
@@ -157,39 +175,6 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           />
         </div>
         <div className="admin-field">
-          <label className="admin-label" htmlFor="year_code">
-            Year code (optional)
-          </label>
-          <input
-            id="year_code"
-            name="year_code"
-            className="admin-input"
-            defaultValue={project?.year_code ?? ""}
-            dir="ltr"
-          />
-        </div>
-      </div>
-
-      <div className="admin-row">
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="accent">
-            Accent color
-          </label>
-          <select
-            id="accent"
-            name="accent"
-            className="admin-select"
-            defaultValue={project?.accent ?? ""}
-          >
-            <option value="">Category default</option>
-            {accents.map((accent) => (
-              <option key={accent} value={accent}>
-                {accent}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="admin-field">
           <label className="admin-label" htmlFor="sort_order">
             Sort order
           </label>
@@ -203,77 +188,20 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
         </div>
       </div>
 
-      <div className="admin-row">
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="status">
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            className="admin-select"
-            defaultValue={
-              project?.status ?? (project?.is_published ? "published" : "draft")
-            }
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="archived">Archived</option>
-          </select>
-        </div>
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="goal_amount">
-            Goal Amount (USD)
-          </label>
-          <input
-            id="goal_amount"
-            name="goal_amount"
-            type="number"
-            min={0}
-            className="admin-input"
-            defaultValue={project?.goal_amount ?? ""}
-            dir="ltr"
-          />
-        </div>
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="amount_raised">
-            Amount Raised (USD)
-          </label>
-          <input
-            id="amount_raised"
-            name="amount_raised"
-            type="number"
-            min={0}
-            className="admin-input"
-            defaultValue={project?.amount_raised ?? 0}
-            dir="ltr"
-          />
-        </div>
-      </div>
-
-      <div className="admin-row">
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="meta_title">
-            SEO Meta Title
-          </label>
-          <input
-            id="meta_title"
-            name="meta_title"
-            className="admin-input"
-            defaultValue={project?.meta_title ?? ""}
-          />
-        </div>
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="meta_description">
-            SEO Meta Description
-          </label>
-          <input
-            id="meta_description"
-            name="meta_description"
-            className="admin-input"
-            defaultValue={project?.meta_description ?? ""}
-          />
-        </div>
+      <div className="admin-field">
+        <label className="admin-label" htmlFor="status">
+          Status
+        </label>
+        <select
+          id="status"
+          name="status"
+          className="admin-select"
+          defaultValue={project?.status ?? (project?.is_published ? "published" : "draft")}
+        >
+          <option value="draft">Draft</option>
+          <option value="published">Published</option>
+          <option value="archived">Archived</option>
+        </select>
       </div>
 
       <div className="admin-actions">

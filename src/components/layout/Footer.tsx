@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { FooterColumn } from "@/lib/admin/settings-store";
+import type { FooterColumn, FooterSocialLink } from "@/lib/admin/settings-store";
 
 const CDN = "https://cdn.prod.website-files.com/632a01171b125a156b28c038";
 const DEFAULT_LOGO = `${CDN}/64c8cde2258c815c760717a9_small.png`;
@@ -10,15 +10,23 @@ type FooterProps = {
   siteTitle?: string;
   tagline?: string;
   copyright?: string;
+  legalLine?: string;
+  privacyUrl?: string;
+  donationPolicyUrl?: string;
   columns?: FooterColumn[];
+  socialLinks?: FooterSocialLink[];
 };
 
 export function Footer({
   logoUrl = DEFAULT_LOGO,
   siteTitle = "مشاريع 10×10",
-  tagline = "تمكين المجتمعات من خلال التنمية المستدامة والعمل الإنساني الشفاف في جميع أنحاء العالم.",
-  copyright = "العون المباشر الدولي. جميع الحقوق محفوظة.",
+  tagline = "جمعية العون المباشر — مؤسسة خيرية كويتية تعمل على تقديم العون الإنساني والتنموي في أكثر من 30 دولة.",
+  copyright = "جمعية العون المباشر. جميع الحقوق محفوظة.",
+  legalLine = "مؤسسة خيرية كويتية غير ربحية — رقم التسجيل 1999/81",
+  privacyUrl = "https://direct-aid.org/cms/about-us-ar-2/good-governance-in-direct-aid/privacy-policy/",
+  donationPolicyUrl = "https://direct-aid.org/cms/donation-policy-ar/",
   columns = [],
+  socialLinks = [],
 }: FooterProps) {
   const year = new Date().getFullYear();
 
@@ -29,6 +37,22 @@ export function Footer({
           <div className="landing-footer-brand">
             <Image src={logoUrl} alt={siteTitle} width={120} height={40} className="h-8 w-auto" />
             <p>{tagline}</p>
+            {socialLinks.length ? (
+              <div className="landing-footer-social">
+                {socialLinks.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={link.label}
+                    title={link.label}
+                  >
+                    {link.label.slice(0, 1)}
+                  </a>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           {columns.map((column) => (
@@ -46,12 +70,15 @@ export function Footer({
         </div>
 
         <div className="landing-footer-bottom">
-          <span>
-            © {year} {copyright}
-          </span>
+          <div className="landing-footer-legal">
+            <span>
+              © {year} {copyright}
+            </span>
+            {legalLine ? <span>{legalLine}</span> : null}
+          </div>
           <div className="landing-footer-meta">
-            <span>منظمة خيرية معتمدة: #8254-A</span>
-            <span>مدققة من KPMG</span>
+            <Link href={privacyUrl}>سياسة الخصوصية</Link>
+            <Link href={donationPolicyUrl}>سياسة التبرع</Link>
           </div>
         </div>
       </div>

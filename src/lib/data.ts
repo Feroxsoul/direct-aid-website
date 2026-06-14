@@ -166,6 +166,8 @@ function mapProjectDetail(
     description:
       row.description ?? getDefaultDescription(row.title, categoryLabel),
     galleryUrls: row.gallery_urls ?? [],
+    metaTitle: row.meta_title ?? undefined,
+    metaDescription: row.meta_description ?? undefined,
   };
 }
 

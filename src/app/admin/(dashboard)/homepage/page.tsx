@@ -5,7 +5,7 @@ import { StatsBoxPreview } from "@/components/admin/StatsBoxPreview";
 import { requirePermission } from "@/lib/admin/auth";
 import { adminGetHomeStatistics, adminGetSettings } from "@/lib/admin/data";
 import { fallbackHomeStatistics } from "@/data/fallback";
-import { DEFAULT_HEADER_NAV, settingsMap } from "@/lib/admin/settings-store";
+import { settingsMap } from "@/lib/admin/settings-store";
 
 const boxColorOptions = [
   { value: "#e2eed6", label: "Light green (default)" },
@@ -31,14 +31,13 @@ export default async function AdminHomepagePage({ searchParams }: HomepageAdminP
   const brandLine1 = settings.stats_brand_line_1 ?? fallbackHomeStatistics.brandLine1;
   const brandLine2 = settings.stats_brand_line_2 ?? fallbackHomeStatistics.brandLine2;
   const boxColor = settings.stats_box_color ?? fallbackHomeStatistics.backgroundColor;
-  const headerNavJson = settings.header_nav_json ?? JSON.stringify(DEFAULT_HEADER_NAV, null, 2);
 
   return (
     <div className="dash-page">
       <header className="dash-page-header">
         <h1 className="dash-page-title">Home Page</h1>
         <p className="dash-page-subtitle">
-          Edit all Arabic content shown on the public homepage. Admin UI stays in English.
+          Edit all Arabic content shown on the public homepage. Top navigation was removed — only logo and share icon appear in the header.
         </p>
       </header>
 
@@ -123,37 +122,23 @@ export default async function AdminHomepagePage({ searchParams }: HomepageAdminP
           presets={boxColorOptions}
         />
 
-        <h2 className="dash-panel-title">Header navigation (Arabic labels)</h2>
+        <h2 className="dash-panel-title">Share button (header)</h2>
         <p className="admin-help-text">
-          JSON array: [{`{"href":"/","label":"الرئيسية"}`}, …]
+          Icon-only share control in the public header. On mobile it opens the native share sheet.
         </p>
-        <textarea
-          name="header_nav_json"
-          className="admin-textarea"
-          rows={8}
-          defaultValue={headerNavJson}
-          dir="ltr"
-        />
-
-        <div className="admin-row">
-          <div className="admin-field">
-            <label className="admin-label">Donate button (Arabic)</label>
-            <input
-              name="donate_label"
-              className="admin-input"
-              defaultValue={settings.donate_label ?? "تبرع الآن"}
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label">Donate URL</label>
-            <input
-              name="donate_url"
-              className="admin-input"
-              defaultValue={settings.donate_url ?? "https://directaid.org/donate"}
-              dir="ltr"
-            />
-          </div>
+        <div className="admin-field">
+          <label className="admin-label">Share label (Arabic, for accessibility)</label>
+          <input
+            name="share_label"
+            className="admin-input"
+            defaultValue={settings.share_label ?? "مشاركة"}
+          />
         </div>
+        <ImageField
+          name="share_icon_url"
+          label="Share icon"
+          defaultValue={settings.share_icon_url ?? ""}
+        />
 
         <h2 className="dash-panel-title">Homepage sections</h2>
         <div className="admin-field">
@@ -206,35 +191,38 @@ export default async function AdminHomepagePage({ searchParams }: HomepageAdminP
             }
           />
         </div>
+
+        <h2 className="dash-panel-title">WhatsApp subscription</h2>
+        <p className="admin-help-text">
+          Replaces the email newsletter box. The button opens WhatsApp with the pre-filled Arabic message.
+        </p>
         <div className="admin-row">
           <div className="admin-field">
-            <label className="admin-label">Newsletter placeholder (Arabic)</label>
+            <label className="admin-label">WhatsApp number (with country code)</label>
             <input
-              name="newsletter_placeholder"
+              name="whatsapp_number"
               className="admin-input"
-              defaultValue={settings.newsletter_placeholder ?? "أدخل بريدك الإلكتروني"}
+              defaultValue={settings.whatsapp_number ?? "9651866888"}
+              dir="ltr"
             />
           </div>
           <div className="admin-field">
-            <label className="admin-label">Newsletter button (Arabic)</label>
+            <label className="admin-label">Pre-filled message (Arabic)</label>
             <input
-              name="newsletter_button"
+              name="whatsapp_subscribe_message"
               className="admin-input"
-              defaultValue={settings.newsletter_button ?? "انضم للمجتمع"}
+              defaultValue={settings.whatsapp_subscribe_message ?? "اشتراك"}
             />
           </div>
         </div>
-
-        <h2 className="dash-panel-title">Category pages share button</h2>
         <div className="admin-field">
-          <label className="admin-label">Share label (Arabic)</label>
-          <input name="share_label" className="admin-input" defaultValue={settings.share_label ?? ""} />
+          <label className="admin-label">Button label (Arabic)</label>
+          <input
+            name="whatsapp_subscribe_button"
+            className="admin-input"
+            defaultValue={settings.whatsapp_subscribe_button ?? "اشتراك"}
+          />
         </div>
-        <ImageField
-          name="share_icon_url"
-          label="Share icon"
-          defaultValue={settings.share_icon_url ?? ""}
-        />
 
         <button type="submit" className="admin-button">
           Save home page

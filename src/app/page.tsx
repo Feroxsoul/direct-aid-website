@@ -15,13 +15,18 @@ import { getPublicContentSettings } from "@/lib/public-content";
 export const revalidate = 0;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const page = await getPageBySlug("home");
+  const [page, content] = await Promise.all([
+    getPageBySlug("home"),
+    getPublicContentSettings(),
+  ]);
 
   return {
+    metadataBase: new URL(content.public_site_url),
     title: page?.title ?? "مشاريع العون المباشر 10×10",
     description: page?.meta_description ?? "مشاريع العون المباشر 10×10",
     openGraph: {
       title: page?.title ?? "مشاريع العون المباشر 10×10",
+      url: content.public_site_url,
     },
   };
 }
@@ -39,9 +44,10 @@ export default async function Home() {
       <LandingHeader
         logoUrl={content.logo_url}
         siteTitle={content.site_title}
-        navLinks={content.header_nav}
-        donateLabel={content.donate_label}
-        donateUrl={content.donate_url}
+        shareIconUrl={content.share_icon_url}
+        shareLabel={content.share_label}
+        shareTitle={content.site_title}
+        shareText={content.site_description || content.site_title}
       />
       <StatisticsSection {...statistics} ctaLabel={content.hero_cta_label} />
       <HomeProjectsExplorer
@@ -54,8 +60,9 @@ export default async function Home() {
       <TransparencySection
         title={content.transparency_title}
         text={content.transparency_text}
-        newsletterPlaceholder={content.newsletter_placeholder}
-        newsletterButton={content.newsletter_button}
+        whatsappNumber={content.whatsapp_number}
+        whatsappMessage={content.whatsapp_subscribe_message}
+        subscribeButtonLabel={content.whatsapp_subscribe_button}
       />
     </PageContainer>
   );

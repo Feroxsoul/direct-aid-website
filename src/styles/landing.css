@@ -8,7 +8,8 @@
   --landing-radius: 1.25rem;
   width: 100%;
   color: var(--da-black);
-  text-align: left;
+  direction: rtl;
+  text-align: start;
 }
 
 .landing-container {
@@ -36,30 +37,21 @@
   min-height: 4.5rem;
 }
 
-@media (min-width: 900px) {
-  .landing-header-inner {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 1.5rem;
-  }
+.landing-share-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f4f4f3;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
 
-  .landing-logo {
-    grid-column: 1;
-  }
-
-  .landing-nav {
-    grid-column: 2;
-    justify-content: center;
-  }
-
-  .landing-header-mobile-actions {
-    display: none;
-  }
-
-  .landing-header-actions {
-    grid-column: 3;
-  }
+.landing-share-btn:hover {
+  background: #e8f3e0;
 }
 
 .landing-nav {
@@ -351,10 +343,11 @@
 .landing-section-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  text-align: start;
 }
 
 .landing-section-title {
@@ -557,6 +550,7 @@
   flex: 1;
   flex-direction: column;
   padding: 1.25rem;
+  text-align: start;
 }
 
 .landing-project-title {
@@ -694,6 +688,21 @@
   letter-spacing: 0.06em;
   cursor: pointer;
   white-space: nowrap;
+  text-decoration: none;
+  text-align: center;
+}
+
+.landing-newsletter-btn--whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 8rem;
+}
+
+.landing-subscribe-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 /* Footer */
@@ -773,19 +782,35 @@
 .landing-footer-bottom {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   padding-top: 1.5rem;
   border-top: 1px solid #f0f0ef;
   color: var(--landing-muted);
   font-size: 0.75rem;
+  text-align: start;
+}
+
+.landing-footer-legal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .landing-footer-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.landing-footer-meta a {
+  color: var(--landing-muted);
+  text-decoration: none;
+}
+
+.landing-footer-meta a:hover {
+  color: var(--da-green);
 }
 
 /* Listing page */

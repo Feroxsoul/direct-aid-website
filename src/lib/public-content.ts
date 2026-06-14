@@ -1,10 +1,16 @@
-import type { FooterColumn } from "@/lib/admin/settings-store";
+import type { FooterColumn, FooterSocialLink } from "@/lib/admin/settings-store";
 import {
   DEFAULT_FOOTER_COLUMNS,
-  DEFAULT_HEADER_NAV,
+  DEFAULT_FOOTER_DONATION_POLICY_URL,
+  DEFAULT_FOOTER_LEGAL,
+  DEFAULT_FOOTER_PRIVACY_URL,
+  DEFAULT_FOOTER_SOCIAL,
+  DEFAULT_PUBLIC_SITE_URL,
   parseFooterColumns,
-  parseHeaderNav,
+  parseFooterSocial,
   parseJsonSetting,
+  sanitizePublicCopyright,
+  sanitizePublicTagline,
 } from "@/lib/admin/settings-store";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -12,46 +18,52 @@ export type PublicContentSettings = {
   logo_url: string;
   site_title: string;
   site_description: string;
+  public_site_url: string;
   share_label: string;
   share_icon_url: string;
   hero_cta_label: string;
-  donate_label: string;
-  donate_url: string;
   transparency_title: string;
   transparency_text: string;
-  newsletter_placeholder: string;
-  newsletter_button: string;
+  whatsapp_number: string;
+  whatsapp_subscribe_message: string;
+  whatsapp_subscribe_button: string;
   impact_section_title: string;
   impact_section_subtitle: string;
   categories_section_title: string;
   footer_tagline: string;
   footer_copyright: string;
-  header_nav: { href: string; label: string }[];
+  footer_legal_line: string;
+  footer_privacy_url: string;
+  footer_donation_policy_url: string;
   footer_columns: FooterColumn[];
+  footer_social: FooterSocialLink[];
 };
 
 const DEFAULTS: PublicContentSettings = {
   logo_url: "",
   site_title: "مشاريع 10×10",
   site_description: "",
-  share_label: "المشاركة",
+  public_site_url: DEFAULT_PUBLIC_SITE_URL,
+  share_label: "مشاركة",
   share_icon_url: "",
   hero_cta_label: "استكشف مهمتنا ←",
-  donate_label: "تبرع الآن",
-  donate_url: "https://directaid.org/donate",
   transparency_title: "راقب الشفافية",
   transparency_text:
     "ابقَ على اطلاع بآخر مستجدات عملياتنا الميدانية. نؤمن بالمساءلة الكاملة عن كل تبرع وكل حياة تتأثر من خلال مبادرة البركة 10×10.",
-  newsletter_placeholder: "أدخل بريدك الإلكتروني",
-  newsletter_button: "انضم للمجتمع",
+  whatsapp_number: "9651866888",
+  whatsapp_subscribe_message: "اشتراك",
+  whatsapp_subscribe_button: "اشتراك",
   impact_section_title: "آخر نشاط للأثر",
   impact_section_subtitle: "مشروع مميز من كل فئة — اختر فئة أعلاه لعرض المزيد.",
   categories_section_title: "فئات المشاريع",
   footer_tagline:
-    "تمكين المجتمعات من خلال التنمية المستدامة والعمل الإنساني الشفاف في جميع أنحاء العالم.",
-  footer_copyright: "العون المباشر الدولي. جميع الحقوق محفوظة.",
-  header_nav: DEFAULT_HEADER_NAV,
+    "جمعية العون المباشر — مؤسسة خيرية كويتية تعمل على تقديم العون الإنساني والتنموي في أكثر من 30 دولة.",
+  footer_copyright: "جمعية العون المباشر. جميع الحقوق محفوظة.",
+  footer_legal_line: DEFAULT_FOOTER_LEGAL,
+  footer_privacy_url: DEFAULT_FOOTER_PRIVACY_URL,
+  footer_donation_policy_url: DEFAULT_FOOTER_DONATION_POLICY_URL,
   footer_columns: DEFAULT_FOOTER_COLUMNS,
+  footer_social: DEFAULT_FOOTER_SOCIAL,
 };
 
 export async function getPublicContentSettings(): Promise<PublicContentSettings> {
@@ -66,22 +78,28 @@ export async function getPublicContentSettings(): Promise<PublicContentSettings>
     logo_url: map.logo_url ?? DEFAULTS.logo_url,
     site_title: map.site_title ?? DEFAULTS.site_title,
     site_description: map.site_description ?? DEFAULTS.site_description,
+    public_site_url: map.public_site_url ?? DEFAULTS.public_site_url,
     share_label: map.share_label ?? DEFAULTS.share_label,
     share_icon_url: map.share_icon_url ?? DEFAULTS.share_icon_url,
     hero_cta_label: map.hero_cta_label ?? DEFAULTS.hero_cta_label,
-    donate_label: map.donate_label ?? DEFAULTS.donate_label,
-    donate_url: map.donate_url ?? DEFAULTS.donate_url,
     transparency_title: map.transparency_title ?? DEFAULTS.transparency_title,
     transparency_text: map.transparency_text ?? DEFAULTS.transparency_text,
-    newsletter_placeholder: map.newsletter_placeholder ?? DEFAULTS.newsletter_placeholder,
-    newsletter_button: map.newsletter_button ?? DEFAULTS.newsletter_button,
+    whatsapp_number: map.whatsapp_number ?? DEFAULTS.whatsapp_number,
+    whatsapp_subscribe_message:
+      map.whatsapp_subscribe_message ?? DEFAULTS.whatsapp_subscribe_message,
+    whatsapp_subscribe_button:
+      map.whatsapp_subscribe_button ?? DEFAULTS.whatsapp_subscribe_button,
     impact_section_title: map.impact_section_title ?? DEFAULTS.impact_section_title,
     impact_section_subtitle: map.impact_section_subtitle ?? DEFAULTS.impact_section_subtitle,
     categories_section_title: map.categories_section_title ?? DEFAULTS.categories_section_title,
-    footer_tagline: map.footer_tagline ?? DEFAULTS.footer_tagline,
-    footer_copyright: map.footer_copyright ?? DEFAULTS.footer_copyright,
-    header_nav: parseHeaderNav(map.header_nav_json),
+    footer_tagline: sanitizePublicTagline(map.footer_tagline) ?? DEFAULTS.footer_tagline,
+    footer_copyright: sanitizePublicCopyright(map.footer_copyright) ?? DEFAULTS.footer_copyright,
+    footer_legal_line: map.footer_legal_line ?? DEFAULTS.footer_legal_line,
+    footer_privacy_url: map.footer_privacy_url ?? DEFAULTS.footer_privacy_url,
+    footer_donation_policy_url:
+      map.footer_donation_policy_url ?? DEFAULTS.footer_donation_policy_url,
     footer_columns: parseFooterColumns(map.footer_columns_json),
+    footer_social: parseFooterSocial(map.footer_social_json),
   };
 }
 

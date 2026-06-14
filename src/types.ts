@@ -55,6 +55,8 @@ export type ProjectDetailData = ProjectCardData & {
   location?: string;
   categoryLabel: string;
   galleryUrls: string[];
+  metaTitle?: string;
+  metaDescription?: string;
 };
 
 export type SiteSettings = {

@@ -61,7 +61,6 @@ function parseProjectPayload(formData: FormData, isNew: boolean) {
     image_alt: String(formData.get("image_alt") ?? "").trim() || null,
     category_slug: String(formData.get("category_slug") ?? "").trim(),
     date_label: String(formData.get("date_label") ?? "").trim(),
-    year_code: String(formData.get("year_code") ?? "").trim() || null,
     description: String(formData.get("description") ?? "").trim() || null,
     short_description: null as string | null,
     location: String(formData.get("location") ?? "").trim() || null,
@@ -69,11 +68,12 @@ function parseProjectPayload(formData: FormData, isNew: boolean) {
     stat_value: String(formData.get("stat_value") ?? "").trim() || null,
     stat_label: String(formData.get("stat_label") ?? "").trim() || null,
     icon_url: String(formData.get("icon_url") ?? "").trim() || null,
-    accent: (String(formData.get("accent") ?? "").trim() || null) as CategoryAccent | null,
+    accent: null as CategoryAccent | null,
     status,
     is_published: status === "published",
-    goal_amount: Number(formData.get("goal_amount") ?? 0) || null,
-    amount_raised: Number(formData.get("amount_raised") ?? 0) || 0,
+    year_code: null,
+    goal_amount: null,
+    amount_raised: 0,
     meta_title: String(formData.get("meta_title") ?? "").trim() || null,
     meta_description:
       String(formData.get("meta_description") ?? "").trim() || null,
@@ -93,6 +93,19 @@ function parseProjectPayload(formData: FormData, isNew: boolean) {
   }
 
   return { slug, payload, isNew };
+}
+
+async function applyCategoryAccentToProject(
+  supabase: NonNullable<Awaited<ReturnType<typeof import("@/lib/supabase/server").createSupabaseServerClient>>>,
+  payload: { category_slug: string; accent: CategoryAccent | null },
+) {
+  const { data: category } = await supabase
+    .from("categories")
+    .select("accent")
+    .eq("slug", payload.category_slug)
+    .maybeSingle();
+
+  payload.accent = (category?.accent as CategoryAccent | null) ?? null;
 }
 
 export async function signOut() {
@@ -154,6 +167,8 @@ export async function saveProject(formData: FormData) {
   const isNew = formData.get("is_new") === "true";
   const { slug, payload } = parseProjectPayload(formData, isNew);
 
+  await applyCategoryAccentToProject(supabase, payload);
+
   const { error } = isNew
     ? await supabase.from("projects").insert(payload)
     : await supabase.from("projects").update(payload).eq("slug", slug);
@@ -179,6 +194,8 @@ export async function saveProjectInline(formData: FormData) {
     const { supabase, profile } = await getAdminWriteClient();
     const isNew = formData.get("is_new") === "true";
     const { slug, payload } = parseProjectPayload(formData, isNew);
+
+    await applyCategoryAccentToProject(supabase, payload);
 
     const { data, error } = isNew
       ? await supabase.from("projects").insert(payload).select("*").single()
@@ -426,6 +443,11 @@ export async function saveFooterSettings(formData: FormData) {
       is_public: true,
     },
     {
+      key: "footer_social_json",
+      value: String(formData.get("footer_social_json") ?? "").trim(),
+      is_public: true,
+    },
+    {
       key: "footer_tagline",
       value: String(formData.get("footer_tagline") ?? "").trim(),
       is_public: true,
@@ -433,6 +455,21 @@ export async function saveFooterSettings(formData: FormData) {
     {
       key: "footer_copyright",
       value: String(formData.get("footer_copyright") ?? "").trim(),
+      is_public: true,
+    },
+    {
+      key: "footer_legal_line",
+      value: String(formData.get("footer_legal_line") ?? "").trim(),
+      is_public: true,
+    },
+    {
+      key: "footer_privacy_url",
+      value: String(formData.get("footer_privacy_url") ?? "").trim(),
+      is_public: true,
+    },
+    {
+      key: "footer_donation_policy_url",
+      value: String(formData.get("footer_donation_policy_url") ?? "").trim(),
       is_public: true,
     },
   ];
@@ -534,16 +571,17 @@ export async function saveHomepage(formData: FormData) {
     { key: "share_label", value: String(formData.get("share_label") ?? "").trim() },
     { key: "share_icon_url", value: String(formData.get("share_icon_url") ?? "").trim() },
     { key: "hero_cta_label", value: String(formData.get("hero_cta_label") ?? "").trim() },
-    { key: "header_nav_json", value: String(formData.get("header_nav_json") ?? "").trim() },
-    { key: "donate_label", value: String(formData.get("donate_label") ?? "").trim() },
-    { key: "donate_url", value: String(formData.get("donate_url") ?? "").trim() },
     { key: "transparency_title", value: String(formData.get("transparency_title") ?? "").trim() },
     { key: "transparency_text", value: String(formData.get("transparency_text") ?? "").trim() },
+    { key: "whatsapp_number", value: String(formData.get("whatsapp_number") ?? "").trim() },
     {
-      key: "newsletter_placeholder",
-      value: String(formData.get("newsletter_placeholder") ?? "").trim(),
+      key: "whatsapp_subscribe_message",
+      value: String(formData.get("whatsapp_subscribe_message") ?? "").trim(),
     },
-    { key: "newsletter_button", value: String(formData.get("newsletter_button") ?? "").trim() },
+    {
+      key: "whatsapp_subscribe_button",
+      value: String(formData.get("whatsapp_subscribe_button") ?? "").trim(),
+    },
     { key: "impact_section_title", value: String(formData.get("impact_section_title") ?? "").trim() },
     { key: "impact_section_subtitle", value: String(formData.get("impact_section_subtitle") ?? "").trim() },
     {
@@ -751,6 +789,7 @@ export async function savePlatformSettings(formData: FormData) {
   const keys = [
     "site_title",
     "logo_url",
+    "public_site_url",
     "stripe_public_key",
     "stripe_secret_key",
     "cloudinary_cloud_name",
@@ -763,7 +802,8 @@ export async function savePlatformSettings(formData: FormData) {
         key,
         value,
         value_json: null,
-        is_public: key === "site_title" || key === "logo_url",
+        is_public:
+          key === "site_title" || key === "logo_url" || key === "public_site_url",
       },
       { onConflict: "key" },
     );
@@ -771,6 +811,7 @@ export async function savePlatformSettings(formData: FormData) {
   }
 
   await logAuditEvent(profile, "settings.updated", "settings");
+  revalidateSite();
   revalidatePath("/admin/settings");
   redirect("/admin/settings?saved=1");
 }
