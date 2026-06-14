@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { recordAdminLogin } from "@/lib/admin/actions";
+import { verifyAdminLogin } from "@/lib/admin/actions";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type LoginFormProps = {
@@ -22,7 +22,7 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
     setError("");
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "");
+    const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
 
     let navigating = false;
@@ -48,32 +48,15 @@ export function LoginForm({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
         return;
       }
 
-      const { data: sessionData } = await supabase.auth.getUser();
-      const userId = sessionData.user?.id;
-
-      if (!userId) {
-        setError("تعذر التحقق من الحساب");
+      const result = await verifyAdminLogin(email);
+      if (!result.ok) {
+        setError(result.error);
         return;
       }
 
-      const { data: adminProfile } = await supabase
-        .from("admin_users")
-        .select("id")
-        .eq("user_id", userId)
-        .eq("is_active", true)
-        .maybeSingle();
-
-      if (!adminProfile) {
-        await supabase.auth.signOut();
-        setError(
-          "ليس لديك صلاحية الدخول — اطلب من Super Admin إضافة بريدك في لوحة المستخدمين أولاً.",
-        );
-        return;
-      }
-
-      await recordAdminLogin();
       navigating = true;
       router.replace("/admin");
+      router.refresh();
     } catch {
       setError("تعذر الاتصال بقاعدة البيانات");
     } finally {

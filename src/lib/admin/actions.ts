@@ -21,6 +21,7 @@ import { categoryAccentColors } from "@/lib/design-tokens";
 import { isHexColor, normalizeHexColor } from "@/lib/category-colors";
 import { normalizeCdnImageUrl } from "@/lib/image-url";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { ADMIN_NAV_PAGES } from "@/lib/admin/nav-pages";
 
 function canManageLoginAccounts(roleSlug: string) {
@@ -45,6 +46,67 @@ async function setAuthUserPassword(userId: string, password: string) {
 
   const { error } = await service.auth.admin.updateUserById(userId, { password });
   if (error) throw new Error(error.message);
+}
+
+async function findAuthUserIdByEmail(
+  service: NonNullable<ReturnType<typeof createSupabaseServiceClient>>,
+  email: string,
+) {
+  let page = 1;
+  const perPage = 200;
+
+  while (page <= 10) {
+    const { data, error } = await service.auth.admin.listUsers({ page, perPage });
+    if (error) throw new Error(error.message);
+
+    const match = data.users.find((user) => user.email?.toLowerCase() === email);
+    if (match?.id) return match.id;
+
+    if (data.users.length < perPage) break;
+    page += 1;
+  }
+
+  return null;
+}
+
+async function createOrLinkAuthUser(
+  email: string,
+  password: string,
+  displayName: string | null,
+) {
+  const service = createSupabaseServiceClient();
+  if (!service) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is required — add it in Railway environment variables",
+    );
+  }
+
+  const { data, error } = await service.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: displayName ? { display_name: displayName } : undefined,
+  });
+
+  if (!error && data.user?.id) {
+    return { service, authUserId: data.user.id };
+  }
+
+  const message = error?.message?.toLowerCase() ?? "";
+  if (
+    message.includes("already") ||
+    message.includes("registered") ||
+    message.includes("exists")
+  ) {
+    const existingId = await findAuthUserIdByEmail(service, email);
+    if (!existingId) {
+      throw new Error(error?.message ?? "Auth account exists but could not be linked");
+    }
+    await setAuthUserPassword(existingId, password);
+    return { service, authUserId: existingId };
+  }
+
+  throw new Error(error?.message ?? "Failed to create auth user");
 }
 
 async function getAdminWriteClient() {
@@ -723,30 +785,19 @@ export async function saveAdminUser(formData: FormData) {
     throw new Error("Password must be at least 8 characters");
   }
 
+  let serviceClient: ReturnType<typeof createSupabaseServiceClient> = null;
   let linkedUserId: string | null = null;
 
   if (password) {
-    const service = createSupabaseServiceClient();
-    if (!service) {
-      throw new Error("Service role key is required to create login accounts");
-    }
-
-    const { data: authData, error: authError } = await service.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { display_name: displayName },
-    });
-
-    if (authError) {
-      throw new Error(authError.message);
-    }
-
-    linkedUserId = authData.user?.id ?? null;
+    const linked = await createOrLinkAuthUser(email, password, displayName);
+    serviceClient = linked.service;
+    linkedUserId = linked.authUserId;
   }
 
+  const db = serviceClient ?? (await createSupabaseServiceClient()) ?? supabase;
+
   const { error } = existing
-    ? await supabase
+    ? await db
         .from("admin_users")
         .update({
           role,
@@ -758,7 +809,7 @@ export async function saveAdminUser(formData: FormData) {
           ...(linkedUserId ? { user_id: linkedUserId } : {}),
         })
         .eq("id", existing.id)
-    : await supabase.from("admin_users").insert({
+    : await db.from("admin_users").insert({
         email,
         role,
         role_slug: role,
@@ -969,6 +1020,70 @@ export async function saveMyProfile(formData: FormData) {
   await logAuditEvent(profile, "profile.updated", "user", profile.id);
   revalidatePath("/admin/profile");
   redirect("/admin/profile?saved=1");
+}
+
+export async function verifyAdminLogin(email: string) {
+  const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return { ok: false as const, error: "تعذر الاتصال بقاعدة البيانات" };
+  }
+
+  const { data: authData } = await supabase.auth.getUser();
+  if (!authData.user) {
+    return { ok: false as const, error: "تعذر التحقق من الحساب" };
+  }
+
+  const service = createSupabaseServiceClient();
+  if (!service) {
+    return {
+      ok: false as const,
+      error: "إعدادات الخادم غير مكتملة — أضف SUPABASE_SERVICE_ROLE_KEY",
+    };
+  }
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const authUserId = authData.user.id;
+
+  const { data: adminUser, error } = await service
+    .from("admin_users")
+    .select("id, email, is_active, suspended_at, user_id")
+    .eq("email", normalizedEmail)
+    .maybeSingle();
+
+  if (error || !adminUser) {
+    await supabase.auth.signOut();
+    return {
+      ok: false as const,
+      error: "ليس لديك صلاحية الدخول — تأكد أن بريدك مضاف في لوحة المستخدمين.",
+    };
+  }
+
+  if (!adminUser.is_active || adminUser.suspended_at) {
+    await supabase.auth.signOut();
+    return { ok: false as const, error: "هذا الحساب غير نشط أو موقوف." };
+  }
+
+  if (adminUser.user_id !== authUserId) {
+    const { error: linkError } = await service
+      .from("admin_users")
+      .update({ user_id: authUserId })
+      .eq("id", adminUser.id);
+
+    if (linkError) {
+      await supabase.auth.signOut();
+      return { ok: false as const, error: "تعذر ربط الحساب — تواصل مع Super Admin." };
+    }
+  }
+
+  await service
+    .from("admin_users")
+    .update({
+      last_login_at: new Date().toISOString(),
+      user_id: authUserId,
+    })
+    .eq("id", adminUser.id);
+
+  return { ok: true as const };
 }
 
 export async function recordAdminLogin() {
