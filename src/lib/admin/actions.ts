@@ -252,31 +252,44 @@ export async function uploadMediaAsset(formData: FormData) {
   revalidatePath("/admin/media");
 }
 
-export async function saveProject(formData: FormData) {
-  const { supabase, profile } = await requireSupabaseAdmin();
-  const isNew = formData.get("is_new") === "true";
-  const { slug, payload } = parseProjectPayload(formData, isNew);
+export type ProjectActionResult = { ok: true; slug: string } | { ok: false; error: string };
 
-  await applyCategoryAccentToProject(supabase, payload);
+export async function saveProject(formData: FormData): Promise<ProjectActionResult> {
+  try {
+    const { supabase, profile } = await getAdminWriteClient();
+    const isNew = formData.get("is_new") === "true";
+    const { slug, payload } = parseProjectPayload(formData, isNew);
 
-  const { error } = isNew
-    ? await supabase.from("projects").insert(payload)
-    : await supabase.from("projects").update(payload).eq("slug", slug);
+    if (!hasPermission(profile.permissions, profile.role_slug, "projects", isNew ? "create" : "edit")) {
+      return { ok: false, error: "You do not have permission to save this project." };
+    }
 
-  if (error) throw new Error(error.message);
+    await applyCategoryAccentToProject(supabase, payload);
 
-  await logAuditEvent(
-    profile,
-    isNew ? "project.created" : "project.updated",
-    "project",
-    slug,
-  );
+    const { error } = isNew
+      ? await supabase.from("projects").insert(payload)
+      : await supabase.from("projects").update(payload).eq("slug", slug);
 
-  revalidateSite();
-  revalidatePath("/admin/projects");
-  revalidatePath(`/admin/projects/${slug}`);
-  revalidatePath(`/project/${slug}`);
-  redirect("/admin/projects");
+    if (error) return { ok: false, error: error.message };
+
+    await logAuditEvent(
+      profile,
+      isNew ? "project.created" : "project.updated",
+      "project",
+      slug,
+    );
+
+    revalidateSite();
+    revalidatePath("/admin/projects");
+    revalidatePath(`/admin/projects/${slug}`);
+    revalidatePath(`/project/${slug}`);
+    return { ok: true, slug };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Failed to save project",
+    };
+  }
 }
 
 export async function saveProjectInline(formData: FormData) {
@@ -453,18 +466,8 @@ export async function deleteProjectInline(slug: string) {
 }
 
 export async function deleteProject(formData: FormData) {
-  const { supabase, profile } = await requireSupabaseAdmin("admin");
-  await assertCanDeleteProjects(profile as AdminProfile);
   const slug = String(formData.get("slug") ?? "").trim();
-  if (!slug) throw new Error("معرف المشروع مطلوب");
-
-  const { error } = await supabase.from("projects").delete().eq("slug", slug);
-  if (error) throw new Error(error.message);
-
-  await logAuditEvent(profile, "project.deleted", "project", slug);
-  revalidateSite();
-  revalidatePath("/admin/projects");
-  redirect("/admin/projects");
+  return deleteProjectInline(slug);
 }
 
 export async function saveCategory(formData: FormData) {
@@ -1039,16 +1042,8 @@ export async function saveMyProfile(formData: FormData) {
   redirect("/admin/profile?saved=1");
 }
 
-export async function verifyAdminLogin(email: string) {
-  const supabase = await createSupabaseServerClient();
-  if (!supabase) {
-    return { ok: false as const, error: "تعذر الاتصال بقاعدة البيانات" };
-  }
-
-  const { data: authData } = await supabase.auth.getUser();
-  if (!authData.user) {
-    return { ok: false as const, error: "تعذر التحقق من الحساب" };
-  }
+export async function verifyAdminLogin(email: string, authUserId?: string) {
+  const normalizedEmail = email.trim().toLowerCase();
 
   const service = createSupabaseServiceClient();
   if (!service) {
@@ -1058,8 +1053,18 @@ export async function verifyAdminLogin(email: string) {
     };
   }
 
-  const normalizedEmail = email.trim().toLowerCase();
-  const authUserId = authData.user.id;
+  let resolvedUserId = authUserId?.trim();
+  if (!resolvedUserId) {
+    const supabase = await createSupabaseServerClient();
+    if (!supabase) {
+      return { ok: false as const, error: "تعذر الاتصال بقاعدة البيانات" };
+    }
+    const { data: authData } = await supabase.auth.getUser();
+    if (!authData.user) {
+      return { ok: false as const, error: "تعذر التحقق من الحساب" };
+    }
+    resolvedUserId = authData.user.id;
+  }
 
   const { data: adminUser, error } = await service
     .from("admin_users")
@@ -1068,7 +1073,8 @@ export async function verifyAdminLogin(email: string) {
     .maybeSingle();
 
   if (error || !adminUser) {
-    await supabase.auth.signOut();
+    const supabase = await createSupabaseServerClient();
+    if (supabase) await supabase.auth.signOut();
     return {
       ok: false as const,
       error: "ليس لديك صلاحية الدخول — تأكد أن بريدك مضاف في لوحة المستخدمين.",
@@ -1076,18 +1082,20 @@ export async function verifyAdminLogin(email: string) {
   }
 
   if (!adminUser.is_active || adminUser.suspended_at) {
-    await supabase.auth.signOut();
+    const supabase = await createSupabaseServerClient();
+    if (supabase) await supabase.auth.signOut();
     return { ok: false as const, error: "هذا الحساب غير نشط أو موقوف." };
   }
 
-  if (adminUser.user_id !== authUserId) {
+  if (adminUser.user_id !== resolvedUserId) {
     const { error: linkError } = await service
       .from("admin_users")
-      .update({ user_id: authUserId })
+      .update({ user_id: resolvedUserId })
       .eq("id", adminUser.id);
 
     if (linkError) {
-      await supabase.auth.signOut();
+      const supabase = await createSupabaseServerClient();
+      if (supabase) await supabase.auth.signOut();
       return { ok: false as const, error: "تعذر ربط الحساب — تواصل مع Super Admin." };
     }
   }
@@ -1096,7 +1104,7 @@ export async function verifyAdminLogin(email: string) {
     .from("admin_users")
     .update({
       last_login_at: new Date().toISOString(),
-      user_id: authUserId,
+      user_id: resolvedUserId,
     })
     .eq("id", adminUser.id);
 

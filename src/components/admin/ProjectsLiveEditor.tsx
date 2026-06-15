@@ -123,7 +123,7 @@ export function ProjectsLiveEditor({
   }
 
   async function handleDelete(slug: string) {
-    if (!canDelete || !window.confirm(t("projects.confirmDelete"))) return;
+    if (!canDelete || !window.confirm(t("projects.deleteConfirm"))) return;
     const result = await deleteProjectInline(slug);
     if (!result.ok) {
       setError(result.error);

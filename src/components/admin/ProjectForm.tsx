@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
 import { deleteProject, saveProject } from "@/lib/admin/actions";
 import { ProjectMediaPicker } from "@/components/admin/ProjectMediaPicker";
 import { useAdminLang } from "@/lib/admin/i18n-context";
@@ -12,15 +14,36 @@ type ProjectFormProps = {
 
 export function ProjectForm({ project, categories }: ProjectFormProps) {
   const { t } = useAdminLang();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const isNew = !project;
 
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setSubmitting(true);
+
+    const result = await saveProject(new FormData(event.currentTarget));
+    if (!result.ok) {
+      setError(result.error);
+      setSubmitting(false);
+      return;
+    }
+
+    router.push("/admin/projects");
+    router.refresh();
+  }
+
   return (
-    <form action={saveProject} className="admin-form dash-panel">
+    <form onSubmit={handleSubmit} className="admin-form dash-panel">
       <input type="hidden" name="is_new" value={String(isNew)} />
 
       <h2 className="dash-panel-title">
         {isNew ? t("projectForm.new") : t("projectForm.edit")}
       </h2>
+
+      {error ? <p className="admin-error">{error}</p> : null}
 
       <div className="admin-row">
         <div className="admin-field">
@@ -205,8 +228,12 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
       </div>
 
       <div className="admin-actions">
-        <button type="submit" className="admin-button">
-          {isNew ? t("projectForm.create") : t("projectForm.save")}
+        <button type="submit" className="admin-button" disabled={submitting}>
+          {submitting
+            ? t("common.uploading")
+            : isNew
+              ? t("projectForm.create")
+              : t("projectForm.save")}
         </button>
       </div>
     </form>
@@ -215,11 +242,32 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
 
 export function ProjectDeleteForm({ slug }: { slug: string }) {
   const { t } = useAdminLang();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleDelete(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!window.confirm(t("projects.deleteConfirm"))) return;
+
+    setError("");
+    setSubmitting(true);
+    const formData = new FormData();
+    formData.set("slug", slug);
+    const result = await deleteProject(formData);
+    if (!result.ok) {
+      setError(result.error);
+      setSubmitting(false);
+      return;
+    }
+    router.push("/admin/projects");
+    router.refresh();
+  }
 
   return (
-    <form action={deleteProject} className="admin-actions">
-      <input type="hidden" name="slug" value={slug} />
-      <button type="submit" className="admin-button admin-button-danger">
+    <form onSubmit={handleDelete} className="admin-actions">
+      {error ? <p className="admin-error">{error}</p> : null}
+      <button type="submit" className="admin-button admin-button-danger" disabled={submitting}>
         {t("projectForm.delete")}
       </button>
     </form>

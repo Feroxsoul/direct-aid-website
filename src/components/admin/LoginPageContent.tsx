@@ -50,9 +50,6 @@ function LoginPageInner({
             <AdminLangToggle />
           </div>
 
-          <p className="admin-login-kicker">
-            <AdminText k="login.kicker" vars={{ version: APP_VERSION_LABEL }} />
-          </p>
           <h1 className="admin-login-title">
             <AdminText k="login.title" />
           </h1>
@@ -82,16 +79,13 @@ function LoginPageInner({
               <AdminText k="login.errorForbidden" />
             </p>
           ) : null}
-
-          {supabaseConfigured ? (
-            <p className="admin-setup-note">
-              <AdminText k="login.note" />
-            </p>
-          ) : null}
         </div>
       </div>
 
       <footer className="admin-login-page-footer">
+        <p className="admin-login-version">
+          <AdminText k="login.kicker" vars={{ version: APP_VERSION_LABEL }} />
+        </p>
         <p>
           <AdminText k="sidebar.poweredBy" />
         </p>

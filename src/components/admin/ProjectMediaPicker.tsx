@@ -84,7 +84,7 @@ export function ProjectMediaPicker({
       <label className="admin-label">{t("projectMedia.title")}</label>
       <p className="admin-help-text">{t("projectMedia.help")}</p>
 
-      <input type="hidden" name="image_url" value={mainImage} required />
+      <input type="hidden" name="image_url" value={mainImage} />
       <input type="hidden" name="gallery_urls" value={galleryOnly.join("\n")} />
 
       <div

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { verifyAdminLogin } from "@/lib/admin/actions";
 import { useAdminLang } from "@/lib/admin/i18n-context";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -13,7 +12,6 @@ type LoginFormProps = {
 
 function LoginFormInner({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
   const { t } = useAdminLang();
-  const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -27,11 +25,9 @@ function LoginFormInner({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
     const email = String(formData.get("email") ?? "").trim().toLowerCase();
     const password = String(formData.get("password") ?? "");
 
-    let navigating = false;
-
     try {
       const supabase = createSupabaseBrowserClient(supabaseUrl, supabaseAnonKey);
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -48,13 +44,20 @@ function LoginFormInner({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
         return;
       }
 
-      const result = await verifyAdminLogin(email);
+      if (!data.user) {
+        setError(t("login.errorInvalid"));
+        return;
+      }
+
+      const result = await verifyAdminLogin(email, data.user.id);
       if (!result.ok) {
+        await supabase.auth.signOut();
         if (result.error.toLowerCase().includes("pending")) {
           setError(t("login.errorPending"));
         } else if (
           result.error.toLowerCase().includes("inactive") ||
-          result.error.toLowerCase().includes("suspended")
+          result.error.toLowerCase().includes("suspended") ||
+          result.error.toLowerCase().includes("موقوف")
         ) {
           setError(t("login.errorInactive"));
         } else if (result.error.toLowerCase().includes("not registered")) {
@@ -65,15 +68,11 @@ function LoginFormInner({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
         return;
       }
 
-      navigating = true;
-      router.replace("/admin");
-      router.refresh();
+      window.location.assign("/admin");
     } catch {
       setError(t("login.dbNotConnected"));
     } finally {
-      if (!navigating) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   }
 
@@ -111,9 +110,9 @@ function LoginFormInner({ supabaseUrl, supabaseAnonKey }: LoginFormProps) {
             type="button"
             className="admin-password-toggle"
             onClick={() => setShowPassword((prev) => !prev)}
-            aria-label={t("login.password")}
+            aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
           >
-            {showPassword ? t("common.no") : t("common.yes")}
+            {showPassword ? t("login.hidePassword") : t("login.showPassword")}
           </button>
         </div>
       </div>

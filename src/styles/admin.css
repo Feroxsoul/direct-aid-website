@@ -612,6 +612,11 @@
   margin-bottom: 0.5rem;
 }
 
+.admin-login-version {
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+}
+
 .admin-login-page-footer {
   position: fixed;
   left: 0;

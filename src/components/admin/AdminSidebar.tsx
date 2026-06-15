@@ -91,7 +91,6 @@ export function AdminSidebar({ profile, logoUrl, lang, onNavigate }: AdminSideba
           className="dash-sidebar-logo-img dash-sidebar-logo-img--10x10"
           unoptimized
         />
-        <span className="dash-sidebar-sub">{t(lang, "sidebar.sub")}</span>
       </div>
 
       <nav className="dash-sidebar-nav" aria-label="Admin navigation">
