@@ -16,6 +16,8 @@ export type WebflowProjectRow = {
   image_alt: string | null;
   category_slug: string;
   date_label: string;
+  project_month?: number | null;
+  project_year?: number | null;
   year_code: string | null;
   accent: CategoryAccent;
   stat_value: string | null;
@@ -23,6 +25,7 @@ export type WebflowProjectRow = {
   icon_url: string | null;
   description: string | null;
   location: string | null;
+  country_slug?: string | null;
   gallery_urls: string[];
   is_published: boolean;
   sort_order: number;
@@ -80,7 +83,12 @@ function mapWebflowToCard(row: WebflowProjectRow): ProjectCardData {
 export function getWebflowProjects(): ProjectCardData[] {
   return webflowProjects
     .filter((row) => row.is_published)
-    .sort((a, b) => a.sort_order - b.sort_order)
+    .sort((a, b) => {
+      const ay = a.project_year ?? 0;
+      const by = b.project_year ?? 0;
+      if (by !== ay) return by - ay;
+      return (b.project_month ?? 0) - (a.project_month ?? 0);
+    })
     .map(mapWebflowToCard);
 }
 
@@ -125,6 +133,8 @@ export function webflowRowToProjectRow(row: WebflowProjectRow): ProjectRow {
     image_alt: row.image_alt,
     category_slug: row.category_slug,
     date_label: row.date_label,
+    project_month: row.project_month ?? null,
+    project_year: row.project_year ?? null,
     year_code: row.year_code,
     accent: row.accent,
     stat_value: row.stat_value,
@@ -132,6 +142,7 @@ export function webflowRowToProjectRow(row: WebflowProjectRow): ProjectRow {
     icon_url: row.icon_url,
     description: row.description,
     location: row.location,
+    country_slug: row.country_slug ?? null,
     gallery_urls: row.gallery_urls,
     is_published: row.is_published,
     status: row.is_published ? "published" : "draft",

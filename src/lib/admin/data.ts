@@ -1,6 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 import { getWebflowProjectRowBySlug } from "@/lib/webflow-data";
+import { slugKeyFromEnglishName } from "@/lib/project-slug";
 import type {
   AdminNotificationRow,
   AdminRoleRow,
@@ -19,7 +20,7 @@ export async function adminGetProjects(): Promise<ProjectRow[]> {
   if (!supabase) return [];
 
   return fetchAllRows(() =>
-    supabase.from("projects").select("*").order("sort_order", { ascending: true }),
+    supabase.from("projects").select("*").order("created_at", { ascending: false }),
   );
 }
 
@@ -38,6 +39,26 @@ export async function adminGetProject(slug: string): Promise<ProjectRow | null> 
   return data ?? getWebflowProjectRowBySlug(slug);
 }
 
+const CATEGORY_SLUG_KEY_DEFAULTS: Record<string, { slug_key: string; name_en: string }> = {
+  "health-10x10": { slug_key: "health", name_en: "Health" },
+  "educational.10x10": { slug_key: "education", name_en: "Education" },
+  "lmshryaa-ldaawy": { slug_key: "dawah", name_en: "Dawah" },
+  developments: { slug_key: "development", name_en: "Development" },
+  "lmshryaa-lgthy": { slug_key: "relief", name_en: "Relief" },
+  orphans: { slug_key: "orphans", name_en: "Orphans" },
+  "waters-10x10": { slug_key: "water", name_en: "Water" },
+  mosque: { slug_key: "mosque", name_en: "Mosque" },
+};
+
+function normalizeCategoryRow(row: CategoryRow): CategoryRow {
+  const defaults = CATEGORY_SLUG_KEY_DEFAULTS[row.slug];
+  return {
+    ...row,
+    slug_key: row.slug_key ?? defaults?.slug_key ?? slugKeyFromEnglishName(row.slug),
+    name_en: row.name_en ?? defaults?.name_en ?? null,
+  };
+}
+
 export async function adminGetCategories(): Promise<CategoryRow[]> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return [];
@@ -47,7 +68,7 @@ export async function adminGetCategories(): Promise<CategoryRow[]> {
     .select("*")
     .order("sort_order", { ascending: true });
 
-  return data ?? [];
+  return (data ?? []).map((row) => normalizeCategoryRow(row as CategoryRow));
 }
 
 export async function adminGetHomeStatistics(): Promise<StatisticsRow | null> {

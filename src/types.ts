@@ -78,12 +78,25 @@ export type PageMeta = {
 export type CategoryRow = {
   id: string;
   slug: string;
+  slug_key: string;
+  name_en: string | null;
   title_line_1: string;
   title_line_2: string;
   icon_url: string;
   accent: CategoryAccent;
   status: CategoryStatus;
   sort_order: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CountryRow = {
+  id: string;
+  slug: string;
+  name_en: string;
+  name_ar: string;
+  sort_order: number;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -96,6 +109,8 @@ export type ProjectRow = {
   image_alt: string | null;
   category_slug: string;
   date_label: string;
+  project_month: number | null;
+  project_year: number | null;
   year_code: string | null;
   accent: CategoryAccent | null;
   stat_value: string | null;
@@ -103,6 +118,7 @@ export type ProjectRow = {
   icon_url: string | null;
   description: string | null;
   location: string | null;
+  country_slug: string | null;
   gallery_urls: string[] | null;
   is_published: boolean;
   sort_order: number;
@@ -272,6 +288,7 @@ export type Database = {
   public: {
     Tables: {
       categories: TableDef<CategoryRow>;
+      countries: TableDef<CountryRow>;
       projects: TableDef<ProjectRow>;
       statistics: TableDef<StatisticsRow>;
       pages: TableDef<PageRow>;

@@ -2,11 +2,15 @@ import { ProjectForm } from "@/components/admin/ProjectForm";
 import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import Link from "next/link";
 import { requirePermission } from "@/lib/admin/auth";
+import { adminGetCountries } from "@/lib/admin/countries";
 import { adminGetCategories } from "@/lib/admin/data";
 
 export default async function NewProjectPage() {
-  await requirePermission("projects", "create");
-  const categories = await adminGetCategories();
+  const profile = await requirePermission("projects", "create");
+  const [categories, countries] = await Promise.all([
+    adminGetCategories(),
+    adminGetCountries(),
+  ]);
 
   return (
     <div className="dash-page">
@@ -18,7 +22,11 @@ export default async function NewProjectPage() {
           </Link>
         </div>
       </div>
-      <ProjectForm categories={categories} />
+      <ProjectForm
+        categories={categories}
+        countries={countries}
+        isSuperAdmin={profile.role_slug === "super_admin"}
+      />
     </div>
   );
 }

@@ -23,6 +23,11 @@ import { normalizeCdnImageUrl } from "@/lib/image-url";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { ADMIN_NAV_PAGES } from "@/lib/admin/nav-pages";
+import {
+  buildProjectSlug,
+  formatArabicDateLabel,
+  slugKeyFromEnglishName,
+} from "@/lib/project-slug";
 
 function canManageLoginAccounts(roleSlug: string) {
   return roleSlug === "super_admin" || roleSlug === "admin";
@@ -140,20 +145,57 @@ function revalidateSite() {
   revalidatePath("/project", "layout");
 }
 
-function parseProjectPayload(formData: FormData, isNew: boolean) {
-  const slug = String(formData.get("slug") ?? "").trim();
+async function nextProjectSlug(
+  supabase: NonNullable<Awaited<ReturnType<typeof createSupabaseServerClient>>>,
+  categorySlug: string,
+  year: number,
+  month: number,
+): Promise<string> {
+  const { data: category } = await supabase
+    .from("categories")
+    .select("slug_key")
+    .eq("slug", categorySlug)
+    .maybeSingle();
+
+  const key = (category?.slug_key ?? slugKeyFromEnglishName(categorySlug)) || "project";
+  const yy = String(year).slice(-2);
+  const mm = String(month).padStart(2, "0");
+  const prefix = `${key}${yy}${mm}`;
+
+  const { data: existing } = await supabase
+    .from("projects")
+    .select("slug")
+    .like("slug", `${prefix}%`);
+
+  const sequences = (existing ?? [])
+    .map((row) => {
+      const match = row.slug.match(new RegExp(`^${prefix}(\\d{2})$`));
+      return match ? Number(match[1]) : 0;
+    })
+    .filter((value) => value > 0);
+
+  const next = sequences.length ? Math.max(...sequences) + 1 : 1;
+  return buildProjectSlug(key, year, month, next);
+}
+
+function parseProjectPayload(formData: FormData) {
   const status = String(formData.get("status") ?? "published").trim();
+  const month = Number(formData.get("project_month"));
+  const year = Number(formData.get("project_year"));
 
   const payload = {
-    slug,
+    slug: String(formData.get("slug") ?? "").trim(),
     title: String(formData.get("title") ?? "").trim(),
     image_url: String(formData.get("image_url") ?? "").trim(),
     image_alt: String(formData.get("image_alt") ?? "").trim() || null,
     category_slug: String(formData.get("category_slug") ?? "").trim(),
-    date_label: String(formData.get("date_label") ?? "").trim(),
+    date_label: "",
+    project_month: month,
+    project_year: year,
     description: String(formData.get("description") ?? "").trim() || null,
     short_description: null as string | null,
-    location: String(formData.get("location") ?? "").trim() || null,
+    location: null as string | null,
+    country_slug: String(formData.get("country_slug") ?? "").trim() || null,
     gallery_urls: parseGalleryUrls(formData.get("gallery_urls")),
     stat_value: String(formData.get("stat_value") ?? "").trim() || null,
     stat_label: String(formData.get("stat_label") ?? "").trim() || null,
@@ -161,19 +203,27 @@ function parseProjectPayload(formData: FormData, isNew: boolean) {
     accent: null as CategoryAccent | null,
     status,
     is_published: status === "published",
-    year_code: null,
+    year_code: null as string | null,
     goal_amount: null,
     amount_raised: 0,
     meta_title: String(formData.get("meta_title") ?? "").trim() || null,
     meta_description:
       String(formData.get("meta_description") ?? "").trim() || null,
-    sort_order: Number(formData.get("sort_order") ?? 0),
+    sort_order: 0,
   };
 
-  if (!payload.slug || !payload.title || !payload.image_url || !payload.category_slug) {
-    throw new Error("Required: slug, title, image, category");
+  if (
+    !payload.title ||
+    !payload.image_url ||
+    !payload.category_slug ||
+    !month ||
+    !year
+  ) {
+    throw new Error("Required: title, image, category, month, year");
   }
 
+  payload.date_label = formatArabicDateLabel(month, year);
+  payload.year_code = `${year} ${payload.date_label.split(" ")[0]?.slice(0, 3).toUpperCase() ?? ""}`;
   payload.short_description = payload.description
     ? payload.description.slice(0, 100)
     : null;
@@ -182,7 +232,7 @@ function parseProjectPayload(formData: FormData, isNew: boolean) {
     payload.accent = null;
   }
 
-  return { slug, payload, isNew };
+  return { payload };
 }
 
 async function applyCategoryAccentToProject(
@@ -258,19 +308,59 @@ export async function saveProject(formData: FormData): Promise<ProjectActionResu
   try {
     const { supabase, profile } = await getAdminWriteClient();
     const isNew = formData.get("is_new") === "true";
-    const { slug, payload } = parseProjectPayload(formData, isNew);
+    const originalSlug = String(formData.get("original_slug") ?? "").trim();
+    const { payload } = parseProjectPayload(formData);
 
     if (!hasPermission(profile.permissions, profile.role_slug, "projects", isNew ? "create" : "edit")) {
       return { ok: false, error: "You do not have permission to save this project." };
     }
 
+    const isSuperAdmin = profile.role_slug === "super_admin";
+    let slug = payload.slug;
+
+    if (isNew) {
+      slug = await nextProjectSlug(
+        supabase,
+        payload.category_slug,
+        payload.project_year!,
+        payload.project_month!,
+      );
+    } else if (isSuperAdmin) {
+      const requested = String(formData.get("slug") ?? "").trim();
+      slug = requested || originalSlug;
+    } else {
+      slug = originalSlug;
+    }
+
+    payload.slug = slug;
+
+    if (payload.country_slug) {
+      const { data: countryRow } = await supabase
+        .from("countries")
+        .select("name_ar")
+        .eq("slug", payload.country_slug)
+        .maybeSingle();
+      payload.location = (countryRow as { name_ar: string } | null)?.name_ar ?? null;
+    }
+
     await applyCategoryAccentToProject(supabase, payload);
 
-    const { error } = isNew
-      ? await supabase.from("projects").insert(payload)
-      : await supabase.from("projects").upsert(payload, { onConflict: "slug" });
-
-    if (error) return { ok: false, error: error.message };
+    if (!isNew && originalSlug && slug !== originalSlug) {
+      await supabase
+        .from("donations")
+        .update({ project_slug: slug })
+        .eq("project_slug", originalSlug);
+      const { error: renameError } = await supabase
+        .from("projects")
+        .update(payload)
+        .eq("slug", originalSlug);
+      if (renameError) return { ok: false, error: renameError.message };
+    } else {
+      const { error } = isNew
+        ? await supabase.from("projects").insert(payload)
+        : await supabase.from("projects").upsert(payload, { onConflict: "slug" });
+      if (error) return { ok: false, error: error.message };
+    }
 
     await logAuditEvent(
       profile,
@@ -282,6 +372,10 @@ export async function saveProject(formData: FormData): Promise<ProjectActionResu
     revalidateSite();
     revalidatePath("/admin/projects");
     revalidatePath(`/admin/projects/${slug}`);
+    if (originalSlug && originalSlug !== slug) {
+      revalidatePath(`/admin/projects/${originalSlug}`);
+      revalidatePath(`/project/${originalSlug}`);
+    }
     revalidatePath(`/project/${slug}`);
     return { ok: true, slug };
   } catch (e) {
@@ -296,7 +390,21 @@ export async function saveProjectInline(formData: FormData) {
   try {
     const { supabase, profile } = await getAdminWriteClient();
     const isNew = formData.get("is_new") === "true";
-    const { slug, payload } = parseProjectPayload(formData, isNew);
+    const originalSlug = String(formData.get("original_slug") ?? "").trim();
+    const { payload } = parseProjectPayload(formData);
+
+    let slug = payload.slug;
+    if (isNew) {
+      slug = await nextProjectSlug(
+        supabase,
+        payload.category_slug,
+        payload.project_year!,
+        payload.project_month!,
+      );
+    } else {
+      slug = originalSlug || payload.slug;
+    }
+    payload.slug = slug;
 
     await applyCategoryAccentToProject(supabase, payload);
 
@@ -348,6 +456,9 @@ export async function syncWebflowProjectsToDatabase() {
     stat_label: string | null;
     icon_url: string | null;
     description: string | null;
+    project_month?: number | null;
+    project_year?: number | null;
+    country_slug?: string | null;
     location: string | null;
     gallery_urls: string[];
     is_published: boolean;
@@ -368,6 +479,9 @@ export async function syncWebflowProjectsToDatabase() {
     icon_url: row.icon_url,
     description: row.description,
     short_description: row.description ? row.description.slice(0, 100) : null,
+    project_month: row.project_month ?? null,
+    project_year: row.project_year ?? null,
+    country_slug: row.country_slug ?? null,
     location: row.location,
     gallery_urls: row.gallery_urls.map((url) => normalizeCdnImageUrl(url)),
     status: row.is_published ? "published" : "draft",
@@ -513,8 +627,15 @@ export async function saveCategory(formData: FormData) {
     throw new Error("Required: slug, titles, icon");
   }
 
+  const nameEn = String(formData.get("name_en") ?? payload.title_line_2).trim();
+  const payloadWithKeys = {
+    ...payload,
+    name_en: nameEn || null,
+    slug_key: slugKeyFromEnglishName(nameEn || payload.slug),
+  };
+
   const { error } = isNew
-    ? await supabase.from("categories").insert(payload)
+    ? await supabase.from("categories").insert(payloadWithKeys)
     : await supabase
         .from("categories")
         .update({
@@ -1138,4 +1259,79 @@ export async function markNotificationsRead() {
 
   revalidatePath("/admin/notifications");
   redirect("/admin/notifications");
+}
+
+export async function saveCategoryKeys(formData: FormData) {
+  try {
+    const { supabase, profile } = await requireSupabaseAdmin("super_admin");
+    const updates = new Map<string, string>();
+
+    for (const [key, value] of formData.entries()) {
+      if (key.startsWith("name_en__")) {
+        updates.set(key.slice("name_en__".length), String(value).trim());
+      }
+    }
+
+    for (const [slug, nameEn] of updates) {
+      if (!nameEn) continue;
+      const slugKey = slugKeyFromEnglishName(nameEn);
+      const { error } = await supabase
+        .from("categories")
+        .update({ name_en: nameEn, slug_key: slugKey })
+        .eq("slug", slug);
+      if (error) return { ok: false as const, error: error.message };
+    }
+
+    await logAuditEvent(profile, "settings.updated", "settings", "category_keys");
+    revalidateSite();
+    revalidatePath("/admin/settings");
+    revalidatePath("/admin/categories");
+    return { ok: true as const };
+  } catch (error) {
+    return {
+      ok: false as const,
+      error: error instanceof Error ? error.message : "Failed to save category keys",
+    };
+  }
+}
+
+export async function saveCountries(formData: FormData) {
+  try {
+    const { supabase, profile } = await requireSupabaseAdmin("super_admin");
+    const indices = new Set<number>();
+
+    for (const key of formData.keys()) {
+      const match = key.match(/^[a-z_]+__(\d+)$/);
+      if (match) indices.add(Number(match[1]));
+    }
+
+    const rows = [...indices]
+      .sort((a, b) => a - b)
+      .map((index) => ({
+        slug: String(formData.get(`slug__${index}`) ?? "").trim(),
+        name_en: String(formData.get(`name_en__${index}`) ?? "").trim(),
+        name_ar: String(formData.get(`name_ar__${index}`) ?? "").trim(),
+        is_active: formData.get(`active__${index}`) === "1",
+        sort_order: index + 1,
+      }))
+      .filter((row) => row.slug && row.name_en && row.name_ar);
+
+    if (!rows.length) {
+      return { ok: false as const, error: "No countries to save." };
+    }
+
+    const { error } = await supabase.from("countries").upsert(rows, { onConflict: "slug" });
+    if (error) return { ok: false as const, error: error.message };
+
+    await logAuditEvent(profile, "settings.updated", "settings", "countries");
+    revalidateSite();
+    revalidatePath("/admin/settings");
+    revalidatePath("/admin/projects");
+    return { ok: true as const };
+  } catch (error) {
+    return {
+      ok: false as const,
+      error: error instanceof Error ? error.message : "Failed to save countries",
+    };
+  }
 }

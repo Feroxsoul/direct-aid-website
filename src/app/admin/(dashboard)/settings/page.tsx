@@ -1,5 +1,6 @@
 import { SettingsAdminPanel } from "@/components/admin/SettingsAdminPanel";
 import { requireSuperAdmin } from "@/lib/admin/auth";
+import { adminGetCountries } from "@/lib/admin/countries";
 import { adminGetCategories, adminGetSettings } from "@/lib/admin/data";
 import { resolveCategoryColor } from "@/lib/category-colors";
 import {
@@ -16,9 +17,10 @@ type SettingsPageProps = {
 export default async function AdminSettingsPage({ searchParams }: SettingsPageProps) {
   await requireSuperAdmin();
   const { saved } = await searchParams;
-  const [settingsRows, categories] = await Promise.all([
+  const [settingsRows, categories, countries] = await Promise.all([
     adminGetSettings(),
     adminGetCategories(),
+    adminGetCountries(),
   ]);
   const map = settingsMap(settingsRows);
   const colorMap = parseCategoryColorMap(map.category_accent_map);
@@ -37,6 +39,7 @@ export default async function AdminSettingsPage({ searchParams }: SettingsPagePr
     <SettingsAdminPanel
       map={map}
       categories={categories}
+      countries={countries}
       colorMapForForm={colorMapForForm}
       tagDefs={tagDefs}
       publicSiteUrl={publicSiteUrl}

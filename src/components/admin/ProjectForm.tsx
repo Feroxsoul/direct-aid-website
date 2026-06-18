@@ -3,21 +3,39 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { deleteProject, saveProject } from "@/lib/admin/actions";
+import { MonthYearPicker } from "@/components/admin/MonthYearPicker";
 import { ProjectMediaPicker } from "@/components/admin/ProjectMediaPicker";
 import { useAdminLang } from "@/lib/admin/i18n-context";
-import type { CategoryRow, ProjectRow } from "@/types";
+import { parseProjectDateLabel } from "@/lib/project-slug";
+import type { CategoryRow, CountryRow, ProjectRow } from "@/types";
 
 type ProjectFormProps = {
   project?: ProjectRow | null;
   categories: CategoryRow[];
+  countries: CountryRow[];
+  isSuperAdmin: boolean;
 };
 
-export function ProjectForm({ project, categories }: ProjectFormProps) {
+function resolveProjectDate(project?: ProjectRow | null) {
+  if (project?.project_month && project?.project_year) {
+    return { month: project.project_month, year: project.project_year };
+  }
+  const parsed = parseProjectDateLabel(project?.date_label, project?.year_code);
+  return parsed ? { month: parsed.month, year: parsed.year } : { month: null, year: null };
+}
+
+export function ProjectForm({
+  project,
+  categories,
+  countries,
+  isSuperAdmin,
+}: ProjectFormProps) {
   const { t } = useAdminLang();
   const router = useRouter();
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const isNew = !project;
+  const projectDate = resolveProjectDate(project);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -38,6 +56,7 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
   return (
     <form onSubmit={handleSubmit} className="admin-form dash-panel">
       <input type="hidden" name="is_new" value={String(isNew)} />
+      {project ? <input type="hidden" name="original_slug" value={project.slug} /> : null}
 
       <h2 className="dash-panel-title">
         {isNew ? t("projectForm.new") : t("projectForm.edit")}
@@ -50,15 +69,34 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           <label className="admin-label" htmlFor="slug">
             {t("projectForm.slug")}
           </label>
-          <input
-            id="slug"
-            name="slug"
-            className="admin-input"
-            defaultValue={project?.slug ?? ""}
-            required
-            readOnly={!isNew}
-            dir="ltr"
-          />
+          {isNew ? (
+            <>
+              <input
+                id="slug"
+                className="admin-input"
+                value={t("projectForm.slugAuto")}
+                readOnly
+                dir="ltr"
+              />
+              <p className="admin-help-text">{t("projectForm.slugAutoHelp")}</p>
+            </>
+          ) : (
+            <>
+              <input
+                id="slug"
+                name="slug"
+                className="admin-input"
+                defaultValue={project.slug}
+                readOnly={!isSuperAdmin}
+                dir="ltr"
+              />
+              {!isSuperAdmin ? (
+                <p className="admin-help-text">{t("projectForm.slugReadOnly")}</p>
+              ) : (
+                <p className="admin-help-text">{t("projectForm.slugSuperAdmin")}</p>
+              )}
+            </>
+          )}
         </div>
         <div className="admin-field">
           <label className="admin-label" htmlFor="title">
@@ -98,8 +136,6 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
           />
         </div>
       </div>
-
-      <p className="admin-help-text">{t("settings.categoryColorsHelp")}</p>
 
       <ProjectMediaPicker
         imageUrl={project?.image_url ?? ""}
@@ -167,49 +203,33 @@ export function ProjectForm({ project, categories }: ProjectFormProps) {
             {categories.map((category) => (
               <option key={category.slug} value={category.slug}>
                 {category.title_line_1} {category.title_line_2}
+                {category.slug_key ? ` (${category.slug_key})` : ""}
               </option>
             ))}
           </select>
         </div>
         <div className="admin-field">
-          <label className="admin-label" htmlFor="location">
-            {t("projectForm.location")}
+          <label className="admin-label" htmlFor="country_slug">
+            {t("projectForm.country")}
           </label>
-          <input
-            id="location"
-            name="location"
-            className="admin-input"
-            defaultValue={project?.location ?? ""}
-          />
+          <select
+            id="country_slug"
+            name="country_slug"
+            className="admin-select"
+            defaultValue={project?.country_slug ?? ""}
+            required
+          >
+            <option value="">{t("projectForm.selectCountry")}</option>
+            {countries.map((country) => (
+              <option key={country.slug} value={country.slug}>
+                {country.name_ar}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      <div className="admin-row">
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="date_label">
-            {t("projectForm.dateLabel")}
-          </label>
-          <input
-            id="date_label"
-            name="date_label"
-            className="admin-input"
-            defaultValue={project?.date_label ?? ""}
-            required
-          />
-        </div>
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="sort_order">
-            {t("projectForm.sortOrder")}
-          </label>
-          <input
-            id="sort_order"
-            name="sort_order"
-            type="number"
-            className="admin-input"
-            defaultValue={project?.sort_order ?? 0}
-          />
-        </div>
-      </div>
+      <MonthYearPicker month={projectDate.month} year={projectDate.year} />
 
       <div className="admin-field">
         <label className="admin-label" htmlFor="status">

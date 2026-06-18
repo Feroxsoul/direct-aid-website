@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { LandingHeader } from "@/components/layout/LandingHeader";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { ProjectDetail } from "@/components/project/ProjectDetail";
 import { getProjectBySlug, getProjectSlugs, getPublicSettings } from "@/lib/data";
 import { getPublicContentSettings } from "@/lib/public-content";
+import { resolveLegacyProjectSlug } from "@/lib/project-slug-redirect";
 
 export const revalidate = 60;
 
@@ -49,8 +50,14 @@ export async function generateMetadata({
 
 export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
+  const resolvedSlug = resolveLegacyProjectSlug(slug);
+
+  if (resolvedSlug !== slug) {
+    redirect(`/project/${resolvedSlug}`);
+  }
+
   const [project, settings, content] = await Promise.all([
-    getProjectBySlug(slug),
+    getProjectBySlug(resolvedSlug),
     getPublicSettings(),
     getPublicContentSettings(),
   ]);

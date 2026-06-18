@@ -1,0 +1,75 @@
+-- Category slug keys (used in project slugs) and English names
+ALTER TABLE public.categories
+  ADD COLUMN IF NOT EXISTS name_en TEXT,
+  ADD COLUMN IF NOT EXISTS slug_key TEXT;
+
+UPDATE public.categories SET slug_key = CASE slug
+  WHEN 'health-10x10' THEN 'health'
+  WHEN 'educational.10x10' THEN 'education'
+  WHEN 'lmshryaa-ldaawy' THEN 'dawah'
+  WHEN 'developments' THEN 'development'
+  WHEN 'lmshryaa-lgthy' THEN 'relief'
+  WHEN 'orphans' THEN 'orphans'
+  WHEN 'waters-10x10' THEN 'water'
+  WHEN 'mosque' THEN 'mosque'
+  ELSE regexp_replace(lower(slug), '[^a-z0-9]+', '', 'g')
+END
+WHERE slug_key IS NULL;
+
+UPDATE public.categories SET name_en = CASE slug
+  WHEN 'health-10x10' THEN 'Health'
+  WHEN 'educational.10x10' THEN 'Education'
+  WHEN 'lmshryaa-ldaawy' THEN 'Dawah'
+  WHEN 'developments' THEN 'Development'
+  WHEN 'lmshryaa-lgthy' THEN 'Relief'
+  WHEN 'orphans' THEN 'Orphans'
+  WHEN 'waters-10x10' THEN 'Water'
+  WHEN 'mosque' THEN 'Mosque'
+  ELSE initcap(slug_key)
+END
+WHERE name_en IS NULL;
+
+ALTER TABLE public.categories
+  ALTER COLUMN slug_key SET NOT NULL;
+
+CREATE UNIQUE INDEX IF NOT EXISTS categories_slug_key_idx ON public.categories (slug_key);
+
+-- Countries master list
+CREATE TABLE IF NOT EXISTS public.countries (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  slug TEXT NOT NULL UNIQUE,
+  name_en TEXT NOT NULL,
+  name_ar TEXT NOT NULL,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TRIGGER countries_set_updated_at
+  BEFORE UPDATE ON public.countries
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+ALTER TABLE public.countries ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read active countries" ON public.countries;
+CREATE POLICY "Public read active countries"
+  ON public.countries FOR SELECT
+  USING (is_active = true);
+
+DROP POLICY IF EXISTS "Active admin manage countries" ON public.countries;
+CREATE POLICY "Active admin manage countries"
+  ON public.countries FOR ALL TO authenticated
+  USING (public.is_active_admin())
+  WITH CHECK (public.is_active_admin());
+
+-- Project date fields + country reference
+ALTER TABLE public.projects
+  ADD COLUMN IF NOT EXISTS project_month INTEGER CHECK (project_month BETWEEN 1 AND 12),
+  ADD COLUMN IF NOT EXISTS project_year INTEGER CHECK (project_year BETWEEN 1900 AND 2100),
+  ADD COLUMN IF NOT EXISTS country_slug TEXT REFERENCES public.countries (slug) ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS projects_country_slug_idx ON public.projects (country_slug);
+CREATE INDEX IF NOT EXISTS projects_created_at_idx ON public.projects (created_at DESC);
+CREATE INDEX IF NOT EXISTS projects_category_date_idx
+  ON public.projects (category_slug, project_year, project_month);

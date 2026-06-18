@@ -1,14 +1,17 @@
 "use client";
 
-import { saveAdvancedSettings, savePlatformSettings } from "@/lib/admin/actions";
+import { SettingsCategoryKeysPanel } from "@/components/admin/SettingsCategoryKeysPanel";
+import { SettingsCountriesPanel } from "@/components/admin/SettingsCountriesPanel";
 import { HexColorField } from "@/components/admin/HexColorField";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { useAdminLang } from "@/lib/admin/i18n-context";
-import type { CategoryRow } from "@/types";
+import { saveAdvancedSettings, savePlatformSettings } from "@/lib/admin/actions";
+import type { CategoryRow, CountryRow } from "@/types";
 
 type SettingsAdminPanelProps = {
   map: Record<string, string>;
   categories: CategoryRow[];
+  countries: CountryRow[];
   colorMapForForm: Record<string, string>;
   tagDefs: unknown[];
   publicSiteUrl: string;
@@ -18,6 +21,7 @@ type SettingsAdminPanelProps = {
 export function SettingsAdminPanel({
   map,
   categories,
+  countries,
   colorMapForForm,
   tagDefs,
   publicSiteUrl,
@@ -44,6 +48,9 @@ export function SettingsAdminPanel({
           </a>
         </p>
       </section>
+
+      <SettingsCategoryKeysPanel categories={categories} />
+      <SettingsCountriesPanel countries={countries} />
 
       <form action={savePlatformSettings} className="dash-panel admin-form">
         <h2 className="dash-panel-title">{t("settings.general")}</h2>

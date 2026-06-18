@@ -1293,3 +1293,36 @@ body:has(.admin-body) .landing-footer {
   border-color: var(--dash-accent);
   color: #0b0d12;
 }
+
+.settings-table-wrap {
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.settings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.settings-table th,
+.settings-table td {
+  border: 1px solid var(--dash-border);
+  padding: 0.5rem 0.625rem;
+  text-align: start;
+  vertical-align: middle;
+}
+
+.settings-table th {
+  background: var(--dash-surface-2, #f8fafc);
+  font-weight: 600;
+}
+
+.settings-table .admin-input {
+  min-width: 8rem;
+}
+
+.admin-success {
+  color: #15803d;
+  margin: 0.5rem 0;
+}

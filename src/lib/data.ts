@@ -172,7 +172,7 @@ export async function getAllProjects(): Promise<ProjectCardData[]> {
       .from("projects")
       .select("*")
       .eq("is_published", true)
-      .order("sort_order", { ascending: true }),
+      .order("created_at", { ascending: false }),
   );
 
   if (!data.length) {
@@ -292,7 +292,7 @@ export async function getProjectsByCategorySlug(
       .select("*")
       .eq("is_published", true)
       .eq("category_slug", slug)
-      .order("sort_order", { ascending: true }),
+      .order("created_at", { ascending: false }),
   );
 
   if (!data.length) {

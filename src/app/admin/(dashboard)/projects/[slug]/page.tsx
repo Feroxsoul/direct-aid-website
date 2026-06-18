@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ProjectDeleteForm, ProjectForm } from "@/components/admin/ProjectForm";
 import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
+import { adminGetCountries } from "@/lib/admin/countries";
 import { canDeleteProjects } from "@/lib/admin/roles";
 import { adminGetCategories, adminGetProject } from "@/lib/admin/data";
 
@@ -13,14 +14,17 @@ type EditProjectPageProps = {
 export default async function EditProjectPage({ params }: EditProjectPageProps) {
   const { slug } = await params;
   const profile = await requirePermission("projects", "edit");
-  const [project, categories] = await Promise.all([
+  const [project, categories, countries] = await Promise.all([
     adminGetProject(slug),
     adminGetCategories(),
+    adminGetCountries(),
   ]);
 
   if (!project) {
     notFound();
   }
+
+  const isSuperAdmin = profile.role_slug === "super_admin";
 
   return (
     <div className="dash-page">
@@ -44,7 +48,12 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
           </Link>
         </div>
       </div>
-      <ProjectForm project={project} categories={categories} />
+      <ProjectForm
+        project={project}
+        categories={categories}
+        countries={countries}
+        isSuperAdmin={isSuperAdmin}
+      />
       {canDeleteProjects(profile.role_slug, profile.permissions) ? (
         <ProjectDeleteForm slug={project.slug} />
       ) : null}
