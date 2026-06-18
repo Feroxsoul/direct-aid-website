@@ -52,8 +52,40 @@ function decodeHtml(text) {
     .trim();
 }
 
+const CATEGORY_SLUGS = [
+  "educational.10x10",
+  "health-10x10",
+  "lmshryaa-ldaawy",
+  "developments",
+  "lmshryaa-lgthy",
+  "orphans",
+  "waters-10x10",
+  "mosque",
+];
+
 function extractSlugs(html) {
   return [...new Set([...html.matchAll(/href="\/project\/([^"]+)"/g)].map((m) => m[1]))];
+}
+
+async function collectAllSlugs() {
+  const slugSet = new Set();
+
+  console.log("Fetching homepage…");
+  const homeHtml = await fetchText(`${BASE}/`);
+  for (const slug of extractSlugs(homeHtml)) slugSet.add(slug);
+
+  for (const categorySlug of CATEGORY_SLUGS) {
+    const url = `${BASE}/lmshryaa/${categorySlug}`;
+    console.log(`Fetching category ${categorySlug}…`);
+    try {
+      const html = await fetchText(url);
+      for (const slug of extractSlugs(html)) slugSet.add(slug);
+    } catch (err) {
+      console.warn(`  skip ${categorySlug}: ${err.message}`);
+    }
+  }
+
+  return { slugs: [...slugSet], homeHtml };
 }
 
 function parseHomeCard(html, slug) {
@@ -143,10 +175,8 @@ async function fetchText(url) {
 }
 
 async function main() {
-  console.log("Fetching homepage…");
-  const homeHtml = await fetchText(`${BASE}/`);
-  const slugs = extractSlugs(homeHtml);
-  console.log(`Found ${slugs.length} projects`);
+  const { slugs, homeHtml } = await collectAllSlugs();
+  console.log(`Found ${slugs.length} unique projects across homepage + category pages`);
 
   const existing = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")) : [];
   const existingMap = new Map(existing.map((p) => [p.slug, p]));
