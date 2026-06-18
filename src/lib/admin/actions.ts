@@ -268,7 +268,7 @@ export async function saveProject(formData: FormData): Promise<ProjectActionResu
 
     const { error } = isNew
       ? await supabase.from("projects").insert(payload)
-      : await supabase.from("projects").update(payload).eq("slug", slug);
+      : await supabase.from("projects").upsert(payload, { onConflict: "slug" });
 
     if (error) return { ok: false, error: error.message };
 
@@ -304,8 +304,7 @@ export async function saveProjectInline(formData: FormData) {
       ? await supabase.from("projects").insert(payload).select("*").single()
       : await supabase
           .from("projects")
-          .update(payload)
-          .eq("slug", slug)
+          .upsert(payload, { onConflict: "slug" })
           .select("*")
           .single();
 

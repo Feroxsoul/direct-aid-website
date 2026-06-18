@@ -45,6 +45,15 @@ export function getWebflowProjectCount() {
   return webflowProjects.length;
 }
 
+export function getWebflowProjectRows(): WebflowProjectRow[] {
+  return webflowProjects;
+}
+
+export function getWebflowProjectRowBySlug(slug: string): ProjectRow | null {
+  const row = webflowProjects.find((item) => item.slug === slug);
+  return row ? webflowRowToProjectRow(row) : null;
+}
+
 function mapWebflowToCard(row: WebflowProjectRow): ProjectCardData {
   return {
     id: row.slug,
@@ -125,6 +134,7 @@ export function webflowRowToProjectRow(row: WebflowProjectRow): ProjectRow {
     location: row.location,
     gallery_urls: row.gallery_urls,
     is_published: row.is_published,
+    status: row.is_published ? "published" : "draft",
     sort_order: row.sort_order,
     created_at: "",
     updated_at: "",

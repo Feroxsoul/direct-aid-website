@@ -19,6 +19,7 @@ import {
   type CategoryRef,
 } from "@/lib/project-catalog";
 import { createSupabaseServerClient } from "@/lib/supabase";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 import { parseCategoryColorMap } from "@/lib/admin/settings-store";
 import {
   getWebflowProjectBySlug,
@@ -155,14 +156,9 @@ export async function getAllProjects(): Promise<ProjectCardData[]> {
     return getWebflowProjects().length ? getWebflowProjects() : fallbackProjects;
   }
 
-  const [{ data, error }, categoryMap, { count }] = await Promise.all([
-    supabase
-      .from("projects")
-      .select("*")
-      .eq("is_published", true)
-      .order("sort_order", { ascending: true }),
-    getCategoryMap(supabase),
+  const [{ count }, categoryMap] = await Promise.all([
     supabase.from("projects").select("*", { count: "exact", head: true }),
+    getCategoryMap(supabase),
   ]);
 
   const hasDbProjects = (count ?? 0) > 0;
@@ -171,7 +167,15 @@ export async function getAllProjects(): Promise<ProjectCardData[]> {
     return getWebflowProjects();
   }
 
-  if (error || !data?.length) {
+  const data = await fetchAllRows(() =>
+    supabase
+      .from("projects")
+      .select("*")
+      .eq("is_published", true)
+      .order("sort_order", { ascending: true }),
+  );
+
+  if (!data.length) {
     return fallbackProjects;
   }
 
@@ -205,8 +209,7 @@ export async function getProjectSlugs(): Promise<string[]> {
       : getFallbackProjectSlugs();
   }
 
-  const [{ data, error }, { count }] = await Promise.all([
-    supabase.from("projects").select("slug").eq("is_published", true),
+  const [{ count }] = await Promise.all([
     supabase.from("projects").select("*", { count: "exact", head: true }),
   ]);
 
@@ -216,7 +219,11 @@ export async function getProjectSlugs(): Promise<string[]> {
     return getWebflowProjectSlugs();
   }
 
-  if (error || !data?.length) {
+  const data = await fetchAllRows(() =>
+    supabase.from("projects").select("slug").eq("is_published", true),
+  );
+
+  if (!data.length) {
     return getFallbackProjectSlugs();
   }
   return data.map((row) => row.slug);
@@ -268,15 +275,9 @@ export async function getProjectsByCategorySlug(
     return webflow.length ? webflow : getFallbackProjectsByCategorySlug(slug);
   }
 
-  const [{ data, error }, categoryMap, { count }] = await Promise.all([
-    supabase
-      .from("projects")
-      .select("*")
-      .eq("is_published", true)
-      .eq("category_slug", slug)
-      .order("sort_order", { ascending: true }),
-    getCategoryMap(supabase),
+  const [{ count }, categoryMap] = await Promise.all([
     supabase.from("projects").select("*", { count: "exact", head: true }),
+    getCategoryMap(supabase),
   ]);
 
   const hasDbProjects = (count ?? 0) > 0;
@@ -285,10 +286,19 @@ export async function getProjectsByCategorySlug(
     return getWebflowProjectsByCategory(slug);
   }
 
-  if (error) {
+  const data = await fetchAllRows(() =>
+    supabase
+      .from("projects")
+      .select("*")
+      .eq("is_published", true)
+      .eq("category_slug", slug)
+      .order("sort_order", { ascending: true }),
+  );
+
+  if (!data.length) {
     return getFallbackProjectsByCategorySlug(slug);
   }
-  return (data ?? []).map((row) =>
+  return data.map((row) =>
     mapProject(row, categoryMap.get(row.category_slug)),
   );
 }

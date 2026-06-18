@@ -1,4 +1,6 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
+import { getWebflowProjectRowBySlug } from "@/lib/webflow-data";
 import type {
   AdminNotificationRow,
   AdminRoleRow,
@@ -16,17 +18,16 @@ export async function adminGetProjects(): Promise<ProjectRow[]> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return [];
 
-  const { data } = await supabase
-    .from("projects")
-    .select("*")
-    .order("sort_order", { ascending: true });
-
-  return data ?? [];
+  return fetchAllRows(() =>
+    supabase.from("projects").select("*").order("sort_order", { ascending: true }),
+  );
 }
 
 export async function adminGetProject(slug: string): Promise<ProjectRow | null> {
   const supabase = await createSupabaseServerClient();
-  if (!supabase) return null;
+  if (!supabase) {
+    return getWebflowProjectRowBySlug(slug);
+  }
 
   const { data } = await supabase
     .from("projects")
@@ -34,7 +35,7 @@ export async function adminGetProject(slug: string): Promise<ProjectRow | null> 
     .eq("slug", slug)
     .maybeSingle();
 
-  return data;
+  return data ?? getWebflowProjectRowBySlug(slug);
 }
 
 export async function adminGetCategories(): Promise<CategoryRow[]> {

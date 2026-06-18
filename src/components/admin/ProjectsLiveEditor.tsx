@@ -13,7 +13,7 @@ import { CATEGORY_SHORT, getCategoryLabelFromRef, truncateCardDescription } from
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useAdminLang } from "@/lib/admin/i18n-context";
 
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 24;
 
 const STATUS_KEYS: Record<string, string> = {
   published: "common.published",
@@ -319,38 +319,53 @@ export function ProjectsLiveEditor({
 
       <footer className="impact-pagination">
         <p>
-          {t("common.showingProjects", { shown: pagedProjects.length, total: filteredProjects.length })}
+          {t("common.showingProjects", {
+            shown: pagedProjects.length,
+            total: filteredProjects.length,
+          })}
+          {totalPages > 1
+            ? ` · ${t("common.pageOf", { page: currentPage, total: totalPages })}`
+            : ""}
         </p>
         <div className="impact-pagination-controls">
           <button
             type="button"
             className="impact-page-btn"
             disabled={currentPage <= 1}
+            onClick={() => setPage(1)}
+            aria-label={t("common.firstPage")}
+          >
+            «
+          </button>
+          <button
+            type="button"
+            className="impact-page-btn"
+            disabled={currentPage <= 1}
             onClick={() => setPage((value) => Math.max(1, value - 1))}
+            aria-label={t("common.previousPage")}
           >
             ‹
           </button>
-          {Array.from({ length: totalPages }, (_, index) => index + 1)
-            .slice(0, 5)
-            .map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={`impact-page-btn${
-                  pageNumber === currentPage ? " is-active" : ""
-                }`}
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))}
+          <span className="impact-page-indicator" aria-live="polite">
+            {currentPage} / {totalPages}
+          </span>
           <button
             type="button"
             className="impact-page-btn"
             disabled={currentPage >= totalPages}
             onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+            aria-label={t("common.nextPage")}
           >
             ›
+          </button>
+          <button
+            type="button"
+            className="impact-page-btn"
+            disabled={currentPage >= totalPages}
+            onClick={() => setPage(totalPages)}
+            aria-label={t("common.lastPage")}
+          >
+            »
           </button>
         </div>
       </footer>

@@ -1,4 +1,7 @@
 import {
+  mergeProjectsWithWebflowCatalog,
+} from "@/lib/admin/project-catalog-merge";
+import {
   CATEGORY_SHORT,
   getCategoryLabelFromRef,
   mapProjectRowToCard,
@@ -51,8 +54,9 @@ export async function getAdminProjectsEditorData(): Promise<AdminProjectsEditorD
   const categoryMap = new Map(categories.map((category) => [category.slug, category]));
   const webflowProjectCount = getWebflowProjectCount();
   const liveUsesWebflow = useWebflowProjectCatalog(dbProjectCount > 0);
+  const mergedProjects = mergeProjectsWithWebflowCatalog(projects);
 
-  const editorProjects: AdminProjectEditorItem[] = projects.map((row) => {
+  const editorProjects: AdminProjectEditorItem[] = mergedProjects.map((row) => {
     const category = categoryMap.get(row.category_slug);
     const categoryLabel = category
       ? getCategoryLabelFromRef(category)
