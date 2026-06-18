@@ -3768,10 +3768,7 @@
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386aba51a6d1753e5d91b24_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A7%D9%84%D9%86%D9%8A%D8%AC%D8%B15_2020%20(3).JPG",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386aba55688aa47e6dd3031_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A7%D9%84%D9%86%D9%8A%D8%AC%D8%B15_2020%20(4).JPG",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386aba4a7827e5a482a2827_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A7%D9%84%D9%86%D9%8A%D8%AC%D8%B15_2020%20(1).jpeg",
-      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386aba455aa82006c00cbac_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A7%D9%84%D9%86%D9%8A%D8%AC%D8%B15_2020%20(5).jpg",
-      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386aba5ed867939e63fced5_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A7%D9%84%D9%86%D9%8A%D8%AC%D8%B15_2020%20(2).jpg",
-      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386aba51a6d1753e5d91b24_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A7%D9%84%D9%86%D9%8A%D8%AC%D8%B15_2020%20(3).jpg",
-      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386aba55688aa47e6dd3031_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A7%D9%84%D9%86%D9%8A%D8%AC%D8%B15_2020%20(4).jpg"
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386aba455aa82006c00cbac_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A7%D9%84%D9%86%D9%8A%D8%AC%D8%B15_2020%20(5).jpg"
     ],
     "is_published": true,
     "sort_order": 152
@@ -9588,6 +9585,32 @@
     "sort_order": 408
   },
   {
+    "slug": "2023somrel5010",
+    "title": "إغاثة عاجلة",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65ff597610d8579f6ec64c14_6.jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "ديسمبر 2023",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "تقوم العون المباشر بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، لتقديم وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو.",
+    "location": "الصومال",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65ff596b10d8579f6ec63dbf_2.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65ff596bacc3cd7f8207f40d_4.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65ff596bbe60a6c62f2541b6_10.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65ff596bbe60a6c62f254192_21.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65ff596bda34d20fc4f7b6c0_32.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65ff596b5e83919ecc116cc6_35.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65ff596bd8fd8dbb25e17797_41.jpg"
+    ],
+    "is_published": true,
+    "sort_order": 408
+  },
+  {
     "slug": "2020tude0023-4208",
     "title": "أغنوهم عن السؤال",
     "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379d860d33b1c2af36f46d0_%D8%B5%D9%88%D8%B1%D8%A926.jpg",
@@ -9617,6 +9640,30 @@
     "sort_order": 409
   },
   {
+    "slug": "2023mozcon5004",
+    "title": "إغاثة",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65f06541b5ba7796275655f0_received_889771802784481.jpeg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "نوفمبر 2023",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "تقوم العون المباشر بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، لتقديم وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو.",
+    "location": "مدغشقر",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65f0652d5349ad2290ca189a_IMG_20231230_125653_069.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65f0652ec1b96116dbddb2d8_IMG_20231230_125708_757.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65f0652d00f13f7de417c845_IMG_20231230_125820_450.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65f0652e100aabb80d96a1ac_IMG_20231230_125859_646.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/65f0652b26fc1c37608a53cc_received_1094114004924756.jpeg"
+    ],
+    "is_published": true,
+    "sort_order": 409
+  },
+  {
     "slug": "2020sode0004-4335",
     "title": "مزرعة",
     "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379d782dc02d3d5ba482ab6_%D8%B5%D9%88%D8%B1%20%D8%A7%D8%AB%D9%86%D8%A7%D8%A1%20%D8%A7%D9%84%D8%AD%D8%B1%D8%AB%203.jpg",
@@ -9636,6 +9683,29 @@
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379d77adc02d3b489481cc0_IMG_6328.JPG",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379d779dc02d3c7c5481ad8_IMG-20200714-WA0008.jpg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379d77ddc02d38ac8482508_%D8%B5%D9%88%D8%B1%20%D8%A7%D8%AB%D9%86%D8%A7%D8%A1%20%D8%A7%D9%84%D8%AD%D8%B1%D8%AB.jpg"
+    ],
+    "is_published": true,
+    "sort_order": 410
+  },
+  {
+    "slug": "2023rwarel5001",
+    "title": "إغاثة",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abfa3ba776e7220a05eca_19.jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "فبراير 2023",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "تدخل سريع تُنفذه العون المباشر لإغاثة المنكوبين من الكوارث الطبيعية والأزمات، وإنقاذ المتضررين من انتشار المجاعات وتفشي الأوبئة والأمراض، من خلال توزيع سلات غذائية تحتوي على المواد الأساسية لسد حاجة الأسر لمدة شهر كامل.",
+    "location": "رواندا",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abf97e84afd995512a256_03.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abf972a1fe90cd203424f_04.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abf99ba776e7220a05592_07.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abf98b28f666a10295aa2_08.jpg"
     ],
     "is_published": true,
     "sort_order": 410
@@ -9673,6 +9743,30 @@
     "sort_order": 411
   },
   {
+    "slug": "2023mozrel5004",
+    "title": "إغاثة",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abeecbf0c46772841a06e_PHOTO-2023-12-24-10-59-30%5B1%5D.jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "ديسمبر 2023",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "تدخل سريع تُنفذه العون المباشر لإغاثة المنكوبين من الكوارث الطبيعية والأزمات، وإنقاذ المتضررين من انتشار المجاعات وتفشي الأوبئة والأمراض، من خلال توزيع سلات غذائية تحتوي على المواد الأساسية لسد حاجة الأسر لمدة شهر كامل.",
+    "location": "موزمبيق",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abee542fd86f16adcfbfe_PHOTO-2023-12-24-10-59-31%5B1%5D.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abee62a1fe90cd202c095_PHOTO-2023-12-24-10-59-33%5B1%5D.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abee5ba776e72209fc808_PHOTO-2023-12-24-10-59-35%5B1%5D.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abee522e7f6bc1573de44_PHOTO-2023-12-24-10-59-39.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/659abee5ce11a2d6808b8e51_PHOTO-2023-12-24-10-59-39%5B1%5D.jpg"
+    ],
+    "is_published": true,
+    "sort_order": 411
+  },
+  {
     "slug": "2020bfde0013-4293",
     "title": "توزيع أبقار على الأسر الفقيرة",
     "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379c1fa944744f7e98f9f66_20200606_100653_800x450.jpg",
@@ -9696,6 +9790,30 @@
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379c1f555e5b44be8e1161a_20200606_094621_800x450.jpg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379c1f6d6cd8c50eec42df2_20200606_094705_800x450.jpg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6379c1f6bfd885987a57847e_20200606_100539_800x450.jpg"
+    ],
+    "is_published": true,
+    "sort_order": 412
+  },
+  {
+    "slug": "36822",
+    "title": "مركز تغذية البركة 19-2",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf351d8c79a31e573e240c_IMG-20220112-WA0010.jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "2020 Apr",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "قال ﷺ \"على كلِّ مُسلِمٍ صدقَةٌ، فإنْ لمْ يجِدْ فيعمَلُ بيدِهِ، فينفَعُ نفسَهُ ويتصدَّقُ، فإنْ لمْ يستطِعْ فيُعينُ ذا الحاجَةِ الملْهُوفَ …\" (صحيح البخاري) وقال ﷺ (ومن كان في حاجة أخيه كان الله في حاجته، ومن فرَّج عن مسلم كربة فرج الله عنه كربة من كربات يوم القيامة، ومن ستر مسلما ستره الله يوم القيامة). (صحيح البخاري) \"إغاثة الملهوف وإعانة المحتاج هي من قبيل شكر الله تعالى على نعمه، وبالشكر تدوم النعم\" تقوم العون المباشر في الحملات الإغاثة بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، وذلك من خلال توفير وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو. \"استمرار دعمكم يساهم في الاستجابة السريعة لتوفير وتأمين الغذاء للمنكوبين والمتضررين من الكوارث والمجاعات\"",
+    "location": "تشاد",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf352ceca905b36c37b61c_IMG20211021094251.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf351224858d5a3d7fff2f_IMG-20220111-WA0007.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf355339e8c32b02cc4458_IMG-20220112-WA0009.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf351324858d5a3d7fff59_IMG20211021094307.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf355d7897f14ae3cf805f_IMG-20220112-WA0000.jpg"
     ],
     "is_published": true,
     "sort_order": 412
@@ -9730,6 +9848,30 @@
     "sort_order": 413
   },
   {
+    "slug": "2020tdco0028",
+    "title": "مركز تغذية البركة 19-1",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf32798ee90df731f655c1_%D8%B5%D9%88%D8%B1%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%20(2).jpeg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "2020 Apr",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "قال ﷺ \"على كلِّ مُسلِمٍ صدقَةٌ، فإنْ لمْ يجِدْ فيعمَلُ بيدِهِ، فينفَعُ نفسَهُ ويتصدَّقُ، فإنْ لمْ يستطِعْ فيُعينُ ذا الحاجَةِ الملْهُوفَ …\" (صحيح البخاري) وقال ﷺ (ومن كان في حاجة أخيه كان الله في حاجته، ومن فرَّج عن مسلم كربة فرج الله عنه كربة من كربات يوم القيامة، ومن ستر مسلما ستره الله يوم القيامة). (صحيح البخاري) \"إغاثة الملهوف وإعانة المحتاج هي من قبيل شكر الله تعالى على نعمه، وبالشكر تدوم النعم\" تقوم العون المباشر في الحملات الإغاثة بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، وذلك من خلال توفير وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو. \"استمرار دعمكم يساهم في الاستجابة السريعة لتوفير وتأمين الغذاء للمنكوبين والمتضررين من الكوارث والمجاعات\"",
+    "location": "تشاد",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/63d0d027e96cff67b2e1f753_20220802_130857.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/63d0d03255b692e004b1c895_20220802_131140.jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf323e4028c3b956813468_%D8%B5%D9%88%D8%B1%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%20(9).jpeg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf323ffc05e95a86edc02e_%D8%B5%D9%88%D8%B1%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%20(16).jpeg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/64cf328a4028c3b956815a60_%D8%B5%D9%88%D8%B1%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%20(15).jpeg"
+    ],
+    "is_published": true,
+    "sort_order": 413
+  },
+  {
     "slug": "4202",
     "title": "طاحونة",
     "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375f552f8d9ef5702319ca0__(10).jpeg",
@@ -9755,6 +9897,29 @@
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375f54e89d53b1e0212fdaf__(13).jpeg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375f54ec7d01e1d02c4ddc3__(14).jpeg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375f54e67fc6416da3469f4__(15).jpeg"
+    ],
+    "is_published": true,
+    "sort_order": 414
+  },
+  {
+    "slug": "mlfd0003",
+    "title": "مراكز تغذية أساسية",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6420464bb00d3ba4ac76f4fc_%D8%B5%D9%88%D8%B1%20%D9%85%D8%B1%D9%83%D8%B2%20%D8%B3%D9%88%D8%A1%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A8%D8%A7%D9%84%D8%B1%D8%A7%D8%B2%D9%8A%20(15).jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "يناير 2019",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "قال ﷺ \"على كلِّ مُسلِمٍ صدقَةٌ، فإنْ لمْ يجِدْ فيعمَلُ بيدِهِ، فينفَعُ نفسَهُ ويتصدَّقُ، فإنْ لمْ يستطِعْ فيُعينُ ذا الحاجَةِ الملْهُوفَ …\" (صحيح البخاري) وقال ﷺ (ومن كان في حاجة أخيه كان الله في حاجته، ومن فرَّج عن مسلم كربة فرج الله عنه كربة من كربات يوم القيامة، ومن ستر مسلما ستره الله يوم القيامة). (صحيح البخاري) \"إغاثة الملهوف وإعانة المحتاج هي من قبيل شكر الله تعالى على نعمه، وبالشكر تدوم النعم\" تقوم العون المباشر في الحملات الإغاثة بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، وذلك من خلال توفير وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو.",
+    "location": "مالي",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/642046457c659e47831643af_%D8%B5%D9%88%D8%B1%20%D9%85%D8%B1%D9%83%D8%B2%20%D8%B3%D9%88%D8%A1%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A8%D8%A7%D9%84%D8%B1%D8%A7%D8%B2%D9%8A%20(11).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6420464523efd15de2e45b31_%D8%B5%D9%88%D8%B1%20%D9%85%D8%B1%D9%83%D8%B2%20%D8%B3%D9%88%D8%A1%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A8%D8%A7%D9%84%D8%B1%D8%A7%D8%B2%D9%8A%20(19).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6420464523efd182a8e45b32_%D8%B5%D9%88%D8%B1%20%D9%85%D8%B1%D9%83%D8%B2%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%20(16).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/642046454c5501c8e2dcf6c5_%D8%B5%D9%88%D8%B1%20%D9%85%D8%B1%D9%83%D8%B2%20%D8%B3%D9%88%D8%A1%20%D8%A7%D9%84%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%20%D8%A8%D8%B3%D9%85%D9%86%D9%83%D9%88%20(20).jpg"
     ],
     "is_published": true,
     "sort_order": 414
@@ -9877,6 +10042,29 @@
     "sort_order": 418
   },
   {
+    "slug": "mrfd0001",
+    "title": "مراكز تغذية للأطفال لتحدي ضعف النمو",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386a5ba7f38c94c5319fc89_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%B0%D9%8A%D8%A9_5_2020%20(1).jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "مايو 2020",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "تقوم العون المباشر في الحملات الإغاثة بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، وذلك من خلال توفير وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو.",
+    "location": "موريتانيا",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386a5af33ee3618d9b1ff2c_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%B0%D9%8A%D8%A9_5_2020%20(2).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386a5b01e5988c318d414e1_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%B0%D9%8A%D8%A9_5_2020%20(3).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386a5b06642016c54556be4_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%B0%D9%8A%D8%A9_5_2020%20(4).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386a5b033ee36922eb1ff2d_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%B0%D9%8A%D8%A9_5_2020%20(5).jpg"
+    ],
+    "is_published": true,
+    "sort_order": 418
+  },
+  {
     "slug": "2020etde0002-4226",
     "title": "توزيع ماعز على الأسر الفقيرة",
     "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375df93f86a9df5b3d4cd6a_thumbnail%20(1).jpg",
@@ -9906,6 +10094,30 @@
     "sort_order": 419
   },
   {
+    "slug": "mlfd0005",
+    "title": "مراكز تغذية لمكافحة الأمراض",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386952fd9d046c12b5f7b2d_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%205_2020%20(1).jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "مايو 2020",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "تقوم العون المباشر في الحملات الإغاثة بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، وذلك من خلال توفير وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو.",
+    "location": "مالي",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386952aaa5b5b5b0c6677f2_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%205_2020%20(6).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386952896459c20017a89d6_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%205_2020%20(2).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/63869529c224a25cee28907a_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%205_2020%20(3).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/638695294b51e258924e802c_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%205_2020%20(4).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6386952a6d766183e8d7f2a4_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%205_2020%20(5).jpg"
+    ],
+    "is_published": true,
+    "sort_order": 419
+  },
+  {
     "slug": "2020etde0001-4225",
     "title": "توزيع الأبقار على الأسر الفقيرة",
     "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375dca372facb772450a169_thumbnail%20(2).jpg",
@@ -9930,6 +10142,29 @@
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375dca089d53b9800fd13bb_thumbnail%20(12).jpg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375dca026d0a7f70cd6dc0b_thumbnail%20(13).jpg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375dc9ff8d9ef316d1fdac3_thumbnail.jpg"
+    ],
+    "is_published": true,
+    "sort_order": 420
+  },
+  {
+    "slug": "mlfd0001",
+    "title": "مراكز تغذية لمكافحة الأمراض",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/63868a6bed8ca6e3b85d93ba_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%206_2020%20(1).jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "يونيو 2020",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "تقوم العون المباشر في الحملات الإغاثة بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، وذلك من خلال توفير وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو.",
+    "location": "مالي",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/63868a67aa9f0251e6404d30_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%206_2020%20(1).jpeg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/63868a67aa9f023ac7404d31_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%206_2020%20(2).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/63868a678107cabf40cdde6c_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%206_2020%20(3).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/63868a678107caa8cecdde62_%D9%85%D8%B1%D8%A7%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%206_2020%20(4).jpg"
     ],
     "is_published": true,
     "sort_order": 420
@@ -9973,6 +10208,29 @@
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375d6b7f3f58eed9334efa4_35.jpg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375d6b7e1e7df2022c78a49_36.jpg",
       "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/6375d6b6262cfd2aa608ce87_37.jpg"
+    ],
+    "is_published": true,
+    "sort_order": 421
+  },
+  {
+    "slug": "mlcl0006",
+    "title": "مراكز تغذية لمكافحة الأمراض",
+    "image_url": "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/638678b14f0ec8d7aa81ab70_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%204_2020%20(1).jpg",
+    "image_alt": null,
+    "category_slug": "lmshryaa-lgthy",
+    "date_label": "أبريل 2020",
+    "year_code": null,
+    "accent": "yellow",
+    "stat_value": null,
+    "stat_label": null,
+    "icon_url": null,
+    "description": "تقوم العون المباشر في الحملات الإغاثة بتوفير مراكز تغذية مخصصة لعلاج سوء التغذية لدى الأطفال، والنساء الحوامل والمرضعات، وذلك من خلال توفير وجبات غذائية مستمرة لحين تجاوز مرحلة الخطر. البرنامج يستهدف وقف انتشار الأمراض الوبائية والمزمنة، ويحمي الأطفال من التأخر في النمو.",
+    "location": "مالي",
+    "gallery_urls": [
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/638678a8a73460c85301a01d_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%204_2020%20(2).JPG",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/638678a661189f9ea9797d97_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%204_2020%20(3).JPG",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/638678a75b2dec71a7d08a26_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%204_2020%20(4).jpg",
+      "https://cdn.prod.website-files.com/632b00743e06d86e529472a1/638678a7fdce8232613c1b5d_%D9%85%D8%B1%D9%83%D8%B2%20%D8%AA%D8%BA%D8%B0%D9%8A%D8%A9%204_2020%20(5).jpg"
     ],
     "is_published": true,
     "sort_order": 421
