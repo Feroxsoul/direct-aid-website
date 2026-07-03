@@ -85,10 +85,12 @@ export function ProjectsLiveEditor({
   );
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProjects(initialProjects);
   }, [initialProjects]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
   }, [categoryFilter, statusFilter, search]);
 

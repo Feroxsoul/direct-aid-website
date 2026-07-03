@@ -91,7 +91,7 @@ export function resolveProjectSource(hasDbProjects: boolean): "webflow" | "datab
   return getWebflowProjectCount() > 0 ? "webflow" : "database";
 }
 
-export function useWebflowProjectCatalog(hasDbProjects = false) {
+export function shouldUseWebflowProjectCatalog(hasDbProjects = false) {
   return resolveProjectSource(hasDbProjects) === "webflow";
 }
 

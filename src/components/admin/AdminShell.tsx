@@ -32,39 +32,37 @@ export function AdminShell({
 }: AdminShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [lang, setLang] = useState<AdminLang>("en");
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
+    const stored = localStorage.getItem("admin-theme");
+    return stored === "dark" || stored === "light" ? stored : "light";
+  });
+  const [lang, setLang] = useState<AdminLang>(() => {
+    if (typeof window === "undefined") return "en";
+    const storedLang = localStorage.getItem(ADMIN_LANG_STORAGE_KEY);
+    return storedLang === "ar" || storedLang === "en" ? storedLang : "en";
+  });
 
   const pageTitle = t(lang, getPageTitleKey(pathname));
 
   const applyLang = useCallback((next: AdminLang) => {
     setLang(next);
-    localStorage.setItem(ADMIN_LANG_STORAGE_KEY, next);
-    document.documentElement.setAttribute("lang", next);
-    document.documentElement.setAttribute("dir", next === "ar" ? "rtl" : "ltr");
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem("admin-theme");
-    if (stored === "dark" || stored === "light") {
-      setTheme(stored);
-      document.documentElement.setAttribute("data-admin-theme", stored);
-    }
+    localStorage.setItem("admin-theme", theme);
+    document.documentElement.setAttribute("data-admin-theme", theme);
+  }, [theme]);
 
-    const storedLang = localStorage.getItem(ADMIN_LANG_STORAGE_KEY);
-    if (storedLang === "ar" || storedLang === "en") {
-      applyLang(storedLang);
-    } else {
-      document.documentElement.setAttribute("lang", "en");
-      document.documentElement.setAttribute("dir", "ltr");
-    }
-  }, [applyLang]);
+  useEffect(() => {
+    localStorage.setItem(ADMIN_LANG_STORAGE_KEY, lang);
+    document.documentElement.setAttribute("lang", lang);
+    document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+  }, [lang]);
 
   function toggleTheme() {
     const next = theme === "light" ? "dark" : "light";
     setTheme(next);
-    localStorage.setItem("admin-theme", next);
-    document.documentElement.setAttribute("data-admin-theme", next);
   }
 
   return (

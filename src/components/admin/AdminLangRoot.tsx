@@ -8,21 +8,22 @@ import {
 import { AdminLangProvider } from "@/lib/admin/i18n-context";
 
 export function AdminLangRoot({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<AdminLang>("en");
+  const [lang, setLang] = useState<AdminLang>(() => {
+    if (typeof window === "undefined") return "en";
+    const stored = localStorage.getItem(ADMIN_LANG_STORAGE_KEY);
+    return stored === "ar" || stored === "en" ? stored : "en";
+  });
 
   const applyLang = useCallback((next: AdminLang) => {
     setLang(next);
     localStorage.setItem(ADMIN_LANG_STORAGE_KEY, next);
-    document.documentElement.setAttribute("lang", next);
-    document.documentElement.setAttribute("dir", next === "ar" ? "rtl" : "ltr");
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem(ADMIN_LANG_STORAGE_KEY);
-    if (stored === "ar" || stored === "en") {
-      applyLang(stored);
-    }
-  }, [applyLang]);
+    document.documentElement.setAttribute("lang", lang);
+    document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+    localStorage.setItem(ADMIN_LANG_STORAGE_KEY, lang);
+  }, [lang]);
 
   return (
     <AdminLangProvider lang={lang} onLangChange={applyLang}>

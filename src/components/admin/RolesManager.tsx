@@ -28,8 +28,9 @@ type RolesManagerProps = {
   }[];
 };
 
-export function RolesManager({ roles }: RolesManagerProps) {
+export function RolesManager({ roles: _roles }: RolesManagerProps) {
   const { t } = useAdminLang();
+  void _roles;
   const [name, setName] = useState("");
   const [color, setColor] = useState(BADGE_COLORS[0]);
   const [loading, setLoading] = useState(false);

@@ -11,22 +11,22 @@ type SiteLangRootProps = {
 };
 
 export function SiteLangRoot({ initialLang, children }: SiteLangRootProps) {
-  const [lang, setLang] = useState<SiteLang>(initialLang);
+  const [lang, setLang] = useState<SiteLang>(() => {
+    if (typeof window === "undefined") return initialLang;
+    const stored = localStorage.getItem(SITE_LANG_STORAGE_KEY);
+    return stored === "ar" || stored === "en" ? stored : initialLang;
+  });
 
   const applyLang = useCallback((next: SiteLang) => {
     setLang(next);
-    localStorage.setItem(SITE_LANG_STORAGE_KEY, next);
-    document.cookie = siteLangCookieValue(next);
-    document.documentElement.setAttribute("lang", next);
-    document.documentElement.setAttribute("dir", next === "ar" ? "rtl" : "ltr");
   }, []);
 
   useEffect(() => {
-    const stored = localStorage.getItem(SITE_LANG_STORAGE_KEY);
-    const preferred: SiteLang =
-      stored === "ar" || stored === "en" ? stored : initialLang;
-    applyLang(preferred);
-  }, [applyLang, initialLang]);
+    localStorage.setItem(SITE_LANG_STORAGE_KEY, lang);
+    document.cookie = siteLangCookieValue(lang);
+    document.documentElement.setAttribute("lang", lang);
+    document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+  }, [lang]);
 
   return (
     <SiteLangProvider lang={lang} onLangChange={applyLang}>

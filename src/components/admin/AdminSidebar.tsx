@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { canAccessNav, hasPermission } from "@/lib/admin/permissions";
 import type { AdminPermissions } from "@/lib/admin/permissions";
 import { t, type AdminLang } from "@/lib/admin/i18n";
@@ -70,11 +70,8 @@ type AdminSidebarProps = {
 export function AdminSidebar({ profile, logoUrl, lang, onNavigate }: AdminSidebarProps) {
   const pathname = usePathname();
   const settingsActive = SETTINGS_CHILDREN.some((item) => pathname.startsWith(item.href));
-  const [settingsOpen, setSettingsOpen] = useState(settingsActive);
-
-  useEffect(() => {
-    if (settingsActive) setSettingsOpen(true);
-  }, [settingsActive]);
+  const [settingsOpenManual, setSettingsOpenManual] = useState(false);
+  const settingsOpen = settingsActive || settingsOpenManual;
 
   const mainItems = MAIN_NAV.filter((item) => canSeeNavItem(profile, item));
   const settingsItems = SETTINGS_CHILDREN.filter((item) => canSeeNavItem(profile, item));
@@ -122,7 +119,7 @@ export function AdminSidebar({ profile, logoUrl, lang, onNavigate }: AdminSideba
               className={`dash-sidebar-link dash-sidebar-group-toggle${
                 settingsActive ? " is-active" : ""
               }`}
-              onClick={() => setSettingsOpen((open) => !open)}
+              onClick={() => setSettingsOpenManual((open) => !open)}
               aria-expanded={settingsOpen}
             >
               <span className="dash-sidebar-icon" aria-hidden>

@@ -17,14 +17,13 @@ export type { AdminSaveResult } from "@/lib/admin/db-write";
 import {
   assertCanDeleteProjects,
   requireSupabaseAdmin,
-  requireSuperAdmin,
 } from "@/lib/admin/auth";
 import {
   DEFAULT_ROLE_DEFINITIONS,
   getDefaultRoleDefinition,
 } from "@/lib/admin/permissions";
 import { hasPermission } from "@/lib/admin/permissions";
-import { canAssignRole, canManageUsers, isPrivilegedRole } from "@/lib/admin/roles";
+import { canAssignRole } from "@/lib/admin/roles";
 import type { AdminProfile } from "@/types";
 import type { CategoryStatus } from "@/types";
 import type { CategoryAccent } from "@/lib/design-tokens";

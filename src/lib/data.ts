@@ -11,12 +11,11 @@ import {
   getFallbackProjectSlugs,
   getFallbackProjectsByCategorySlug,
 } from "@/data/projects";
-import type { CategoryAccent } from "@/lib/design-tokens";
 import {
   getCategoryLabelFromRef,
   mapProjectRowToCard,
   sortProjectsByDateDesc,
-  useWebflowProjectCatalog,
+  shouldUseWebflowProjectCatalog,
   type CategoryRef,
 } from "@/lib/project-catalog";
 import { createSupabaseServerClient } from "@/lib/supabase";
@@ -24,7 +23,6 @@ import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 import { parseCategoryColorMap } from "@/lib/admin/settings-store";
 import {
   getWebflowProjectBySlug,
-  getWebflowProjectCount,
   getWebflowProjectSlugs,
   getWebflowProjects,
   getWebflowProjectsByCategory,
@@ -167,7 +165,7 @@ export async function getAllProjects(): Promise<ProjectCardData[]> {
 
   const hasDbProjects = (count ?? 0) > 0;
 
-  if (useWebflowProjectCatalog(hasDbProjects)) {
+  if (shouldUseWebflowProjectCatalog(hasDbProjects)) {
     return getWebflowProjects();
   }
 
@@ -217,7 +215,7 @@ export async function getProjectSlugs(): Promise<string[]> {
 
   const hasDbProjects = (count ?? 0) > 0;
 
-  if (useWebflowProjectCatalog(hasDbProjects)) {
+  if (shouldUseWebflowProjectCatalog(hasDbProjects)) {
     return getWebflowProjectSlugs();
   }
 
@@ -254,7 +252,7 @@ export async function getProjectBySlug(
 
   const hasDbProjects = (count ?? 0) > 0;
 
-  if (useWebflowProjectCatalog(hasDbProjects)) {
+  if (shouldUseWebflowProjectCatalog(hasDbProjects)) {
     return getWebflowProjectBySlug(slug, categories);
   }
 
@@ -284,7 +282,7 @@ export async function getProjectsByCategorySlug(
 
   const hasDbProjects = (count ?? 0) > 0;
 
-  if (useWebflowProjectCatalog(hasDbProjects)) {
+  if (shouldUseWebflowProjectCatalog(hasDbProjects)) {
     return getWebflowProjectsByCategory(slug);
   }
 

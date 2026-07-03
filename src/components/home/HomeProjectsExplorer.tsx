@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/set-state-in-effect */
+
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
@@ -73,6 +75,17 @@ export function HomeProjectsExplorer({
   const categoriesSectionHeading =
     content.categories_section_title || categoriesSectionTitle;
   const impactSectionHeading = content.impact_section_title || impactSectionTitle;
+  const impactSectionSubtitleTemplate =
+    content.impact_section_subtitle || impactSectionSubtitle;
+  const impactSectionSubtitleText = useMemo(() => {
+    if (!impactSectionSubtitleTemplate?.trim()) {
+      return t("impact.subtitle", { count: filteredProjects.length });
+    }
+    if (impactSectionSubtitleTemplate.includes("{count}")) {
+      return impactSectionSubtitleTemplate.replaceAll("{count}", String(filteredProjects.length));
+    }
+    return impactSectionSubtitleTemplate;
+  }, [filteredProjects.length, impactSectionSubtitleTemplate, t]);
 
   const updateCategory = useCallback(
     (slug: string | null) => {
@@ -183,7 +196,7 @@ export function HomeProjectsExplorer({
                       count: filteredProjects.length,
                       category: activeLabel,
                     })
-                  : t("impact.subtitle", { count: filteredProjects.length })}
+                  : impactSectionSubtitleText}
               </p>
             </div>
             {activeSlug ? (

@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { CategoryForm } from "@/components/admin/CategoryForm";
-import { AdminPageHeader, AdminText } from "@/components/admin/AdminPageHeader";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { requirePermission } from "@/lib/admin/auth";
 
 export default async function NewCategoryPage() {

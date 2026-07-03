@@ -7,7 +7,7 @@ import {
   mapProjectRowToCard,
   projectStatus,
   sortProjectsByDateDesc,
-  useWebflowProjectCatalog,
+  shouldUseWebflowProjectCatalog,
 } from "@/lib/project-catalog";
 import { getWebflowProjectCount } from "@/lib/webflow-data";
 import {
@@ -54,7 +54,7 @@ export async function getAdminProjectsEditorData(): Promise<AdminProjectsEditorD
 
   const categoryMap = new Map(categories.map((category) => [category.slug, category]));
   const webflowProjectCount = getWebflowProjectCount();
-  const liveUsesWebflow = useWebflowProjectCatalog(dbProjectCount > 0);
+  const liveUsesWebflow = shouldUseWebflowProjectCatalog(dbProjectCount > 0);
   const mergedProjects = sortProjectsByDateDesc(mergeProjectsWithWebflowCatalog(projects));
 
   const editorProjects: AdminProjectEditorItem[] = mergedProjects.map((row) => {
