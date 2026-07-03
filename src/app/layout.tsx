@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Footer } from "@/components/layout/Footer";
 import { PublicLocaleProvider } from "@/lib/public-locale-context";
 import { SiteLangRoot } from "@/components/layout/SiteLangRoot";
 import { BRAND_10X10_LOGO_SVG } from "@/lib/brand";
 import { getPublicCountryMaps } from "@/lib/public-countries";
 import { getPublicContentSettings } from "@/lib/public-content";
+import { parseSiteLang, SITE_LANG_COOKIE } from "@/lib/site-lang-cookie";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -35,11 +37,17 @@ export default async function RootLayout({
     getPublicContentSettings(),
     getPublicCountryMaps(),
   ]);
+  const cookieStore = await cookies();
+  const initialLang = parseSiteLang(cookieStore.get(SITE_LANG_COOKIE)?.value);
 
   return (
-    <html lang="ar" dir="rtl" suppressHydrationWarning>
+    <html
+      lang={initialLang}
+      dir={initialLang === "ar" ? "rtl" : "ltr"}
+      suppressHydrationWarning
+    >
       <body className="flex min-h-screen flex-col bg-white text-da-black antialiased">
-        <SiteLangRoot>
+        <SiteLangRoot initialLang={initialLang}>
           <PublicLocaleProvider content={content} countryMaps={countryMaps}>
             <main className="flex flex-1 flex-col">{children}</main>
             {content.show_footer ? (

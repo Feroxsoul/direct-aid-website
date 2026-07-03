@@ -19,8 +19,8 @@ export function StatisticsSection({
   brandLogoUrl,
   backgroundColor,
 }: StatisticsSectionProps) {
-  const { t } = useSiteLang();
-  const { lang, content } = usePublicLocale();
+  const { t, lang } = useSiteLang();
+  const { content } = usePublicLocale();
   const localized = localizeHomeStatistics(
     {
       value,
@@ -51,7 +51,9 @@ export function StatisticsSection({
                 <Image src={iconUrl} alt="" width={28} height={28} aria-hidden unoptimized />
               </div>
               <p className="landing-stat-value">{value}</p>
-              <p className="landing-stat-label">{localized.label}</p>
+              <p className="landing-stat-label" key={`stat-label-${lang}`}>
+                {localized.label}
+              </p>
             </div>
 
             <div className="landing-hero-brand-card">
@@ -66,7 +68,9 @@ export function StatisticsSection({
             </div>
 
             <div className="landing-hero-copy">
-              <p className="landing-hero-intro">{localized.introText}</p>
+              <p className="landing-hero-intro" key={`stat-intro-${lang}`}>
+                {localized.introText}
+              </p>
               <Link href="#categories" className="landing-hero-cta">
                 {cta}
               </Link>

@@ -2,24 +2,31 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { SITE_LANG_STORAGE_KEY, type SiteLang } from "@/lib/site-i18n";
+import { siteLangCookieValue } from "@/lib/site-lang-cookie";
 import { SiteLangProvider } from "@/lib/site-i18n-context";
 
-export function SiteLangRoot({ children }: { children: React.ReactNode }) {
-  const [lang, setLang] = useState<SiteLang>("ar");
+type SiteLangRootProps = {
+  initialLang: SiteLang;
+  children: React.ReactNode;
+};
+
+export function SiteLangRoot({ initialLang, children }: SiteLangRootProps) {
+  const [lang, setLang] = useState<SiteLang>(initialLang);
 
   const applyLang = useCallback((next: SiteLang) => {
     setLang(next);
     localStorage.setItem(SITE_LANG_STORAGE_KEY, next);
+    document.cookie = siteLangCookieValue(next);
     document.documentElement.setAttribute("lang", next);
     document.documentElement.setAttribute("dir", next === "ar" ? "rtl" : "ltr");
   }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem(SITE_LANG_STORAGE_KEY);
-    if (stored === "ar" || stored === "en") {
-      applyLang(stored);
-    }
-  }, [applyLang]);
+    const preferred: SiteLang =
+      stored === "ar" || stored === "en" ? stored : initialLang;
+    applyLang(preferred);
+  }, [applyLang, initialLang]);
 
   return (
     <SiteLangProvider lang={lang} onLangChange={applyLang}>
