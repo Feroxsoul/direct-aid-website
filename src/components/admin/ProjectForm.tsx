@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { deleteProject, saveProject } from "@/lib/admin/actions";
+import { BilingualField } from "@/components/admin/BilingualField";
 import { MonthYearPicker } from "@/components/admin/MonthYearPicker";
 import { ProjectMediaPicker } from "@/components/admin/ProjectMediaPicker";
 import { useAdminLang } from "@/lib/admin/i18n-context";
+import { formatEnglishCountryName } from "@/lib/site-localize";
 import { parseProjectDateLabel } from "@/lib/project-slug";
 import type { CategoryRow, CountryRow, ProjectRow } from "@/types";
 
@@ -30,7 +32,7 @@ export function ProjectForm({
   countries,
   isSuperAdmin,
 }: ProjectFormProps) {
-  const { t } = useAdminLang();
+  const { t, lang } = useAdminLang();
   const router = useRouter();
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -98,63 +100,58 @@ export function ProjectForm({
             </>
           )}
         </div>
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="title">
-            {t("projectForm.title")}
-          </label>
-          <input
-            id="title"
-            name="title"
-            className="admin-input"
-            defaultValue={project?.title ?? ""}
-            required
-          />
-        </div>
       </div>
 
-      <div className="admin-row">
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="meta_title">
-            {t("projectForm.metaTitle")}
-          </label>
-          <input
-            id="meta_title"
-            name="meta_title"
-            className="admin-input"
-            defaultValue={project?.meta_title ?? ""}
-          />
-        </div>
-        <div className="admin-field">
-          <label className="admin-label" htmlFor="meta_description">
-            {t("projectForm.metaDescription")}
-          </label>
-          <input
-            id="meta_description"
-            name="meta_description"
-            className="admin-input"
-            defaultValue={project?.meta_description ?? ""}
-          />
-        </div>
-      </div>
+      <h3 className="dash-panel-title">{t("projectForm.bilingualContent")}</h3>
+
+      <BilingualField
+        label={t("projectForm.titleBilingual")}
+        nameAr="title"
+        nameEn="title_en"
+        defaultAr={project?.title ?? ""}
+        defaultEn={project?.title_en ?? ""}
+        requiredAr
+        arLabel={t("projectForm.langAr")}
+        enLabel={t("projectForm.langEn")}
+      />
+
+      <BilingualField
+        label={t("projectForm.metaTitleBilingual")}
+        nameAr="meta_title"
+        nameEn="meta_title_en"
+        defaultAr={project?.meta_title ?? ""}
+        defaultEn={project?.meta_title_en ?? ""}
+        arLabel={t("projectForm.langAr")}
+        enLabel={t("projectForm.langEn")}
+      />
+
+      <BilingualField
+        label={t("projectForm.metaDescriptionBilingual")}
+        nameAr="meta_description"
+        nameEn="meta_description_en"
+        defaultAr={project?.meta_description ?? ""}
+        defaultEn={project?.meta_description_en ?? ""}
+        arLabel={t("projectForm.langAr")}
+        enLabel={t("projectForm.langEn")}
+      />
 
       <ProjectMediaPicker
         imageUrl={project?.image_url ?? ""}
         galleryUrls={project?.gallery_urls ?? []}
       />
 
-      <div className="admin-field">
-        <label className="admin-label" htmlFor="description">
-          {t("projectForm.description")}
-        </label>
-        <p className="admin-help-text">{t("projectForm.descriptionHelp")}</p>
-        <textarea
-          id="description"
-          name="description"
-          className="admin-textarea"
-          rows={8}
-          defaultValue={project?.description ?? ""}
-        />
-      </div>
+      <BilingualField
+        label={t("projectForm.descriptionBilingual")}
+        nameAr="description"
+        nameEn="description_en"
+        defaultAr={project?.description ?? ""}
+        defaultEn={project?.description_en ?? ""}
+        multiline
+        rows={8}
+        arLabel={t("projectForm.langAr")}
+        enLabel={t("projectForm.langEn")}
+      />
+      <p className="admin-help-text">{t("projectForm.descriptionHelp")}</p>
 
       <div className="impact-tags-panel">
         <h3 className="dash-panel-title">{t("projectForm.impactTag")}</h3>
@@ -170,21 +167,19 @@ export function ProjectForm({
               className="admin-input"
               placeholder="8,750"
               defaultValue={project?.stat_value ?? ""}
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label" htmlFor="stat_label">
-              {t("projectForm.statLabel")}
-            </label>
-            <input
-              id="stat_label"
-              name="stat_label"
-              className="admin-input"
-              placeholder="beneficiaries"
-              defaultValue={project?.stat_label ?? ""}
+              dir="ltr"
             />
           </div>
         </div>
+        <BilingualField
+          label={t("projectForm.statLabelBilingual")}
+          nameAr="stat_label"
+          nameEn="stat_label_en"
+          defaultAr={project?.stat_label ?? ""}
+          defaultEn={project?.stat_label_en ?? ""}
+          arLabel={t("projectForm.langAr")}
+          enLabel={t("projectForm.langEn")}
+        />
       </div>
 
       <div className="admin-row">
@@ -202,8 +197,9 @@ export function ProjectForm({
             <option value="">{t("projectForm.selectCategory")}</option>
             {categories.map((category) => (
               <option key={category.slug} value={category.slug}>
-                {category.title_line_1} {category.title_line_2}
-                {category.slug_key ? ` (${category.slug_key})` : ""}
+                {lang === "en"
+                  ? `${category.name_en ?? category.title_line_2} (${category.slug_key ?? category.slug})`
+                  : `${category.title_line_1} ${category.title_line_2}`}
               </option>
             ))}
           </select>
@@ -222,7 +218,9 @@ export function ProjectForm({
             <option value="">{t("projectForm.selectCountry")}</option>
             {countries.map((country) => (
               <option key={country.slug} value={country.slug}>
-                {country.name_ar}
+                {lang === "en"
+                  ? formatEnglishCountryName(country.name_en)
+                  : country.name_ar}
               </option>
             ))}
           </select>

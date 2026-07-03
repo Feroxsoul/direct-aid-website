@@ -80,9 +80,11 @@ function mapHomeStatistics(
   return {
     value: row.value,
     label: row.label,
+    labelEn: row.label_en ?? defaults.labelEn,
     iconUrl: row.icon_url ?? defaults.iconUrl,
     illustrationUrl: row.illustration_url ?? defaults.illustrationUrl,
     introText: row.intro_text ?? defaults.introText,
+    introTextEn: row.intro_text_en ?? defaults.introTextEn,
     brandLine1: settings.stats_brand_line_1 ?? defaults.brandLine1,
     brandLine2: settings.stats_brand_line_2 ?? defaults.brandLine2,
     brandLogoUrl: settings.stats_brand_logo_url ?? defaults.brandLogoUrl,

@@ -1,6 +1,7 @@
 "use client";
 
 import { saveHomepage } from "@/lib/admin/actions";
+import { BilingualField } from "@/components/admin/BilingualField";
 import { ColorField } from "@/components/admin/ColorField";
 import { ImageField } from "@/components/admin/ImageField";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -26,6 +27,8 @@ export function HomepageAdminForm({
   saved,
 }: HomepageAdminFormProps) {
   const { t } = useAdminLang();
+  const arLabel = t("projectForm.langAr");
+  const enLabel = t("projectForm.langEn");
 
   const boxColorOptions = [
     { value: "#e2eed6", label: t("homepage.colorLightGreen") },
@@ -65,34 +68,47 @@ export function HomepageAdminForm({
               className="admin-input"
               defaultValue={stats?.label ?? ""}
               required
+              dir="rtl"
+            />
+          </div>
+          <div className="admin-field">
+            <label className="admin-label">{t("homepage.statLabel")} ({enLabel})</label>
+            <input
+              name="stats_label_en"
+              className="admin-input"
+              defaultValue={stats?.label_en ?? ""}
+              dir="ltr"
             />
           </div>
         </div>
+
+        <BilingualField
+          label={t("homepage.intro")}
+          nameAr="stats_intro"
+          nameEn="stats_intro_en"
+          defaultAr={stats?.intro_text ?? ""}
+          defaultEn={stats?.intro_text_en ?? ""}
+          multiline
+          rows={4}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
+
+        <BilingualField
+          label={t("homepage.cta")}
+          nameAr="hero_cta_label"
+          nameEn="hero_cta_label_en"
+          defaultAr={settings.hero_cta_label ?? "استكشف مهمتنا ←"}
+          defaultEn={settings.hero_cta_label_en ?? "Explore our mission →"}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
 
         <ImageField
           name="stats_brand_logo_url"
           label={t("homepage.brandLogo")}
           defaultValue={brandLogoUrl}
         />
-
-        <div className="admin-field">
-          <label className="admin-label">{t("homepage.intro")}</label>
-          <textarea
-            name="stats_intro"
-            className="admin-textarea"
-            defaultValue={stats?.intro_text ?? ""}
-            rows={4}
-          />
-        </div>
-
-        <div className="admin-field">
-          <label className="admin-label">{t("homepage.cta")}</label>
-          <input
-            name="hero_cta_label"
-            className="admin-input"
-            defaultValue={settings.hero_cta_label ?? "استكشف مهمتنا ←"}
-          />
-        </div>
 
         <ImageField
           name="stats_icon_url"
@@ -139,56 +155,69 @@ export function HomepageAdminForm({
         ) : null}
 
         <h2 className="dash-panel-title">{t("homepage.sectionsTitle")}</h2>
-        <div className="admin-field">
-          <label className="admin-label">{t("homepage.categoriesTitle")}</label>
-          <input
-            name="categories_section_title"
-            className="admin-input"
-            defaultValue={settings.categories_section_title ?? "فئات المشاريع"}
-          />
-        </div>
-        <div className="admin-field">
-          <label className="admin-label">{t("homepage.impactTitle")}</label>
-          <input
-            name="impact_section_title"
-            className="admin-input"
-            defaultValue={settings.impact_section_title ?? "آخر نشاط للأثر"}
-          />
-        </div>
-        <div className="admin-field">
-          <label className="admin-label">{t("homepage.impactSubtitle")}</label>
-          <textarea
-            name="impact_section_subtitle"
-            className="admin-textarea"
-            rows={2}
-            defaultValue={
-              settings.impact_section_subtitle ??
-              "مشروع مميز من كل فئة — اختر فئة أعلاه لعرض المزيد."
-            }
-          />
-        </div>
+        <BilingualField
+          label={t("homepage.categoriesTitle")}
+          nameAr="categories_section_title"
+          nameEn="categories_section_title_en"
+          defaultAr={settings.categories_section_title ?? "فئات المشاريع"}
+          defaultEn={settings.categories_section_title_en ?? "Project categories"}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
+        <BilingualField
+          label={t("homepage.impactTitle")}
+          nameAr="impact_section_title"
+          nameEn="impact_section_title_en"
+          defaultAr={settings.impact_section_title ?? "آخر نشاط للأثر"}
+          defaultEn={settings.impact_section_title_en ?? "Latest impact"}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
+        <BilingualField
+          label={t("homepage.impactSubtitle")}
+          nameAr="impact_section_subtitle"
+          nameEn="impact_section_subtitle_en"
+          defaultAr={
+            settings.impact_section_subtitle ??
+            "مشروع مميز من كل فئة — اختر فئة أعلاه لعرض المزيد."
+          }
+          defaultEn={
+            settings.impact_section_subtitle_en ??
+            "All projects — scroll down to load more."
+          }
+          multiline
+          rows={2}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
 
         <h2 className="dash-panel-title">{t("homepage.transparencyTitle")}</h2>
-        <div className="admin-field">
-          <label className="admin-label">{t("homepage.transparencyHeading")}</label>
-          <input
-            name="transparency_title"
-            className="admin-input"
-            defaultValue={settings.transparency_title ?? "راقب الشفافية"}
-          />
-        </div>
-        <div className="admin-field">
-          <label className="admin-label">{t("homepage.transparencyDesc")}</label>
-          <textarea
-            name="transparency_text"
-            className="admin-textarea"
-            rows={3}
-            defaultValue={
-              settings.transparency_text ??
-              "ابقَ على اطلاع بآخر مستجدات عملياتنا الميدانية."
-            }
-          />
-        </div>
+        <BilingualField
+          label={t("homepage.transparencyHeading")}
+          nameAr="transparency_title"
+          nameEn="transparency_title_en"
+          defaultAr={settings.transparency_title ?? "راقب الشفافية"}
+          defaultEn={settings.transparency_title_en ?? "Track transparency"}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
+        <BilingualField
+          label={t("homepage.transparencyDesc")}
+          nameAr="transparency_text"
+          nameEn="transparency_text_en"
+          defaultAr={
+            settings.transparency_text ??
+            "ابقَ على اطلاع بآخر مستجدات عملياتنا الميدانية."
+          }
+          defaultEn={
+            settings.transparency_text_en ??
+            "Stay informed about the latest updates from our field operations."
+          }
+          multiline
+          rows={3}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
 
         <h2 className="dash-panel-title">{t("homepage.whatsappTitle")}</h2>
         <p className="admin-help-text">{t("homepage.whatsappHelp")}</p>
@@ -202,23 +231,25 @@ export function HomepageAdminForm({
               dir="ltr"
             />
           </div>
-          <div className="admin-field">
-            <label className="admin-label">{t("homepage.whatsappMessage")}</label>
-            <input
-              name="whatsapp_subscribe_message"
-              className="admin-input"
-              defaultValue={settings.whatsapp_subscribe_message ?? "اشتراك"}
-            />
-          </div>
         </div>
-        <div className="admin-field">
-          <label className="admin-label">{t("homepage.whatsappButton")}</label>
-          <input
-            name="whatsapp_subscribe_button"
-            className="admin-input"
-            defaultValue={settings.whatsapp_subscribe_button ?? "اشتراك"}
-          />
-        </div>
+        <BilingualField
+          label={t("homepage.whatsappMessage")}
+          nameAr="whatsapp_subscribe_message"
+          nameEn="whatsapp_subscribe_message_en"
+          defaultAr={settings.whatsapp_subscribe_message ?? "اشتراك"}
+          defaultEn={settings.whatsapp_subscribe_message_en ?? "Subscribe"}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
+        <BilingualField
+          label={t("homepage.whatsappButton")}
+          nameAr="whatsapp_subscribe_button"
+          nameEn="whatsapp_subscribe_button_en"
+          defaultAr={settings.whatsapp_subscribe_button ?? "اشتراك"}
+          defaultEn={settings.whatsapp_subscribe_button_en ?? "Subscribe"}
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
         <div className="admin-field">
           <label className="admin-checkbox-label">
             <input

@@ -6,6 +6,14 @@ import { usePublicLocale } from "@/lib/public-locale-context";
 import { localizeProjectCard } from "@/lib/site-localize";
 import type { ProjectCardData } from "@/types";
 
+function hasStoredEnglish(project: ProjectCardData) {
+  return Boolean(
+    project.titleEn?.trim() ||
+      project.descriptionEn?.trim() ||
+      project.statLabelEn?.trim(),
+  );
+}
+
 export function useLocalizedProject(project: ProjectCardData) {
   const { lang, countryMaps } = usePublicLocale();
   const { translateMany } = useTranslate();
@@ -23,12 +31,19 @@ export function useLocalizedProject(project: ProjectCardData) {
         project.description ?? "",
         project.categoryLabel ?? "",
         project.statistics?.label ?? "",
+        project.titleEn ?? "",
+        project.descriptionEn ?? "",
       ].join("\u0001"),
     [project],
   );
 
   useEffect(() => {
     if (lang === "ar") {
+      setTranslated({});
+      return;
+    }
+
+    if (hasStoredEnglish(project)) {
       setTranslated({});
       return;
     }

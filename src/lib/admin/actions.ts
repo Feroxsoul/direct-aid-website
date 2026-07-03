@@ -209,6 +209,12 @@ function parseProjectPayload(formData: FormData) {
     meta_title: String(formData.get("meta_title") ?? "").trim() || null,
     meta_description:
       String(formData.get("meta_description") ?? "").trim() || null,
+    title_en: String(formData.get("title_en") ?? "").trim() || null,
+    description_en: String(formData.get("description_en") ?? "").trim() || null,
+    meta_title_en: String(formData.get("meta_title_en") ?? "").trim() || null,
+    meta_description_en:
+      String(formData.get("meta_description_en") ?? "").trim() || null,
+    stat_label_en: String(formData.get("stat_label_en") ?? "").trim() || null,
     sort_order: 0,
   };
 
@@ -782,7 +788,9 @@ export async function saveHomepage(formData: FormData) {
   const statsPayload = {
     value: String(formData.get("stats_value") ?? "").trim(),
     label: String(formData.get("stats_label") ?? "").trim(),
+    label_en: String(formData.get("stats_label_en") ?? "").trim() || null,
     intro_text: String(formData.get("stats_intro") ?? "").trim() || null,
+    intro_text_en: String(formData.get("stats_intro_en") ?? "").trim() || null,
     icon_url: String(formData.get("stats_icon_url") ?? "").trim() || null,
   };
 
@@ -820,22 +828,45 @@ export async function saveHomepage(formData: FormData) {
         ]
       : []),
     { key: "hero_cta_label", value: String(formData.get("hero_cta_label") ?? "").trim() },
+    { key: "hero_cta_label_en", value: String(formData.get("hero_cta_label_en") ?? "").trim() },
     { key: "transparency_title", value: String(formData.get("transparency_title") ?? "").trim() },
+    { key: "transparency_title_en", value: String(formData.get("transparency_title_en") ?? "").trim() },
     { key: "transparency_text", value: String(formData.get("transparency_text") ?? "").trim() },
+    { key: "transparency_text_en", value: String(formData.get("transparency_text_en") ?? "").trim() },
     { key: "whatsapp_number", value: String(formData.get("whatsapp_number") ?? "").trim() },
     {
       key: "whatsapp_subscribe_message",
       value: String(formData.get("whatsapp_subscribe_message") ?? "").trim(),
     },
     {
+      key: "whatsapp_subscribe_message_en",
+      value: String(formData.get("whatsapp_subscribe_message_en") ?? "").trim(),
+    },
+    {
       key: "whatsapp_subscribe_button",
       value: String(formData.get("whatsapp_subscribe_button") ?? "").trim(),
     },
+    {
+      key: "whatsapp_subscribe_button_en",
+      value: String(formData.get("whatsapp_subscribe_button_en") ?? "").trim(),
+    },
     { key: "impact_section_title", value: String(formData.get("impact_section_title") ?? "").trim() },
+    {
+      key: "impact_section_title_en",
+      value: String(formData.get("impact_section_title_en") ?? "").trim(),
+    },
     { key: "impact_section_subtitle", value: String(formData.get("impact_section_subtitle") ?? "").trim() },
+    {
+      key: "impact_section_subtitle_en",
+      value: String(formData.get("impact_section_subtitle_en") ?? "").trim(),
+    },
     {
       key: "categories_section_title",
       value: String(formData.get("categories_section_title") ?? "").trim(),
+    },
+    {
+      key: "categories_section_title_en",
+      value: String(formData.get("categories_section_title_en") ?? "").trim(),
     },
     {
       key: "show_whatsapp_block",

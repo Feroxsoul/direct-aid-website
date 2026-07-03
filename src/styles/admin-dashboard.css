@@ -37,7 +37,7 @@
   grid-template-columns: 15.5rem minmax(0, 1fr);
   min-height: 100vh;
   width: 100%;
-  direction: ltr;
+  direction: inherit;
   background: var(--dash-bg);
   color: var(--dash-text);
 }
@@ -824,7 +824,7 @@
 .admin-body.dash-mode {
   background: var(--dash-bg);
   text-align: left;
-  direction: ltr;
+  direction: inherit;
   width: 100%;
   max-width: none;
   margin: 0;

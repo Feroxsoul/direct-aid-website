@@ -42,6 +42,14 @@ export type PublicContentSettings = {
   footer_social: FooterSocialLink[];
   show_whatsapp_block: boolean;
   show_footer: boolean;
+  hero_cta_label_en: string;
+  transparency_title_en: string;
+  transparency_text_en: string;
+  whatsapp_subscribe_message_en: string;
+  whatsapp_subscribe_button_en: string;
+  impact_section_title_en: string;
+  impact_section_subtitle_en: string;
+  categories_section_title_en: string;
 };
 
 const DEFAULTS: PublicContentSettings = {
@@ -72,6 +80,14 @@ const DEFAULTS: PublicContentSettings = {
   footer_social: DEFAULT_FOOTER_SOCIAL,
   show_whatsapp_block: true,
   show_footer: true,
+  hero_cta_label_en: "",
+  transparency_title_en: "",
+  transparency_text_en: "",
+  whatsapp_subscribe_message_en: "",
+  whatsapp_subscribe_button_en: "",
+  impact_section_title_en: "",
+  impact_section_subtitle_en: "",
+  categories_section_title_en: "",
 };
 
 export async function getPublicContentSettings(): Promise<PublicContentSettings> {
@@ -111,6 +127,14 @@ export async function getPublicContentSettings(): Promise<PublicContentSettings>
     footer_social: parseFooterSocial(map.footer_social_json),
     show_whatsapp_block: parsePublicBoolean(map.show_whatsapp_block, true),
     show_footer: parsePublicBoolean(map.show_footer, true),
+    hero_cta_label_en: map.hero_cta_label_en ?? "",
+    transparency_title_en: map.transparency_title_en ?? "",
+    transparency_text_en: map.transparency_text_en ?? "",
+    whatsapp_subscribe_message_en: map.whatsapp_subscribe_message_en ?? "",
+    whatsapp_subscribe_button_en: map.whatsapp_subscribe_button_en ?? "",
+    impact_section_title_en: map.impact_section_title_en ?? "",
+    impact_section_subtitle_en: map.impact_section_subtitle_en ?? "",
+    categories_section_title_en: map.categories_section_title_en ?? "",
   };
 }
 

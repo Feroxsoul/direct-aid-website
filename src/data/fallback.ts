@@ -74,6 +74,9 @@ export const fallbackHomeStatistics: HomeStatisticsData = {
   illustrationUrl: `${CDN}/6354b9eae708dc82e540dd5b_Group%203.svg`,
   introText:
     "مشروع البركة 10×10 من باب مشاركة الأثر معكم نقوم برفع التقارير الخاصة في هذا الموقع بشكل دوري",
+  labelEn: "people helped",
+  introTextEn:
+    "The Baraka 10×10 project — we share impact with you by publishing field reports on this site regularly.",
   brandLine1: "عشرة",
   brandLine2: "10*",
   brandLogoUrl: `${CDN}/6354b9eae708dc82e540dd5b_Group%203.svg`,

@@ -19,9 +19,11 @@ export type HomepageCategory = {
 export type HomeStatisticsData = {
   value: string;
   label: string;
+  labelEn?: string | null;
   iconUrl: string;
   illustrationUrl: string;
   introText: string;
+  introTextEn?: string | null;
   brandLine1: string;
   brandLine2: string;
   brandLogoUrl: string;
@@ -53,6 +55,9 @@ export type ProjectCardData = {
   description?: string;
   location?: string;
   countrySlug?: string;
+  titleEn?: string | null;
+  descriptionEn?: string | null;
+  statLabelEn?: string | null;
 };
 
 export type ProjectDetailData = ProjectCardData & {
@@ -118,6 +123,7 @@ export type ProjectRow = {
   accent: CategoryAccent | null;
   stat_value: string | null;
   stat_label: string | null;
+  stat_label_en?: string | null;
   icon_url: string | null;
   description: string | null;
   location: string | null;
@@ -127,6 +133,10 @@ export type ProjectRow = {
   sort_order: number;
   status?: ProjectStatus | string | null;
   short_description?: string | null;
+  title_en?: string | null;
+  description_en?: string | null;
+  meta_title_en?: string | null;
+  meta_description_en?: string | null;
   goal_amount?: number | null;
   amount_raised?: number | null;
   suggested_donations?: number[] | null;
@@ -141,9 +151,11 @@ export type StatisticsRow = {
   key: string;
   value: string;
   label: string;
+  label_en?: string | null;
   icon_url: string | null;
   illustration_url: string | null;
   intro_text: string | null;
+  intro_text_en?: string | null;
   sort_order: number;
   created_at: string;
   updated_at: string;

@@ -191,7 +191,45 @@ export function localizePublicContent(
 
   return {
     ...content,
-    ...PUBLIC_CONTENT_EN,
+    site_title: PUBLIC_CONTENT_EN.site_title,
+    site_description: PUBLIC_CONTENT_EN.site_description,
+    hero_cta_label:
+      content.hero_cta_label_en ||
+      content.hero_cta_label ||
+      PUBLIC_CONTENT_EN.hero_cta_label,
+    transparency_title:
+      content.transparency_title_en ||
+      content.transparency_title ||
+      PUBLIC_CONTENT_EN.transparency_title,
+    transparency_text:
+      content.transparency_text_en ||
+      content.transparency_text ||
+      PUBLIC_CONTENT_EN.transparency_text,
+    whatsapp_subscribe_message:
+      content.whatsapp_subscribe_message_en ||
+      content.whatsapp_subscribe_message ||
+      PUBLIC_CONTENT_EN.whatsapp_subscribe_message,
+    whatsapp_subscribe_button:
+      content.whatsapp_subscribe_button_en ||
+      content.whatsapp_subscribe_button ||
+      PUBLIC_CONTENT_EN.whatsapp_subscribe_button,
+    impact_section_title:
+      content.impact_section_title_en ||
+      content.impact_section_title ||
+      PUBLIC_CONTENT_EN.impact_section_title,
+    impact_section_subtitle:
+      content.impact_section_subtitle_en ||
+      content.impact_section_subtitle ||
+      PUBLIC_CONTENT_EN.impact_section_subtitle,
+    categories_section_title:
+      content.categories_section_title_en ||
+      content.categories_section_title ||
+      PUBLIC_CONTENT_EN.categories_section_title,
+    footer_tagline: PUBLIC_CONTENT_EN.footer_tagline,
+    footer_copyright: PUBLIC_CONTENT_EN.footer_copyright,
+    footer_legal_line: PUBLIC_CONTENT_EN.footer_legal_line,
+    footer_privacy_url: PUBLIC_CONTENT_EN.footer_privacy_url,
+    footer_donation_policy_url: PUBLIC_CONTENT_EN.footer_donation_policy_url,
     footer_columns:
       content.footer_columns.length > 0 ? FOOTER_COLUMNS_EN : content.footer_columns,
   };
@@ -205,8 +243,8 @@ export function localizeHomeStatistics(
 
   return {
     ...stats,
-    label: HOME_STATISTICS_EN.label,
-    introText: HOME_STATISTICS_EN.introText,
+    label: stats.labelEn || stats.label || HOME_STATISTICS_EN.label,
+    introText: stats.introTextEn || stats.introText || HOME_STATISTICS_EN.introText,
   };
 }
 
@@ -232,15 +270,27 @@ export function localizeProjectCard(
     locationEn = countryByNameAr[project.location.trim()];
   }
 
+  const title =
+    project.titleEn?.trim() ||
+    translated?.title ||
+    project.title;
+  const description =
+    project.descriptionEn?.trim() ||
+    translated?.description ||
+    project.description;
+  const statLabel =
+    project.statLabelEn?.trim() ||
+    translated?.statistics?.label ||
+    project.statistics?.label;
+
   return {
     ...project,
-    title: translated?.title ?? project.title,
-    description: translated?.description ?? project.description,
-    categoryLabel: translated?.categoryLabel
-      ?? (lang === "en" && project.categorySlug
-        ? CATEGORY_NAME_EN[project.categorySlug]
-        : undefined)
-      ?? project.categoryLabel,
+    title,
+    description,
+    categoryLabel:
+      translated?.categoryLabel ??
+      (project.categorySlug ? CATEGORY_NAME_EN[project.categorySlug] : undefined) ??
+      project.categoryLabel,
     location: locationEn ?? project.location,
     metadata: {
       ...project.metadata,
@@ -252,7 +302,7 @@ export function localizeProjectCard(
     statistics: project.statistics
       ? {
           value: project.statistics.value,
-          label: translated?.statistics?.label ?? project.statistics.label,
+          label: statLabel ?? project.statistics.label,
         }
       : undefined,
   };

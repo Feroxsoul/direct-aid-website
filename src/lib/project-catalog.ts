@@ -137,6 +137,9 @@ export function mapProjectRowToCard(
     description: truncateCardDescription(row.description),
     location: row.location ?? undefined,
     countrySlug: row.country_slug ?? undefined,
+    titleEn: row.title_en ?? undefined,
+    descriptionEn: row.description_en ?? undefined,
+    statLabelEn: row.stat_label_en ?? undefined,
   };
 }
 

@@ -6,7 +6,7 @@ export default function AdminRootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="admin-body dash-mode" dir="ltr" lang="en">
+    <div className="admin-body dash-mode" suppressHydrationWarning>
       {children}
     </div>
   );
