@@ -52,6 +52,7 @@ export type ProjectCardData = {
   statistics?: ProjectStatistics;
   iconUrl?: string;
   categoryLabel?: string;
+  categoryLabelEn?: string | null;
   description?: string;
   location?: string;
   countrySlug?: string;

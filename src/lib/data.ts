@@ -96,7 +96,7 @@ async function getCategoryMap(
   supabase: NonNullable<ReturnType<typeof createSupabaseServerClient>>,
 ) {
   const { data } = await supabase.from("categories").select(
-    "slug, accent, title_line_1, title_line_2",
+    "slug, accent, title_line_1, title_line_2, name_en",
   );
 
   return new Map((data ?? []).map((category) => [category.slug, category as CategoryRef]));

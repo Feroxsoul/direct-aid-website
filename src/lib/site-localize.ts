@@ -288,6 +288,7 @@ export function localizeProjectCard(
     description,
     categoryLabel:
       translated?.categoryLabel ??
+      project.categoryLabelEn?.trim() ??
       (project.categorySlug ? CATEGORY_NAME_EN[project.categorySlug] : undefined) ??
       project.categoryLabel,
     location: locationEn ?? project.location,

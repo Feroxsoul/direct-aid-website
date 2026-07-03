@@ -80,6 +80,7 @@ export type CategoryRef = {
   accent: CategoryAccent;
   title_line_1?: string;
   title_line_2?: string;
+  name_en?: string | null;
 };
 
 export function resolveProjectSource(hasDbProjects: boolean): "webflow" | "database" {
@@ -134,6 +135,7 @@ export function mapProjectRowToCard(
         : undefined,
     iconUrl: row.icon_url ?? undefined,
     categoryLabel,
+    categoryLabelEn: category?.name_en ?? null,
     description: truncateCardDescription(row.description),
     location: row.location ?? undefined,
     countrySlug: row.country_slug ?? undefined,
