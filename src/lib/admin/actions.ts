@@ -277,6 +277,8 @@ export async function signOut() {
 
 export async function uploadImage(formData: FormData): Promise<string> {
   const { supabase } = await requireSupabaseAdmin();
+  const service = createSupabaseServiceClient();
+  const writeClient = service ?? supabase;
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {
@@ -286,19 +288,21 @@ export async function uploadImage(formData: FormData): Promise<string> {
   const extension = file.name.split(".").pop() ?? "jpg";
   const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${extension}`;
 
-  const { error } = await supabase.storage.from("media").upload(path, file, {
+  const { error } = await writeClient.storage.from("media").upload(path, file, {
     cacheControl: "3600",
     upsert: false,
   });
 
   if (error) throw new Error(error.message);
 
-  const { data } = supabase.storage.from("media").getPublicUrl(path);
+  const { data } = writeClient.storage.from("media").getPublicUrl(path);
   return data.publicUrl;
 }
 
 export async function uploadMediaAsset(formData: FormData) {
   const { supabase, profile } = await requireSupabaseAdmin();
+  const service = createSupabaseServiceClient();
+  const writeClient = service ?? supabase;
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {
@@ -307,7 +311,7 @@ export async function uploadMediaAsset(formData: FormData) {
 
   const url = await uploadImage(formData);
 
-  await supabase.from("media_assets").insert({
+  await writeClient.from("media_assets").insert({
     url,
     filename: file.name,
     alt_text: null,

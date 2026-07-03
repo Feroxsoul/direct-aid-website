@@ -213,7 +213,6 @@ export function ProjectForm({
             name="country_slug"
             className="admin-select"
             defaultValue={project?.country_slug ?? ""}
-            required
           >
             <option value="">{t("projectForm.selectCountry")}</option>
             {countries.map((country) => (
