@@ -7,18 +7,17 @@ import { useSiteLang } from "@/lib/site-i18n-context";
 import { localizeHomeStatistics } from "@/lib/site-localize";
 import type { HomeStatisticsData } from "@/types";
 
-type StatisticsSectionProps = HomeStatisticsData & {
-  ctaLabel?: string;
-};
+type StatisticsSectionProps = HomeStatisticsData;
 
 export function StatisticsSection({
   value,
   label,
+  labelEn,
   iconUrl,
   introText,
+  introTextEn,
   brandLogoUrl,
   backgroundColor,
-  ctaLabel,
 }: StatisticsSectionProps) {
   const { t } = useSiteLang();
   const { lang, content } = usePublicLocale();
@@ -26,9 +25,11 @@ export function StatisticsSection({
     {
       value,
       label,
+      labelEn,
       iconUrl,
       illustrationUrl: "",
       introText,
+      introTextEn,
       brandLine1: "",
       brandLine2: "",
       brandLogoUrl,
@@ -36,7 +37,7 @@ export function StatisticsSection({
     },
     lang,
   );
-  const cta = ctaLabel ?? content.hero_cta_label ?? t("hero.cta");
+  const cta = content.hero_cta_label ?? t("hero.cta");
   return (
     <section id="hero" aria-label="Project impact" className="landing-hero">
       <div className="landing-container">

@@ -72,37 +72,27 @@ export function HomepageAdminForm({
         <h2 className="dash-panel-title">{t("homepage.heroTitle")}</h2>
         {error ? <p className="admin-error">{error}</p> : null}
 
-        <div className="admin-row">
-          <div className="admin-field">
-            <label className="admin-label">{t("homepage.statValue")}</label>
-            <input
-              name="stats_value"
-              className="admin-input"
-              defaultValue={stats?.value ?? ""}
-              required
-              dir="ltr"
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label">{t("homepage.statLabel")}</label>
-            <input
-              name="stats_label"
-              className="admin-input"
-              defaultValue={stats?.label ?? ""}
-              required
-              dir="rtl"
-            />
-          </div>
-          <div className="admin-field">
-            <label className="admin-label">{t("homepage.statLabel")} ({enLabel})</label>
-            <input
-              name="stats_label_en"
-              className="admin-input"
-              defaultValue={stats?.label_en ?? ""}
-              dir="ltr"
-            />
-          </div>
+        <div className="admin-field">
+          <label className="admin-label">{t("homepage.statValue")}</label>
+          <input
+            name="stats_value"
+            className="admin-input"
+            defaultValue={stats?.value ?? ""}
+            required
+            dir="ltr"
+          />
         </div>
+
+        <BilingualField
+          label={t("homepage.statLabel")}
+          nameAr="stats_label"
+          nameEn="stats_label_en"
+          defaultAr={stats?.label ?? ""}
+          defaultEn={stats?.label_en ?? ""}
+          requiredAr
+          arLabel={arLabel}
+          enLabel={enLabel}
+        />
 
         <BilingualField
           label={t("homepage.intro")}

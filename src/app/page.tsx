@@ -52,7 +52,7 @@ export default async function Home() {
         shareText={content.site_description || content.site_title}
         whatsappHeaderUrl={content.whatsapp_header_url}
       />
-      <StatisticsSection {...statistics} ctaLabel={content.hero_cta_label} />
+      <StatisticsSection {...statistics} />
       <Suspense fallback={null}>
         <HomeProjectsExplorer
           categories={categories}
