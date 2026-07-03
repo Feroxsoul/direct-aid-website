@@ -191,8 +191,8 @@ export function localizePublicContent(
 
   return {
     ...content,
-    site_title: PUBLIC_CONTENT_EN.site_title,
-    site_description: PUBLIC_CONTENT_EN.site_description,
+    site_title: content.site_title || PUBLIC_CONTENT_EN.site_title,
+    site_description: content.site_description || PUBLIC_CONTENT_EN.site_description,
     hero_cta_label:
       content.hero_cta_label_en ||
       content.hero_cta_label ||
@@ -225,13 +225,12 @@ export function localizePublicContent(
       content.categories_section_title_en ||
       content.categories_section_title ||
       PUBLIC_CONTENT_EN.categories_section_title,
-    footer_tagline: PUBLIC_CONTENT_EN.footer_tagline,
-    footer_copyright: PUBLIC_CONTENT_EN.footer_copyright,
-    footer_legal_line: PUBLIC_CONTENT_EN.footer_legal_line,
-    footer_privacy_url: PUBLIC_CONTENT_EN.footer_privacy_url,
-    footer_donation_policy_url: PUBLIC_CONTENT_EN.footer_donation_policy_url,
-    footer_columns:
-      content.footer_columns.length > 0 ? FOOTER_COLUMNS_EN : content.footer_columns,
+    footer_tagline: content.footer_tagline || PUBLIC_CONTENT_EN.footer_tagline,
+    footer_copyright: content.footer_copyright || PUBLIC_CONTENT_EN.footer_copyright,
+    footer_legal_line: content.footer_legal_line || PUBLIC_CONTENT_EN.footer_legal_line,
+    footer_privacy_url: content.footer_privacy_url || PUBLIC_CONTENT_EN.footer_privacy_url,
+    footer_donation_policy_url:
+      content.footer_donation_policy_url || PUBLIC_CONTENT_EN.footer_donation_policy_url,
   };
 }
 
