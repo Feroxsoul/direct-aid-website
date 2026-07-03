@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
 import { saveCategory } from "@/lib/admin/actions";
 import { ImageField } from "@/components/admin/ImageField";
 import { useAdminLang } from "@/lib/admin/i18n-context";
@@ -11,16 +13,36 @@ type CategoryFormProps = {
 
 export function CategoryForm({ category }: CategoryFormProps) {
   const { t } = useAdminLang();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const isNew = !category;
 
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setSubmitting(true);
+
+    const result = await saveCategory(new FormData(event.currentTarget));
+    if (!result.ok) {
+      setError(result.error);
+      setSubmitting(false);
+      return;
+    }
+
+    router.push("/admin/categories");
+    router.refresh();
+  }
+
   return (
-    <form action={saveCategory} className="admin-form dash-panel">
+    <form onSubmit={handleSubmit} className="admin-form dash-panel">
       <input type="hidden" name="is_new" value={String(isNew)} />
 
       <h2 className="dash-panel-title">
         {isNew ? t("categoryForm.new") : t("categoryForm.edit")}
       </h2>
       <p className="admin-help-text">{t("categoryForm.help")}</p>
+      {error ? <p className="admin-error">{error}</p> : null}
 
       <div className="admin-row">
         <div className="admin-field">
@@ -101,8 +123,12 @@ export function CategoryForm({ category }: CategoryFormProps) {
         </select>
       </div>
 
-      <button type="submit" className="admin-button">
-        {isNew ? t("categoryForm.create") : t("categoryForm.save")}
+      <button type="submit" className="admin-button" disabled={submitting}>
+        {submitting
+          ? t("common.uploading")
+          : isNew
+            ? t("categoryForm.create")
+            : t("categoryForm.save")}
       </button>
     </form>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
 import { saveFooterSettings } from "@/lib/admin/actions";
 import { FooterLinksEditor } from "@/components/admin/FooterLinksEditor";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
@@ -30,6 +32,25 @@ export function FooterAdminPanel({
   saved,
 }: FooterAdminPanelProps) {
   const { t } = useAdminLang();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setSubmitting(true);
+
+    const result = await saveFooterSettings(new FormData(event.currentTarget));
+    if (!result.ok) {
+      setError(result.error);
+      setSubmitting(false);
+      return;
+    }
+
+    router.push("/admin/footer?saved=1");
+    router.refresh();
+  }
 
   return (
     <div className="dash-page">
@@ -40,7 +61,8 @@ export function FooterAdminPanel({
         savedKey="footer.saved"
       />
 
-      <form action={saveFooterSettings} className="admin-form dash-panel">
+      <form onSubmit={handleSubmit} className="admin-form dash-panel">
+        {error ? <p className="admin-error">{error}</p> : null}
         <div className="admin-field">
           <label className="admin-checkbox-label">
             <input type="checkbox" name="show_footer" defaultChecked={showFooter} />
@@ -58,8 +80,8 @@ export function FooterAdminPanel({
           initialPrivacyUrl={initialPrivacyUrl}
           initialDonationPolicyUrl={initialDonationPolicyUrl}
         />
-        <button type="submit" className="admin-button">
-          {t("footer.save")}
+        <button type="submit" className="admin-button" disabled={submitting}>
+          {submitting ? t("common.uploading") : t("footer.save")}
         </button>
       </form>
     </div>

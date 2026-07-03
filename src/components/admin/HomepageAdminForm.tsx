@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState, type FormEvent } from "react";
 import { saveHomepage } from "@/lib/admin/actions";
 import { BilingualField } from "@/components/admin/BilingualField";
 import { ColorField } from "@/components/admin/ColorField";
@@ -27,8 +29,27 @@ export function HomepageAdminForm({
   saved,
 }: HomepageAdminFormProps) {
   const { t } = useAdminLang();
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const arLabel = t("projectForm.langAr");
   const enLabel = t("projectForm.langEn");
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setSubmitting(true);
+
+    const result = await saveHomepage(new FormData(event.currentTarget));
+    if (!result.ok) {
+      setError(result.error);
+      setSubmitting(false);
+      return;
+    }
+
+    router.push("/admin/homepage?saved=1");
+    router.refresh();
+  }
 
   const boxColorOptions = [
     { value: "#e2eed6", label: t("homepage.colorLightGreen") },
@@ -47,8 +68,9 @@ export function HomepageAdminForm({
         savedKey="homepage.saved"
       />
 
-      <form action={saveHomepage} className="admin-form dash-panel">
+      <form onSubmit={handleSubmit} className="admin-form dash-panel">
         <h2 className="dash-panel-title">{t("homepage.heroTitle")}</h2>
+        {error ? <p className="admin-error">{error}</p> : null}
 
         <div className="admin-row">
           <div className="admin-field">
@@ -262,8 +284,8 @@ export function HomepageAdminForm({
           <p className="admin-help-text">{t("homepage.showWhatsappHelp")}</p>
         </div>
 
-        <button type="submit" className="admin-button">
-          {t("homepage.save")}
+        <button type="submit" className="admin-button" disabled={submitting}>
+          {submitting ? t("common.uploading") : t("homepage.save")}
         </button>
       </form>
     </div>

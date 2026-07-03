@@ -4,6 +4,17 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { logAuditEvent } from "@/lib/admin/audit";
 import {
+  type AdminSaveResult,
+  CATEGORY_OPTIONAL_COLUMNS,
+  isMissingColumnError,
+  omitKeys,
+  PROJECT_BILINGUAL_COLUMNS,
+  runWithOptionalColumns,
+  STATISTICS_BILINGUAL_COLUMNS,
+} from "@/lib/admin/db-write";
+
+export type { AdminSaveResult } from "@/lib/admin/db-write";
+import {
   assertCanDeleteProjects,
   requireSupabaseAdmin,
   requireSuperAdmin,
@@ -356,15 +367,31 @@ export async function saveProject(formData: FormData): Promise<ProjectActionResu
         .from("donations")
         .update({ project_slug: slug })
         .eq("project_slug", originalSlug);
-      const { error: renameError } = await supabase
-        .from("projects")
-        .update(payload)
-        .eq("slug", originalSlug);
+
+      const { error: renameError } = await runWithOptionalColumns(
+        async (row) => {
+          const r = await supabase.from("projects").update(row).eq("slug", originalSlug);
+          return { error: r.error };
+        },
+        payload,
+        [...PROJECT_BILINGUAL_COLUMNS],
+      );
+
       if (renameError) return { ok: false, error: renameError.message };
     } else {
-      const { error } = isNew
-        ? await supabase.from("projects").insert(payload)
-        : await supabase.from("projects").upsert(payload, { onConflict: "slug" });
+      const write = async (row: typeof payload) => {
+        const r = isNew
+          ? await supabase.from("projects").insert(row)
+          : await supabase.from("projects").upsert(row, { onConflict: "slug" });
+        return { error: r.error };
+      };
+
+      const { error } = await runWithOptionalColumns(
+        write,
+        payload,
+        [...PROJECT_BILINGUAL_COLUMNS],
+      );
+
       if (error) return { ok: false, error: error.message };
     }
 
@@ -414,13 +441,17 @@ export async function saveProjectInline(formData: FormData) {
 
     await applyCategoryAccentToProject(supabase, payload);
 
-    const { data, error } = isNew
-      ? await supabase.from("projects").insert(payload).select("*").single()
-      : await supabase
-          .from("projects")
-          .upsert(payload, { onConflict: "slug" })
-          .select("*")
-          .single();
+    const write = (row: typeof payload) =>
+      isNew
+        ? supabase.from("projects").insert(row).select("*").single()
+        : supabase.from("projects").upsert(row, { onConflict: "slug" }).select("*").single();
+
+    let { data, error } = await write(payload);
+    if (error && isMissingColumnError(error)) {
+      const retry = await write(omitKeys(payload, [...PROJECT_BILINGUAL_COLUMNS]));
+      data = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       return { ok: false as const, error: error.message };
@@ -589,8 +620,9 @@ export async function deleteProject(formData: FormData) {
   return deleteProjectInline(slug);
 }
 
-export async function saveCategory(formData: FormData) {
-  const { supabase, profile } = await requireSupabaseAdmin();
+export async function saveCategory(formData: FormData): Promise<AdminSaveResult> {
+  try {
+    const { supabase, profile } = await getAdminWriteClient();
   const isNew = formData.get("is_new") === "true";
   const slug = String(formData.get("slug") ?? "").trim();
   const status = String(formData.get("status") ?? "published").trim();
@@ -629,20 +661,29 @@ export async function saveCategory(formData: FormData) {
     sort_order: Number(formData.get("sort_order") ?? 0),
   };
 
-  if (!payload.slug || !payload.title_line_1 || !payload.title_line_2 || !payload.icon_url) {
-    throw new Error("Required: slug, titles, icon");
-  }
+    if (!payload.slug || !payload.title_line_1 || !payload.title_line_2 || !payload.icon_url) {
+      return { ok: false, error: "Required: slug, titles, icon" };
+    }
 
-  const nameEn = String(formData.get("name_en") ?? payload.title_line_2).trim();
-  const payloadWithKeys = {
-    ...payload,
-    name_en: nameEn || null,
-    slug_key: slugKeyFromEnglishName(nameEn || payload.slug),
-  };
+    const nameEn = String(formData.get("name_en") ?? payload.title_line_2).trim();
+    const payloadWithKeys = {
+      ...payload,
+      name_en: nameEn || null,
+      slug_key: slugKeyFromEnglishName(nameEn || payload.slug),
+    };
 
-  const { error } = isNew
-    ? await supabase.from("categories").insert(payloadWithKeys)
-    : await supabase
+    if (isNew) {
+      const { error } = await runWithOptionalColumns(
+        async (row) => {
+          const r = await supabase.from("categories").insert(row);
+          return { error: r.error };
+        },
+        payloadWithKeys,
+        [...CATEGORY_OPTIONAL_COLUMNS],
+      );
+      if (error) return { ok: false, error: error.message };
+    } else {
+      const { error } = await supabase
         .from("categories")
         .update({
           title_line_1: payload.title_line_1,
@@ -651,26 +692,53 @@ export async function saveCategory(formData: FormData) {
           accent: payload.accent,
           status: payload.status,
           sort_order: payload.sort_order,
+          name_en: nameEn || null,
+          slug_key: slugKeyFromEnglishName(nameEn || payload.slug),
         })
         .eq("slug", slug);
 
-  if (error) throw new Error(error.message);
+      if (error) {
+        if (isMissingColumnError(error)) {
+          const { error: fallbackError } = await supabase
+            .from("categories")
+            .update({
+              title_line_1: payload.title_line_1,
+              title_line_2: payload.title_line_2,
+              icon_url: payload.icon_url,
+              accent: payload.accent,
+              status: payload.status,
+              sort_order: payload.sort_order,
+            })
+            .eq("slug", slug);
+          if (fallbackError) return { ok: false, error: fallbackError.message };
+        } else {
+          return { ok: false, error: error.message };
+        }
+      }
+    }
 
-  await logAuditEvent(
-    profile,
-    isNew ? "category.created" : "category.updated",
-    "category",
-    slug,
-    { status: categoryStatus },
-  );
+    await logAuditEvent(
+      profile,
+      isNew ? "category.created" : "category.updated",
+      "category",
+      slug,
+      { status: categoryStatus },
+    );
 
-  revalidateSite();
-  revalidatePath("/admin/categories");
-  redirect(isNew ? "/admin/categories" : `/admin/categories/${slug}`);
+    revalidateSite();
+    revalidatePath("/admin/categories");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Failed to save category",
+    };
+  }
 }
 
-export async function saveFooterSettings(formData: FormData) {
-  const { supabase, profile } = await requireSupabaseAdmin();
+export async function saveFooterSettings(formData: FormData): Promise<AdminSaveResult> {
+  try {
+    const { supabase, profile } = await getAdminWriteClient();
 
   const settings = [
     {
@@ -725,13 +793,19 @@ export async function saveFooterSettings(formData: FormData) {
       },
       { onConflict: "key" },
     );
-    if (error) throw new Error(error.message);
+    if (error) return { ok: false, error: error.message };
   }
 
-  await logAuditEvent(profile, "footer.updated", "homepage", "footer");
-  revalidateSite();
-  revalidatePath("/admin/footer");
-  redirect("/admin/footer?saved=1");
+    await logAuditEvent(profile, "footer.updated", "homepage", "footer");
+    revalidateSite();
+    revalidatePath("/admin/footer");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Failed to save footer",
+    };
+  }
 }
 
 export async function saveAdvancedSettings(formData: FormData) {
@@ -782,8 +856,9 @@ export async function saveAdvancedSettings(formData: FormData) {
   redirect("/admin/settings?saved=1");
 }
 
-export async function saveHomepage(formData: FormData) {
-  const { supabase, profile } = await requireSupabaseAdmin();
+export async function saveHomepage(formData: FormData): Promise<AdminSaveResult> {
+  try {
+    const { supabase, profile } = await getAdminWriteClient();
 
   const statsPayload = {
     value: String(formData.get("stats_value") ?? "").trim(),
@@ -794,12 +869,19 @@ export async function saveHomepage(formData: FormData) {
     icon_url: String(formData.get("stats_icon_url") ?? "").trim() || null,
   };
 
-  const { error: statsError } = await supabase
-    .from("statistics")
-    .update(statsPayload)
-    .eq("key", "homepage_beneficiaries");
+  const { error: statsError } = await runWithOptionalColumns(
+    async (payload) => {
+      const r = await supabase
+        .from("statistics")
+        .update(payload)
+        .eq("key", "homepage_beneficiaries");
+      return { error: r.error };
+    },
+    statsPayload,
+    [...STATISTICS_BILINGUAL_COLUMNS],
+  );
 
-  if (statsError) throw new Error(statsError.message);
+  if (statsError) return { ok: false, error: statsError.message };
 
   const statsIllustration = String(formData.get("stats_illustration_url") ?? "").trim() || null;
   const { error: illustrationError } = await supabase
@@ -807,7 +889,7 @@ export async function saveHomepage(formData: FormData) {
     .update({ illustration_url: statsIllustration })
     .eq("key", "homepage_beneficiaries");
 
-  if (illustrationError) throw new Error(illustrationError.message);
+  if (illustrationError) return { ok: false, error: illustrationError.message };
 
   const settings = [
     { key: "stats_brand_line_1", value: String(formData.get("stats_brand_line_1") ?? "").trim() },
@@ -879,13 +961,19 @@ export async function saveHomepage(formData: FormData) {
       { key: setting.key, value: setting.value, value_json: null, is_public: true },
       { onConflict: "key" },
     );
-    if (error) throw new Error(error.message);
+    if (error) return { ok: false, error: error.message };
   }
 
-  await logAuditEvent(profile, "homepage.updated", "homepage", "main");
-  revalidateSite();
-  revalidatePath("/admin/homepage");
-  redirect("/admin/homepage?saved=1");
+    await logAuditEvent(profile, "homepage.updated", "homepage", "main");
+    revalidateSite();
+    revalidatePath("/admin/homepage");
+    return { ok: true };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Failed to save homepage",
+    };
+  }
 }
 
 async function parseAdminRole(

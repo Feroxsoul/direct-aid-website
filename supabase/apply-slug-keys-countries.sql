@@ -130,5 +130,17 @@ ON CONFLICT (slug) DO UPDATE SET
   sort_order = EXCLUDED.sort_order,
   is_active = EXCLUDED.is_active;
 
--- ── 5. Refresh PostgREST schema cache ──────────────────────────────────────
+-- ── 6. Bilingual project & homepage stats columns ───────────────────────────
+ALTER TABLE public.projects
+  ADD COLUMN IF NOT EXISTS title_en TEXT,
+  ADD COLUMN IF NOT EXISTS description_en TEXT,
+  ADD COLUMN IF NOT EXISTS meta_title_en TEXT,
+  ADD COLUMN IF NOT EXISTS meta_description_en TEXT,
+  ADD COLUMN IF NOT EXISTS stat_label_en TEXT;
+
+ALTER TABLE public.statistics
+  ADD COLUMN IF NOT EXISTS label_en TEXT,
+  ADD COLUMN IF NOT EXISTS intro_text_en TEXT;
+
+-- ── 7. Refresh PostgREST schema cache ──────────────────────────────────────
 NOTIFY pgrst, 'reload schema';
