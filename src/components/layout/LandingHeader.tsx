@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ShareButton } from "@/components/layout/ShareButton";
-import { WhatsAppHeaderButton } from "@/components/layout/WhatsAppHeaderButton";
+import { LandingHeaderActions } from "@/components/layout/LandingHeaderActions";
 
 const CDN = "https://cdn.prod.website-files.com/632a01171b125a156b28c038";
 const DEFAULT_LOGO = `${CDN}/64c8cde2258c815c760717a9_small.png`;
@@ -10,22 +9,18 @@ type LandingHeaderProps = {
   logoUrl?: string;
   siteTitle?: string;
   shareIconUrl?: string;
-  shareLabel?: string;
   shareTitle?: string;
   shareText?: string;
   whatsappHeaderUrl?: string;
-  whatsappHeaderLabel?: string;
 };
 
 export function LandingHeader({
   logoUrl = DEFAULT_LOGO,
   siteTitle = "مشاريع 10×10",
   shareIconUrl,
-  shareLabel = "مشاركة",
   shareTitle,
   shareText,
   whatsappHeaderUrl,
-  whatsappHeaderLabel = "WhatsApp",
 }: LandingHeaderProps) {
   return (
     <header className="landing-header">
@@ -41,17 +36,13 @@ export function LandingHeader({
           />
         </Link>
 
-        <div className="landing-header-actions-group">
-          {whatsappHeaderUrl ? (
-            <WhatsAppHeaderButton href={whatsappHeaderUrl} label={whatsappHeaderLabel} />
-          ) : null}
-          <ShareButton
-            iconUrl={shareIconUrl}
-            label={shareLabel}
-            title={shareTitle ?? siteTitle}
-            text={shareText ?? siteTitle}
-          />
-        </div>
+        <LandingHeaderActions
+          whatsappHeaderUrl={whatsappHeaderUrl}
+          shareIconUrl={shareIconUrl}
+          shareTitle={shareTitle}
+          shareText={shareText}
+          siteTitle={siteTitle}
+        />
       </div>
     </header>
   );

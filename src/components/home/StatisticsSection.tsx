@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useSiteLang } from "@/lib/site-i18n-context";
 import type { HomeStatisticsData } from "@/types";
 
 type StatisticsSectionProps = HomeStatisticsData & {
@@ -13,8 +16,10 @@ export function StatisticsSection({
   introText,
   brandLogoUrl,
   backgroundColor,
-  ctaLabel = "استكشف مهمتنا ←",
+  ctaLabel,
 }: StatisticsSectionProps) {
+  const { t } = useSiteLang();
+  const cta = ctaLabel ?? t("hero.cta");
   return (
     <section id="hero" aria-label="Project impact" className="landing-hero">
       <div className="landing-container">
@@ -45,7 +50,7 @@ export function StatisticsSection({
             <div className="landing-hero-copy">
               <p className="landing-hero-intro">{introText}</p>
               <Link href="#categories" className="landing-hero-cta">
-                {ctaLabel}
+                {cta}
               </Link>
             </div>
           </div>

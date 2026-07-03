@@ -23,7 +23,7 @@ body {
   font-family: var(--da-font-family);
   font-size: var(--da-text-base);
   line-height: var(--da-leading-tight);
-  text-align: right;
+  text-align: start;
   -webkit-font-smoothing: antialiased;
 }
 

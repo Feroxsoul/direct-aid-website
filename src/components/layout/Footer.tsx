@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useSiteLang } from "@/lib/site-i18n-context";
 import type { FooterColumn, FooterSocialLink } from "@/lib/admin/settings-store";
 
 const CDN = "https://cdn.prod.website-files.com/632a01171b125a156b28c038";
@@ -28,6 +31,7 @@ export function Footer({
   columns = [],
   socialLinks = [],
 }: FooterProps) {
+  const { t } = useSiteLang();
   const year = new Date().getFullYear();
 
   return (
@@ -77,8 +81,8 @@ export function Footer({
             {legalLine ? <span>{legalLine}</span> : null}
           </div>
           <div className="landing-footer-meta">
-            <Link href={privacyUrl}>سياسة الخصوصية</Link>
-            <Link href={donationPolicyUrl}>سياسة التبرع</Link>
+            <Link href={privacyUrl}>{t("footer.privacy")}</Link>
+            <Link href={donationPolicyUrl}>{t("footer.donation")}</Link>
           </div>
         </div>
       </div>

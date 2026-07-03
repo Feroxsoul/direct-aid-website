@@ -8,7 +8,6 @@
   --landing-radius: 1.25rem;
   width: 100%;
   color: var(--da-black);
-  direction: rtl;
   text-align: start;
 }
 
@@ -69,6 +68,27 @@
 }
 
 .landing-whatsapp-btn:hover {
+  background: #e8f3e0;
+}
+
+.landing-lang-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.625rem;
+  border: 0;
+  border-radius: 999px;
+  background: #f4f4f3;
+  color: var(--da-black);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.landing-lang-btn:hover {
   background: #e8f3e0;
 }
 
@@ -259,7 +279,6 @@
 
 .landing-hero-copy {
   grid-column: 1 / -1;
-  direction: rtl;
 }
 
 @media (min-width: 900px) {
@@ -294,7 +313,6 @@
     grid-column: 1 / -1;
     grid-row: 2;
     display: block;
-    direction: rtl;
   }
 
   .landing-hero-brand-logo-img {

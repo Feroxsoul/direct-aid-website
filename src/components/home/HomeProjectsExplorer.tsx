@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { resolveCategoryColor } from "@/lib/category-colors";
+import { useSiteLang } from "@/lib/site-i18n-context";
 import { LandingProjectCard } from "@/components/home/LandingProjectCard";
 import type { HomepageCategory, ProjectCardData } from "@/types";
 
@@ -26,6 +27,7 @@ export function HomeProjectsExplorer({
   impactSectionTitle = "آخر نشاط للأثر",
   impactSectionSubtitle = "جميع المشاريع — مرّر للأسفل لتحميل المزيد.",
 }: HomeProjectsExplorerProps) {
+  const { t } = useSiteLang();
   const router = useRouter();
   const searchParams = useSearchParams();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -103,7 +105,7 @@ export function HomeProjectsExplorer({
     <>
       <section
         id="categories"
-        aria-label="فئات المشاريع"
+        aria-label={t("categories.aria")}
         className="landing-section landing-section--categories"
       >
         <div className="landing-container">
@@ -152,26 +154,29 @@ export function HomeProjectsExplorer({
         </div>
       </section>
 
-      <section id="impact" aria-label="آخر الأثر" className="landing-section">
+      <section id="impact" aria-label={t("impact.aria")} className="landing-section">
         <div className="landing-container">
           <div className="landing-section-header">
             <div>
               <h2 className="landing-section-title">{impactSectionTitle}</h2>
               <p className="landing-section-subtitle">
                 {activeLabel
-                  ? `جميع المشاريع (${filteredProjects.length}) في ${activeLabel}.`
-                  : `${impactSectionSubtitle} (${filteredProjects.length} مشروع)`}
+                  ? t("impact.allInCategory", {
+                      count: filteredProjects.length,
+                      category: activeLabel,
+                    })
+                  : t("impact.subtitle", { count: filteredProjects.length })}
               </p>
             </div>
             {activeSlug ? (
               <button type="button" className="landing-section-link" onClick={showAllProjects}>
-                عرض كل المشاريع ←
+                {t("impact.showAll")}
               </button>
             ) : null}
           </div>
 
           {visibleProjects.length === 0 ? (
-            <p className="landing-section-subtitle">لا توجد مشاريع في هذه الفئة حالياً.</p>
+            <p className="landing-section-subtitle">{t("impact.empty")}</p>
           ) : (
             <>
               <div
@@ -189,7 +194,7 @@ export function HomeProjectsExplorer({
               </div>
               {hasMore ? (
                 <div ref={loadMoreRef} className="landing-load-more-sentinel" aria-hidden>
-                  <span className="landing-load-more-label">جاري تحميل المزيد…</span>
+                  <span className="landing-load-more-label">{t("impact.loading")}</span>
                 </div>
               ) : null}
             </>

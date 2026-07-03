@@ -1,3 +1,7 @@
+"use client";
+
+import { useSiteLang } from "@/lib/site-i18n-context";
+
 type TransparencySectionProps = {
   title?: string;
   text?: string;
@@ -18,10 +22,11 @@ export function TransparencySection({
   whatsappMessage = "اشتراك",
   subscribeButtonLabel = "اشتراك",
 }: TransparencySectionProps) {
+  const { t } = useSiteLang();
   const whatsappUrl = buildWhatsAppUrl(whatsappNumber, whatsappMessage);
 
   return (
-    <section id="transparency" aria-label="الشفافية" className="landing-transparency">
+    <section id="transparency" aria-label={t("transparency.aria")} className="landing-transparency">
       <div className="landing-container">
         <div className="landing-transparency-shell">
           <div>

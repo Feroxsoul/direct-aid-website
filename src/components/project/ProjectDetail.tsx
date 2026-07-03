@@ -1,19 +1,22 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ShareButton } from "@/components/layout/ShareButton";
+import { useSiteLang } from "@/lib/site-i18n-context";
 import type { ProjectDetailData } from "@/types";
 
 type ProjectDetailProps = {
   project: ProjectDetailData;
   shareIconUrl?: string;
-  shareLabel?: string;
 };
 
 function isWebflowCdn(url: string) {
   return url.includes("cdn.prod.website-files.com");
 }
 
-export function ProjectDetail({ project, shareIconUrl, shareLabel }: ProjectDetailProps) {
+export function ProjectDetail({ project, shareIconUrl }: ProjectDetailProps) {
+  const { t } = useSiteLang();
   const tags = [
     project.categoryLabel,
     project.location,
@@ -30,14 +33,11 @@ export function ProjectDetail({ project, shareIconUrl, shareLabel }: ProjectDeta
     <div className="project-page landing-container">
       <div className="project-toolbar landing-reveal">
         <Link href="/#impact" className="project-back-link">
-          <span className="project-back-icon" aria-hidden>
-            ←
-          </span>
-          <span>رجوع للمشاريع</span>
+          <span>{t("project.back")}</span>
         </Link>
         <ShareButton
           iconUrl={shareIconUrl}
-          label={shareLabel}
+          label={t("share")}
           title={project.title}
           text={project.description.slice(0, 120)}
           className="project-share-btn landing-share-btn"
@@ -82,13 +82,13 @@ export function ProjectDetail({ project, shareIconUrl, shareLabel }: ProjectDeta
           className="project-gallery landing-reveal"
           style={{ animationDelay: "230ms" }}
         >
-          <h2 className="project-gallery-title">صور المشروع</h2>
+          <h2 className="project-gallery-title">{t("project.galleryTitle")}</h2>
           <div className="project-gallery-grid">
             {galleryUrls.map((url, index) => (
               <Image
                 key={`${url}-${index}`}
                 src={url}
-                alt={`${project.title} — صورة ${index + 1}`}
+                alt={t("project.galleryImage", { title: project.title, index: index + 1 })}
                 width={940}
                 height={600}
                 className="project-gallery-image"

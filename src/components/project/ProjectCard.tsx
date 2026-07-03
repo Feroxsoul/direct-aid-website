@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { categoryAccentColors } from "@/lib/design-tokens";
+import { useSiteLang } from "@/lib/site-i18n-context";
 import type {
   ProjectCardData,
   ProjectMetadata,
@@ -26,7 +29,7 @@ export function ProjectCard({
 
   return (
     <article
-      className={`box da-rtl flex w-[var(--da-card-size)] min-w-[var(--da-card-size)] max-w-[var(--da-card-size)] min-h-[var(--da-card-height)] max-h-[var(--da-card-height)] flex-col overflow-hidden rounded-da-md bg-transparent shadow-da-card ${className}`}
+      className={`box flex w-[var(--da-card-size)] min-w-[var(--da-card-size)] max-w-[var(--da-card-size)] min-h-[var(--da-card-height)] max-h-[var(--da-card-height)] flex-col overflow-hidden rounded-da-md bg-transparent shadow-da-card ${className}`}
     >
       <ProjectCardImage
         imageUrl={imageUrl}
@@ -63,6 +66,7 @@ function ProjectCardImage({
   href,
   title,
 }: ProjectCardImageProps & { href: string; title: string }) {
+  const { t } = useSiteLang();
   const unoptimized = imageUrl.includes("cdn.prod.website-files.com");
 
   return (
@@ -70,7 +74,7 @@ function ProjectCardImage({
       <Link
         href={href}
         className="absolute inset-0 z-[1] block"
-        aria-label={`${title} — عرض التفاصيل`}
+        aria-label={`${title} — ${t("project.viewDetails")}`}
       >
         <Image
           src={imageUrl}
@@ -131,22 +135,24 @@ type ProjectCardInfoProps = {
 };
 
 function ProjectCardInfo({ title, href, iconUrl }: ProjectCardInfoProps) {
+  const { t } = useSiteLang();
+
   return (
     <div className="info-inbox flex min-h-[var(--da-info-row-height)] flex-1 items-center justify-between px-[var(--da-space-7)] max-[479px]:px-[15px]">
       <Link
         href={href}
         className="more-button flex min-h-[27px] min-w-[63px] shrink-0 items-center justify-center self-center rounded-da-sm bg-da-lightgray px-2 py-0.5 no-underline"
-        aria-label={`المزيد — ${title}`}
+        aria-label={t("project.moreAria", { title })}
       >
         <span className="text-tag">
           <strong className="bold-text-2 da-text-button block pb-0.5 text-center text-da-gray">
-            + المزيد
+            {t("project.more")}
           </strong>
         </span>
       </Link>
 
       <div className="title-project flex items-center justify-center">
-        <h3 className="text-block-14 da-text-card-title m-0 text-end text-da-black">
+        <h3 className="text-block-14 da-text-card-title m-0 text-start text-da-black">
           {title}
         </h3>
         {iconUrl ? (

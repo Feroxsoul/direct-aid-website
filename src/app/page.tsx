@@ -48,7 +48,6 @@ export default async function Home() {
         logoUrl={content.logo_url}
         siteTitle={content.site_title}
         shareIconUrl={content.share_icon_url}
-        shareLabel={content.share_label}
         shareTitle={content.site_title}
         shareText={content.site_description || content.site_title}
         whatsappHeaderUrl={content.whatsapp_header_url}

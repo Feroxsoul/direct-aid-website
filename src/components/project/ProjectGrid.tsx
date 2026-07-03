@@ -1,4 +1,7 @@
+"use client";
+
 import { ProjectCard } from "@/components/project/ProjectCard";
+import { useSiteLang } from "@/lib/site-i18n-context";
 import type { ProjectCardData } from "@/types";
 
 type ProjectGridProps = {
@@ -8,21 +11,22 @@ type ProjectGridProps = {
 };
 
 export function ProjectGrid({ projects, variant = "home" }: ProjectGridProps) {
+  const { t } = useSiteLang();
   const wrapperClass =
     variant === "listing" ? "collection-list-wrapper-2" : "collection-list-wrapper";
 
   if (projects.length === 0) {
     return (
-      <section aria-label="قائمة المشاريع" className={`${wrapperClass} w-full`}>
+      <section aria-label={t("project.listAria")} className={`${wrapperClass} w-full`}>
         <p className="empty-state da-text-body px-5 py-10 text-center text-da-gray">
-          لا توجد مشاريع في هذه الفئة حالياً.
+          {t("impact.empty")}
         </p>
       </section>
     );
   }
 
   return (
-    <section aria-label="قائمة المشاريع" className={`${wrapperClass} w-full`}>
+    <section aria-label={t("project.listAria")} className={`${wrapperClass} w-full`}>
       <ul
         role="list"
         className="collection-list m-0 flex list-none flex-row flex-wrap items-center justify-center gap-0 p-0 max-[767px]:flex-col"

@@ -71,7 +71,6 @@ export default async function CategoryProjectsPage({ params }: CategoryPageProps
         logoUrl={settings.logo_url || content.logo_url}
         siteTitle={settings.site_title || content.site_title}
         shareIconUrl={content.share_icon_url}
-        shareLabel={content.share_label}
         shareTitle={label}
         shareText={label}
         whatsappHeaderUrl={content.whatsapp_header_url}
