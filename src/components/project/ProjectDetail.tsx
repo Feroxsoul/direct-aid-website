@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ShareButton } from "@/components/layout/ShareButton";
+import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useSiteLang } from "@/lib/site-i18n-context";
 import type { ProjectDetailData } from "@/types";
 
@@ -17,15 +18,16 @@ function isWebflowCdn(url: string) {
 
 export function ProjectDetail({ project, shareIconUrl }: ProjectDetailProps) {
   const { t } = useSiteLang();
+  const localized = useLocalizedProject(project);
   const tags = [
-    project.categoryLabel,
-    project.location,
-    project.metadata.dateLabel,
+    localized.categoryLabel,
+    localized.location,
+    localized.metadata.dateLabel,
   ].filter(Boolean) as string[];
 
   const galleryUrls = [
     ...new Set(
-      project.galleryUrls.filter((url) => url && url !== project.imageUrl),
+      project.galleryUrls.filter((url) => url && url !== localized.imageUrl),
     ),
   ];
 
@@ -38,8 +40,8 @@ export function ProjectDetail({ project, shareIconUrl }: ProjectDetailProps) {
         <ShareButton
           iconUrl={shareIconUrl}
           label={t("share")}
-          title={project.title}
-          text={project.description.slice(0, 120)}
+          title={localized.title}
+          text={(localized.description ?? project.description).slice(0, 120)}
           className="project-share-btn landing-share-btn"
         />
       </div>
@@ -49,14 +51,14 @@ export function ProjectDetail({ project, shareIconUrl }: ProjectDetailProps) {
         style={{ animationDelay: "90ms" }}
       >
         <Image
-          src={project.imageUrl}
-          alt={project.imageAlt ?? project.title}
+          src={localized.imageUrl}
+          alt={localized.imageAlt ?? localized.title}
           fill
           className="project-hero-image"
           sizes="(max-width: 767px) 100vw, 940px"
           priority
           loading="eager"
-          unoptimized={isWebflowCdn(project.imageUrl)}
+          unoptimized={isWebflowCdn(localized.imageUrl)}
         />
       </div>
 
@@ -72,9 +74,9 @@ export function ProjectDetail({ project, shareIconUrl }: ProjectDetailProps) {
           ))}
         </div>
 
-        <h1 className="project-detail-title">{project.title}</h1>
+        <h1 className="project-detail-title">{localized.title}</h1>
 
-        <p className="project-detail-description">{project.description}</p>
+        <p className="project-detail-description">{localized.description ?? project.description}</p>
       </div>
 
       {galleryUrls.length > 0 ? (
@@ -88,7 +90,7 @@ export function ProjectDetail({ project, shareIconUrl }: ProjectDetailProps) {
               <Image
                 key={`${url}-${index}`}
                 src={url}
-                alt={t("project.galleryImage", { title: project.title, index: index + 1 })}
+                alt={t("project.galleryImage", { title: localized.title, index: index + 1 })}
                 width={940}
                 height={600}
                 className="project-gallery-image"

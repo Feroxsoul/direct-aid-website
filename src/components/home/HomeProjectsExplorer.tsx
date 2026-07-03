@@ -4,7 +4,9 @@ import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { resolveCategoryColor } from "@/lib/category-colors";
+import { usePublicLocale } from "@/lib/public-locale-context";
 import { useSiteLang } from "@/lib/site-i18n-context";
+import { getCategoryShortLabel, localizeCategory } from "@/lib/site-localize";
 import { LandingProjectCard } from "@/components/home/LandingProjectCard";
 import type { HomepageCategory, ProjectCardData } from "@/types";
 
@@ -28,6 +30,7 @@ export function HomeProjectsExplorer({
   impactSectionSubtitle = "جميع المشاريع — مرّر للأسفل لتحميل المزيد.",
 }: HomeProjectsExplorerProps) {
   const { t } = useSiteLang();
+  const { lang, content } = usePublicLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -53,11 +56,23 @@ export function HomeProjectsExplorer({
 
   const hasMore = visibleCount < filteredProjects.length;
 
+  const localizedCategories = useMemo(
+    () => categories.map((category) => localizeCategory(category, lang)),
+    [categories, lang],
+  );
+
   const activeLabel = activeSlug
-    ? (categories.find((category) => category.slug === activeSlug)?.titleLine2 ??
-      categories.find((category) => category.slug === activeSlug)?.titleLine1 ??
-      activeSlug)
+    ? localizedCategories.find((category) => category.slug === activeSlug)
+      ? getCategoryShortLabel(
+          categories.find((category) => category.slug === activeSlug)!,
+          lang,
+        )
+      : activeSlug
     : null;
+
+  const categoriesSectionHeading =
+    content.categories_section_title || categoriesSectionTitle;
+  const impactSectionHeading = content.impact_section_title || impactSectionTitle;
 
   const updateCategory = useCallback(
     (slug: string | null) => {
@@ -109,12 +124,15 @@ export function HomeProjectsExplorer({
         className="landing-section landing-section--categories"
       >
         <div className="landing-container">
-          {categoriesSectionTitle?.trim() ? (
-            <h2 className="landing-section-title landing-reveal">{categoriesSectionTitle}</h2>
+          {categoriesSectionHeading?.trim() ? (
+            <h2 className="landing-section-title landing-reveal">{categoriesSectionHeading}</h2>
           ) : null}
           <div className="landing-categories-scroll">
-            {categories.map((category, index) => {
-              const short = category.titleLine2 || category.titleLine1;
+            {localizedCategories.map((category, index) => {
+              const short = getCategoryShortLabel(
+                categories.find((item) => item.slug === category.slug) ?? category,
+                lang,
+              );
               const isActive = activeSlug === category.slug;
 
               return (
@@ -158,7 +176,7 @@ export function HomeProjectsExplorer({
         <div className="landing-container">
           <div className="landing-section-header">
             <div>
-              <h2 className="landing-section-title">{impactSectionTitle}</h2>
+              <h2 className="landing-section-title">{impactSectionHeading}</h2>
               <p className="landing-section-subtitle">
                 {activeLabel
                   ? t("impact.allInCategory", {

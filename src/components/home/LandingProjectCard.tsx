@@ -1,7 +1,11 @@
+"use client";
+
 import { ProjectCoverImage } from "@/components/admin/ProjectCoverImage";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { resolveCategoryColor } from "@/lib/category-colors";
+import { useSiteLang } from "@/lib/site-i18n-context";
 import type { ProjectCardData } from "@/types";
 
 type LandingProjectCardProps = {
@@ -15,9 +19,11 @@ export function LandingProjectCard({
   revealIndex = 0,
   categoryColorMap = {},
 }: LandingProjectCardProps) {
+  const { t } = useSiteLang();
+  const localized = useLocalizedProject(project);
   const accentColor = resolveCategoryColor(
-    project.categorySlug,
-    project.categoryAccent,
+    localized.categorySlug,
+    localized.categoryAccent,
     categoryColorMap,
   );
 
@@ -27,45 +33,45 @@ export function LandingProjectCard({
       style={{ "--reveal-index": revealIndex } as CSSProperties}
     >
       <div className="landing-project-media">
-        <Link href={project.href} className="absolute inset-0">
+        <Link href={localized.href} className="absolute inset-0">
           <ProjectCoverImage
-            src={project.imageUrl}
-            alt={project.imageAlt ?? project.title}
+            src={localized.imageUrl}
+            alt={localized.imageAlt ?? localized.title}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         </Link>
-        {project.statistics ? (
+        {localized.statistics ? (
           <span className="landing-project-badge landing-project-badge--stat">
-            {project.statistics.value} {project.statistics.label}
+            {localized.statistics.value} {localized.statistics.label}
           </span>
         ) : null}
         <span className="landing-project-badge landing-project-badge--date">
-          {project.metadata.yearCode ?? project.metadata.dateLabel}
+          {localized.metadata.yearCode ?? localized.metadata.dateLabel}
         </span>
       </div>
 
       <div className="landing-project-body">
-        <h3 className="landing-project-title">{project.title}</h3>
-        {project.description ? (
-          <p className="landing-project-desc">{project.description}</p>
+        <h3 className="landing-project-title">{localized.title}</h3>
+        {localized.description ? (
+          <p className="landing-project-desc">{localized.description}</p>
         ) : null}
 
         <div className="landing-project-footer">
-          {project.categoryLabel ? (
+          {localized.categoryLabel ? (
             <span className="landing-project-category">
               <span
                 className="landing-project-dot"
                 style={{ backgroundColor: accentColor }}
                 aria-hidden
               />
-              {project.categoryLabel}
+              {localized.categoryLabel}
             </span>
           ) : (
             <span />
           )}
-              <Link href={project.href} className="landing-project-btn">
-                تفاصيل المشروع
-              </Link>
+          <Link href={localized.href} className="landing-project-btn">
+            {t("project.details")}
+          </Link>
         </div>
       </div>
     </article>

@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePublicLocale } from "@/lib/public-locale-context";
 import { useSiteLang } from "@/lib/site-i18n-context";
+import { localizeHomeStatistics } from "@/lib/site-localize";
 import type { HomeStatisticsData } from "@/types";
 
 type StatisticsSectionProps = HomeStatisticsData & {
@@ -19,7 +21,22 @@ export function StatisticsSection({
   ctaLabel,
 }: StatisticsSectionProps) {
   const { t } = useSiteLang();
-  const cta = ctaLabel ?? t("hero.cta");
+  const { lang, content } = usePublicLocale();
+  const localized = localizeHomeStatistics(
+    {
+      value,
+      label,
+      iconUrl,
+      illustrationUrl: "",
+      introText,
+      brandLine1: "",
+      brandLine2: "",
+      brandLogoUrl,
+      backgroundColor,
+    },
+    lang,
+  );
+  const cta = ctaLabel ?? content.hero_cta_label ?? t("hero.cta");
   return (
     <section id="hero" aria-label="Project impact" className="landing-hero">
       <div className="landing-container">
@@ -33,7 +50,7 @@ export function StatisticsSection({
                 <Image src={iconUrl} alt="" width={28} height={28} aria-hidden unoptimized />
               </div>
               <p className="landing-stat-value">{value}</p>
-              <p className="landing-stat-label">{label}</p>
+              <p className="landing-stat-label">{localized.label}</p>
             </div>
 
             <div className="landing-hero-brand-card">
@@ -48,7 +65,7 @@ export function StatisticsSection({
             </div>
 
             <div className="landing-hero-copy">
-              <p className="landing-hero-intro">{introText}</p>
+              <p className="landing-hero-intro">{localized.introText}</p>
               <Link href="#categories" className="landing-hero-cta">
                 {cta}
               </Link>

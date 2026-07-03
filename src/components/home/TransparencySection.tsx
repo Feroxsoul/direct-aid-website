@@ -1,5 +1,6 @@
 "use client";
 
+import { usePublicLocale } from "@/lib/public-locale-context";
 import { useSiteLang } from "@/lib/site-i18n-context";
 
 type TransparencySectionProps = {
@@ -23,15 +24,21 @@ export function TransparencySection({
   subscribeButtonLabel = "اشتراك",
 }: TransparencySectionProps) {
   const { t } = useSiteLang();
-  const whatsappUrl = buildWhatsAppUrl(whatsappNumber, whatsappMessage);
+  const { content } = usePublicLocale();
+  const whatsappUrl = buildWhatsAppUrl(
+    whatsappNumber || content.whatsapp_number,
+    whatsappMessage || content.whatsapp_subscribe_message,
+  );
 
   return (
     <section id="transparency" aria-label={t("transparency.aria")} className="landing-transparency">
       <div className="landing-container">
         <div className="landing-transparency-shell">
           <div>
-            <h2 className="landing-transparency-title">{title}</h2>
-            <p className="landing-transparency-text">{text}</p>
+            <h2 className="landing-transparency-title">
+              {content.transparency_title || title}
+            </h2>
+            <p className="landing-transparency-text">{content.transparency_text || text}</p>
           </div>
           <div className="landing-subscribe-action">
             <a
@@ -40,7 +47,7 @@ export function TransparencySection({
               target="_blank"
               rel="noreferrer"
             >
-              {subscribeButtonLabel}
+              {content.whatsapp_subscribe_button || subscribeButtonLabel}
             </a>
           </div>
         </div>

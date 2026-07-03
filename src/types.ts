@@ -11,6 +11,7 @@ export type HomepageCategory = {
   slug: string;
   titleLine1: string;
   titleLine2: string;
+  nameEn?: string | null;
   iconUrl: string;
   accent: CategoryAccent;
 };
@@ -50,6 +51,8 @@ export type ProjectCardData = {
   iconUrl?: string;
   categoryLabel?: string;
   description?: string;
+  location?: string;
+  countrySlug?: string;
 };
 
 export type ProjectDetailData = ProjectCardData & {

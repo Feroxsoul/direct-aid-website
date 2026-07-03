@@ -48,6 +48,7 @@ function mapCategory(row: CategoryRow): HomepageCategory {
     slug: row.slug,
     titleLine1: row.title_line_1,
     titleLine2: row.title_line_2,
+    nameEn: row.name_en,
     iconUrl: row.icon_url,
     accent: row.accent,
   };

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { categoryAccentColors } from "@/lib/design-tokens";
+import { useLocalizedProject } from "@/hooks/use-localized-project";
 import { useSiteLang } from "@/lib/site-i18n-context";
 import type {
   ProjectCardData,
@@ -14,33 +15,24 @@ export type ProjectCardProps = ProjectCardData & {
   className?: string;
 };
 
-export function ProjectCard({
-  title,
-  imageUrl,
-  imageAlt,
-  href,
-  metadata,
-  categoryAccent,
-  statistics,
-  iconUrl,
-  className = "",
-}: ProjectCardProps) {
-  const accentColor = categoryAccentColors[categoryAccent];
+export function ProjectCard({ className = "", ...project }: ProjectCardProps) {
+  const localized = useLocalizedProject(project);
+  const accentColor = categoryAccentColors[project.categoryAccent];
 
   return (
     <article
       className={`box flex w-[var(--da-card-size)] min-w-[var(--da-card-size)] max-w-[var(--da-card-size)] min-h-[var(--da-card-height)] max-h-[var(--da-card-height)] flex-col overflow-hidden rounded-da-md bg-transparent shadow-da-card ${className}`}
     >
       <ProjectCardImage
-        imageUrl={imageUrl}
-        imageAlt={imageAlt ?? title}
-        metadata={metadata}
-        statistics={statistics}
-        href={href}
-        title={title}
+        imageUrl={localized.imageUrl}
+        imageAlt={localized.imageAlt ?? localized.title}
+        metadata={localized.metadata}
+        statistics={localized.statistics}
+        href={localized.href}
+        title={localized.title}
       />
 
-      <ProjectCardInfo title={title} href={href} iconUrl={iconUrl} />
+      <ProjectCardInfo title={localized.title} href={localized.href} iconUrl={localized.iconUrl} />
 
       <div
         className="color-inbox block min-h-[var(--da-color-bar-height)] w-full rounded-b-da-md"

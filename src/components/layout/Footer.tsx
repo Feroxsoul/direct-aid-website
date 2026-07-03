@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePublicLocale } from "@/lib/public-locale-context";
 import { useSiteLang } from "@/lib/site-i18n-context";
 import type { FooterColumn, FooterSocialLink } from "@/lib/admin/settings-store";
 
@@ -10,37 +11,27 @@ const DEFAULT_LOGO = `${CDN}/64c8cde2258c815c760717a9_small.png`;
 
 type FooterProps = {
   logoUrl?: string;
-  siteTitle?: string;
-  tagline?: string;
-  copyright?: string;
-  legalLine?: string;
-  privacyUrl?: string;
-  donationPolicyUrl?: string;
   columns?: FooterColumn[];
   socialLinks?: FooterSocialLink[];
 };
 
 export function Footer({
   logoUrl = DEFAULT_LOGO,
-  siteTitle = "مشاريع 10×10",
-  tagline = "جمعية العون المباشر — مؤسسة خيرية كويتية تعمل على تقديم العون الإنساني والتنموي في أكثر من 30 دولة.",
-  copyright = "جمعية العون المباشر. جميع الحقوق محفوظة.",
-  legalLine = "مؤسسة خيرية كويتية غير ربحية — رقم التسجيل 1999/81",
-  privacyUrl = "https://direct-aid.org/cms/about-us-ar-2/good-governance-in-direct-aid/privacy-policy/",
-  donationPolicyUrl = "https://direct-aid.org/cms/donation-policy-ar/",
-  columns = [],
+  columns: columnsProp = [],
   socialLinks = [],
 }: FooterProps) {
   const { t } = useSiteLang();
+  const { content } = usePublicLocale();
   const year = new Date().getFullYear();
+  const columns = content.footer_columns.length ? content.footer_columns : columnsProp;
 
   return (
     <footer className="landing-footer">
       <div className="landing-container">
         <div className="landing-footer-grid">
           <div className="landing-footer-brand">
-            <Image src={logoUrl} alt={siteTitle} width={120} height={40} className="h-8 w-auto" />
-            <p>{tagline}</p>
+            <Image src={logoUrl} alt={content.site_title} width={120} height={40} className="h-8 w-auto" />
+            <p>{content.footer_tagline}</p>
             {socialLinks.length ? (
               <div className="landing-footer-social">
                 {socialLinks.map((link) => (
@@ -76,13 +67,13 @@ export function Footer({
         <div className="landing-footer-bottom">
           <div className="landing-footer-legal">
             <span>
-              © {year} {copyright}
+              © {year} {content.footer_copyright}
             </span>
-            {legalLine ? <span>{legalLine}</span> : null}
+            {content.footer_legal_line ? <span>{content.footer_legal_line}</span> : null}
           </div>
           <div className="landing-footer-meta">
-            <Link href={privacyUrl}>{t("footer.privacy")}</Link>
-            <Link href={donationPolicyUrl}>{t("footer.donation")}</Link>
+            <Link href={content.footer_privacy_url}>{t("footer.privacy")}</Link>
+            <Link href={content.footer_donation_policy_url}>{t("footer.donation")}</Link>
           </div>
         </div>
       </div>
