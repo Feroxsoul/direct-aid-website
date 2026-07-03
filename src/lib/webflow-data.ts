@@ -1,7 +1,7 @@
 import webflowProjectsJson from "@/data/webflow-projects.json";
 import type { CategoryAccent } from "@/lib/design-tokens";
 import { getDefaultDescription } from "@/data/project-details";
-import { truncateCardDescription } from "@/lib/project-catalog";
+import { truncateCardDescription, sortProjectsByDateDesc } from "@/lib/project-catalog";
 import type {
   HomepageCategory,
   ProjectCardData,
@@ -81,15 +81,9 @@ function mapWebflowToCard(row: WebflowProjectRow): ProjectCardData {
 }
 
 export function getWebflowProjects(): ProjectCardData[] {
-  return webflowProjects
-    .filter((row) => row.is_published)
-    .sort((a, b) => {
-      const ay = a.project_year ?? 0;
-      const by = b.project_year ?? 0;
-      if (by !== ay) return by - ay;
-      return (b.project_month ?? 0) - (a.project_month ?? 0);
-    })
-    .map(mapWebflowToCard);
+  return sortProjectsByDateDesc(webflowProjects.filter((row) => row.is_published)).map(
+    mapWebflowToCard,
+  );
 }
 
 export function getWebflowProjectsByCategory(slug: string): ProjectCardData[] {

@@ -2,6 +2,67 @@ import type { CategoryAccent } from "@/lib/design-tokens";
 import type { ProjectCardData, ProjectRow } from "@/types";
 
 import { getWebflowProjectCount } from "@/lib/webflow-data";
+import { parseProjectDateLabel } from "@/lib/project-slug";
+
+export type ProjectDateSortable = {
+  project_year?: number | null;
+  project_month?: number | null;
+  date_label?: string | null;
+  year_code?: string | null;
+  created_at?: string | null;
+  slug: string;
+};
+
+/** Resolve year/month for sorting (newest first on listings). */
+export function getProjectSortDate(row: ProjectDateSortable): {
+  year: number;
+  month: number;
+} {
+  if (row.project_year && row.project_month) {
+    return { year: row.project_year, month: row.project_month };
+  }
+
+  const parsed = parseProjectDateLabel(row.date_label ?? null, row.year_code);
+  if (parsed) {
+    return { year: parsed.year, month: parsed.month };
+  }
+
+  const slugTail = row.slug.match(/(\d{2})(\d{2})\d{2}$/);
+  if (slugTail) {
+    const yy = Number(slugTail[1]);
+    const mm = Number(slugTail[2]);
+    return {
+      year: yy >= 70 ? 1900 + yy : 2000 + yy,
+      month: mm,
+    };
+  }
+
+  if (row.created_at) {
+    const created = new Date(row.created_at);
+    if (!Number.isNaN(created.getTime())) {
+      return { year: created.getFullYear(), month: created.getMonth() + 1 };
+    }
+  }
+
+  return { year: 0, month: 0 };
+}
+
+/** Newest project date first (2026 → 2025 → 2024, then month within year). */
+export function compareProjectsByDateDesc(
+  a: ProjectDateSortable,
+  b: ProjectDateSortable,
+): number {
+  const da = getProjectSortDate(a);
+  const db = getProjectSortDate(b);
+
+  if (db.year !== da.year) return db.year - da.year;
+  if (db.month !== da.month) return db.month - da.month;
+  return b.slug.localeCompare(a.slug);
+}
+
+export function sortProjectsByDateDesc<T extends ProjectDateSortable>(rows: T[]): T[] {
+  return [...rows].sort(compareProjectsByDateDesc);
+}
 
 export const CATEGORY_SHORT: Record<string, string> = {
   "health-10x10": "الصحية",

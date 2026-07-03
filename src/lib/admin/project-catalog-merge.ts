@@ -16,15 +16,7 @@ export function mergeProjectsWithWebflowCatalog(
     bySlug.set(row.slug, row);
   }
 
-  return Array.from(bySlug.values()).sort((a, b) => {
-    const aTime = a.created_at ? Date.parse(a.created_at) : 0;
-    const bTime = b.created_at ? Date.parse(b.created_at) : 0;
-    if (bTime !== aTime) return bTime - aTime;
-    const ay = a.project_year ?? 0;
-    const by = b.project_year ?? 0;
-    if (by !== ay) return by - ay;
-    return (b.project_month ?? 0) - (a.project_month ?? 0);
-  });
+  return Array.from(bySlug.values());
 }
 
 export function getWebflowOnlyProjectCount(dbProjects: ProjectRow[]): number {

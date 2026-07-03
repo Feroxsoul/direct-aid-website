@@ -1,6 +1,7 @@
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { fetchAllRows } from "@/lib/supabase/fetch-all-rows";
 import { getWebflowProjectRowBySlug } from "@/lib/webflow-data";
+import { sortProjectsByDateDesc } from "@/lib/project-catalog";
 import { slugKeyFromEnglishName } from "@/lib/project-slug";
 import type {
   AdminNotificationRow,
@@ -19,8 +20,8 @@ export async function adminGetProjects(): Promise<ProjectRow[]> {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return [];
 
-  return fetchAllRows(() =>
-    supabase.from("projects").select("*").order("created_at", { ascending: false }),
+  return sortProjectsByDateDesc(
+    await fetchAllRows(() => supabase.from("projects").select("*")),
   );
 }
 

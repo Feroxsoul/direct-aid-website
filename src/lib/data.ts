@@ -15,6 +15,7 @@ import type { CategoryAccent } from "@/lib/design-tokens";
 import {
   getCategoryLabelFromRef,
   mapProjectRowToCard,
+  sortProjectsByDateDesc,
   useWebflowProjectCatalog,
   type CategoryRef,
 } from "@/lib/project-catalog";
@@ -167,12 +168,10 @@ export async function getAllProjects(): Promise<ProjectCardData[]> {
     return getWebflowProjects();
   }
 
-  const data = await fetchAllRows(() =>
-    supabase
-      .from("projects")
-      .select("*")
-      .eq("is_published", true)
-      .order("created_at", { ascending: false }),
+  const data = sortProjectsByDateDesc(
+    await fetchAllRows(() =>
+      supabase.from("projects").select("*").eq("is_published", true),
+    ),
   );
 
   if (!data.length) {
@@ -286,13 +285,14 @@ export async function getProjectsByCategorySlug(
     return getWebflowProjectsByCategory(slug);
   }
 
-  const data = await fetchAllRows(() =>
-    supabase
-      .from("projects")
-      .select("*")
-      .eq("is_published", true)
-      .eq("category_slug", slug)
-      .order("created_at", { ascending: false }),
+  const data = sortProjectsByDateDesc(
+    await fetchAllRows(() =>
+      supabase
+        .from("projects")
+        .select("*")
+        .eq("is_published", true)
+        .eq("category_slug", slug),
+    ),
   );
 
   if (!data.length) {
