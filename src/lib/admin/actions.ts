@@ -151,7 +151,10 @@ function parseGalleryUrls(value: FormDataEntryValue | null): string[] {
 }
 
 function revalidateSite() {
+  // Root layout renders header/footer and public settings.
+  // Revalidate both page and layout so footer changes show immediately.
   revalidatePath("/");
+  revalidatePath("/", "layout");
   revalidatePath("/lmshryaa", "layout");
   revalidatePath("/project", "layout");
 }
