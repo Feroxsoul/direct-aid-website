@@ -1,8 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { usePublicLocale } from "@/lib/public-locale-context";
 import { useSiteLang } from "@/lib/site-i18n-context";
 import { localizeHomeStatistics } from "@/lib/site-localize";
 import type { HomeStatisticsData } from "@/types";
@@ -19,8 +17,7 @@ export function StatisticsSection({
   brandLogoUrl,
   backgroundColor,
 }: StatisticsSectionProps) {
-  const { t, lang } = useSiteLang();
-  const { content } = usePublicLocale();
+  const { lang } = useSiteLang();
   const localized = localizeHomeStatistics(
     {
       value,
@@ -37,7 +34,6 @@ export function StatisticsSection({
     },
     lang,
   );
-  const cta = content.hero_cta_label ?? t("hero.cta");
   return (
     <section id="hero" aria-label="Project impact" className="landing-hero">
       <div className="landing-container">
@@ -71,9 +67,6 @@ export function StatisticsSection({
               <p className="landing-hero-intro" key={`stat-intro-${lang}`}>
                 {localized.introText}
               </p>
-              <Link href="#categories" className="landing-hero-cta">
-                {cta}
-              </Link>
             </div>
           </div>
         </div>
