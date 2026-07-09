@@ -55,7 +55,9 @@ export async function getAdminProjectsEditorData(): Promise<AdminProjectsEditorD
   const categoryMap = new Map(categories.map((category) => [category.slug, category]));
   const webflowProjectCount = getWebflowProjectCount();
   const liveUsesWebflow = shouldUseWebflowProjectCatalog(dbProjectCount > 0);
-  const mergedProjects = sortProjectsByDateDesc(mergeProjectsWithWebflowCatalog(projects));
+  const mergedProjects = liveUsesWebflow
+    ? sortProjectsByDateDesc(mergeProjectsWithWebflowCatalog(projects))
+    : projects;
 
   const editorProjects: AdminProjectEditorItem[] = mergedProjects.map((row) => {
     const category = categoryMap.get(row.category_slug);
