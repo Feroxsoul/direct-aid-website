@@ -4,6 +4,6 @@ dockerfilePath = "Dockerfile"
 # Redeploy trigger: impact-admin-v2 (2026-06-12)
 
 [deploy]
-healthcheckPath = "/"
+healthcheckPath = "/api/deploy"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
