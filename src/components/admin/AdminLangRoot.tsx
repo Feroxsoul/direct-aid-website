@@ -5,6 +5,7 @@ import {
   ADMIN_LANG_STORAGE_KEY,
   type AdminLang,
 } from "@/lib/admin/i18n";
+import { adminLangCookieValue } from "@/lib/admin-lang-cookie";
 import { AdminLangProvider } from "@/lib/admin/i18n-context";
 
 export function AdminLangRoot({ children }: { children: React.ReactNode }) {
@@ -23,6 +24,7 @@ export function AdminLangRoot({ children }: { children: React.ReactNode }) {
     document.documentElement.setAttribute("lang", lang);
     document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
     localStorage.setItem(ADMIN_LANG_STORAGE_KEY, lang);
+    document.cookie = adminLangCookieValue(lang);
   }, [lang]);
 
   return (

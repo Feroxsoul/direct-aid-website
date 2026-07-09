@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AdminLangToggle } from "@/components/admin/AdminLangToggle";
 import { AdminProfileMenu } from "@/components/admin/AdminProfileMenu";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { adminLangCookieValue } from "@/lib/admin-lang-cookie";
 import { AdminLangProvider } from "@/lib/admin/i18n-context";
 import {
   ADMIN_LANG_STORAGE_KEY,
@@ -58,6 +59,7 @@ export function AdminShell({
     localStorage.setItem(ADMIN_LANG_STORAGE_KEY, lang);
     document.documentElement.setAttribute("lang", lang);
     document.documentElement.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+    document.cookie = adminLangCookieValue(lang);
   }, [lang]);
 
   function toggleTheme() {

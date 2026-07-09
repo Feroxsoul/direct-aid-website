@@ -5,7 +5,7 @@ import { AdminLangRoot } from "@/components/admin/AdminLangRoot";
 import { AdminLangToggle } from "@/components/admin/AdminLangToggle";
 import { AdminText } from "@/components/admin/AdminPageHeader";
 import { LoginForm } from "@/components/admin/LoginForm";
-import { APP_DEVELOPER, APP_VERSION_LABEL } from "@/lib/app-version";
+import { APP_VERSION_LABEL } from "@/lib/app-version";
 import { BRAND_10X10_LOGO_SVG, DEFAULT_DIRECT_AID_LOGO } from "@/lib/brand";
 
 type LoginPageContentProps = {
@@ -90,7 +90,7 @@ function LoginPageInner({
           <AdminText k="sidebar.poweredBy" />
         </p>
         <p>
-          <AdminText k="sidebar.byDeveloper" vars={{ name: APP_DEVELOPER }} />
+          <AdminText k="sidebar.byDeveloper" />
         </p>
       </footer>
     </div>

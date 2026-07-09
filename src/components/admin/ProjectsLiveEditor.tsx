@@ -41,7 +41,7 @@ export function ProjectsLiveEditor({
   supabaseUrl,
   supabaseAnonKey,
 }: ProjectsLiveEditorProps) {
-  const { t } = useAdminLang();
+  const { lang, t } = useAdminLang();
   const router = useRouter();
   const [projects, setProjects] = useState(initialProjects);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -158,7 +158,7 @@ export function ProjectsLiveEditor({
       <header className="impact-projects-header">
         <div>
           <h2 className="impact-projects-title">{t("projects.title")}</h2>
-          <p className="impact-projects-subtitle">
+          <p className="impact-projects-subtitle" dir={lang === "ar" ? "rtl" : "ltr"}>
             {t("projects.subtitle", { count: filteredProjects.length })}
           </p>
         </div>

@@ -9,7 +9,6 @@ import type { AdminPermissions } from "@/lib/admin/permissions";
 import { t, type AdminLang } from "@/lib/admin/i18n";
 import { isNavPageHidden } from "@/lib/admin/nav-pages";
 import {
-  APP_DEVELOPER,
   APP_VERSION_LABEL,
 } from "@/lib/app-version";
 
@@ -154,9 +153,7 @@ export function AdminSidebar({ profile, logoUrl, lang, onNavigate }: AdminSideba
       <div className="dash-sidebar-version">
         <span className="dash-sidebar-version-label">{APP_VERSION_LABEL}</span>
         <span className="dash-sidebar-version-meta">{t(lang, "sidebar.poweredBy")}</span>
-        <span className="dash-sidebar-version-meta">
-          {t(lang, "sidebar.byDeveloper", { name: APP_DEVELOPER })}
-        </span>
+        <span className="dash-sidebar-version-meta">{t(lang, "sidebar.byDeveloper")}</span>
       </div>
     </aside>
   );

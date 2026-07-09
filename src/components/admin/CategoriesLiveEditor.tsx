@@ -20,7 +20,7 @@ export function CategoriesLiveEditor({
   canCreate,
   canEdit,
 }: CategoriesLiveEditorProps) {
-  const { t } = useAdminLang();
+  const { lang, t } = useAdminLang();
   const [categories] = useState(initialCategories);
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -46,7 +46,7 @@ export function CategoriesLiveEditor({
       <header className="impact-projects-header">
         <div>
           <h2 className="impact-projects-title">{t("categories.title")}</h2>
-          <p className="impact-projects-subtitle">
+          <p className="impact-projects-subtitle" dir={lang === "ar" ? "rtl" : "ltr"}>
             {t("categories.subtitle", { count: filtered.length })}
           </p>
         </div>
