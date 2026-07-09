@@ -191,12 +191,7 @@ export function HomeProjectsExplorer({
             <div>
               <h2 className="landing-section-title">{impactSectionHeading}</h2>
               <p className="landing-section-subtitle">
-                {activeLabel
-                  ? t("impact.allInCategory", {
-                      count: filteredProjects.length,
-                      category: activeLabel,
-                    })
-                  : impactSectionSubtitleText}
+                {impactSectionSubtitleText}
               </p>
             </div>
             {activeSlug ? (
