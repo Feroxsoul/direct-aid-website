@@ -18,7 +18,6 @@ const PAGE_SIZE = 24;
 const STATUS_KEYS: Record<string, string> = {
   published: "common.published",
   draft: "common.draft",
-  archived: "common.archived",
 };
 
 type ProjectsLiveEditorProps = AdminProjectsEditorData & {
@@ -192,7 +191,6 @@ export function ProjectsLiveEditor({
             <option value="all">{t("projects.allStatuses")}</option>
             <option value="published">{t("common.published")}</option>
             <option value="draft">{t("common.draft")}</option>
-            <option value="archived">{t("common.archived")}</option>
           </select>
           <input
             type="search"

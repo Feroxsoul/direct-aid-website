@@ -11,7 +11,8 @@ function formatMoney(value: number) {
 }
 
 function projectStatus(project: ProjectRow) {
-  return project.status ?? (project.is_published ? "published" : "draft");
+  const status = project.status ?? (project.is_published ? "published" : "draft");
+  return status === "archived" ? "draft" : status;
 }
 
 type ProjectCardsGridProps = {

@@ -192,7 +192,8 @@ async function nextProjectSlug(
 }
 
 function parseProjectPayload(formData: FormData) {
-  const status = String(formData.get("status") ?? "published").trim();
+  const rawStatus = String(formData.get("status") ?? "published").trim();
+  const status = rawStatus === "archived" ? "draft" : rawStatus;
   const month = Number(formData.get("project_month"));
   const year = Number(formData.get("project_year"));
 

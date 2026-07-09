@@ -146,7 +146,8 @@ export function mapProjectRowToCard(
 }
 
 export function projectStatus(row: ProjectRow) {
-  return row.status ?? (row.is_published ? "published" : "draft");
+  const status = row.status ?? (row.is_published ? "published" : "draft");
+  return status === "archived" ? "draft" : status;
 }
 
 export function relativeTimeLabel(dateLabel: string) {

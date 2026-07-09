@@ -240,7 +240,6 @@ export function ProjectForm({
         >
           <option value="draft">{t("common.draft")}</option>
           <option value="published">{t("common.published")}</option>
-          <option value="archived">{t("common.archived")}</option>
         </select>
       </div>
 
